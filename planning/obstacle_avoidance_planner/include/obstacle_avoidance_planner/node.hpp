@@ -179,6 +179,7 @@ private:
   bool enable_pre_smoothing_;
   bool skip_optimization_;
   bool reset_prev_optimization_;
+  bool enable_boost_check_;
 
   // vehicle circles info for for mpt constraints
   std::string vehicle_circle_method_;

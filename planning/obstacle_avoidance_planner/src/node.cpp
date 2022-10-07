@@ -287,6 +287,8 @@ ObstacleAvoidancePlanner::ObstacleAvoidancePlanner(const rclcpp::NodeOptions & n
     enable_pre_smoothing_ = declare_parameter<bool>("option.enable_pre_smoothing");
     skip_optimization_ = declare_parameter<bool>("option.skip_optimization");
     reset_prev_optimization_ = declare_parameter<bool>("option.reset_prev_optimization");
+    enable_boost_check_ = declare_parameter<bool>("option.enable_boost_check");
+
   }
 
   {  // trajectory parameter
@@ -570,6 +572,7 @@ rcl_interfaces::msg::SetParametersResult ObstacleAvoidancePlanner::onParam(
     updateParam<bool>(parameters, "option.enable_pre_smoothing", enable_pre_smoothing_);
     updateParam<bool>(parameters, "option.skip_optimization", skip_optimization_);
     updateParam<bool>(parameters, "option.reset_prev_optimization", reset_prev_optimization_);
+    updateParam<bool>(parameters, "option.enable_boost_check", enable_boost_check_);
   }
 
   {  // trajectory parameter
