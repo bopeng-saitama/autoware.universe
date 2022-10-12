@@ -431,6 +431,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   point fp;
   polygon footprint;
   polygon drivable_area_polygon;
+  polygon intersection_polygon;
 
   std::vector<point> result;
   cv::Mat cv_image;
@@ -439,6 +440,8 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   const double half_width = vehicle_param.width / 2.0;
   const double base_to_front = vehicle_param.length - vehicle_param.rear_overhang;
   const double base_to_rear = vehicle_param.rear_overhang;
+
+  constexpr double epsilon = 1e-8;
 
   const auto top_left_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, -base_to_left, 0.0)
@@ -460,6 +463,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
 
   if(enable_boost_check){
 
+    std::cout << "boost check" << std::endl;
     fp = {top_left_pos.x, top_left_pos.y};
     footprint.outer().push_back(fp);
     fp = {top_right_pos.x, top_right_pos.y};
@@ -480,57 +484,36 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     cv::erode(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(cv_image, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-
+    const auto & info = drivable_area.info;
 
     for (const auto & contour : contours) {
       geometry_msgs::msg::Pose pose;
       for (const auto & point : contour) {
         pose.position =
-          tier4_autoware_utils::calcOffsetPose(traj_point.pose,point.x, point.y, 0.0).position;
+          tier4_autoware_utils::calcOffsetPose(traj_point.pose, (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
+                                               (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y, 0.0).position;
         drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
       }
-      drivable_area_polygon.outer().push_back({drivable_area_polygon.outer().front().x(), drivable_area_polygon.outer().front().y()});
+      drivable_area_polygon.outer().push_back({drivable_area_polygon.outer().at(0).x(), drivable_area_polygon.outer().at(0).y()});
     }
     bg::correct(drivable_area_polygon);
 
     bg::intersection(footprint, drivable_area_polygon, result);
-    std::cout << bg::area(footprint) << std::endl;
-    std::cout << bg::area(drivable_area_polygon) << std::endl;
 
-    polygon poly;
-    for (const auto & p : result) {
-      point temp;
-      temp = {p.x(), p.y()};
-      poly.outer().push_back(temp);
-    }poly.outer().push_back({poly.outer().front().x(), poly.outer().front().y()});
-    std::cout << "****" << bg::area(poly) << std::endl;
+    for (const auto & point : result) {
+      intersection_polygon.outer().push_back(point);
+    }
+    bg::correct(intersection_polygon);
 
-    return false;
+    if (bg::area(intersection_polygon) < bg::area(footprint) || std::fabs(bg::area(intersection_polygon) - bg::area(footprint)) > epsilon) {
 
-//    const auto & info = drivable_area.info;
-//    for (const auto & contour : contours) {
-//      geometry_msgs::msg::Pose pose;
-//      for (const auto & point : contour) {
-//        p = {
-//            (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
-//            (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y};
-//        pose.position =
-//          tier4_autoware_utils::calcOffsetPose(traj_point.pose,
-//                                               (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
-//                                               (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y, 0.0).position;
-//        std::cout << "point: " << pose.position.x << ", " << pose.position.y << std::endl;
-//        pose.position = tier4_autoware_utils::calcOffsetPose(traj_point.pose, point.x, point.y, 0.0).position;
-//
-//        drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
-//
-//        std::cout << "point: " << point.x << ", " << point.y << std::endl;
-//
-//      }
-//    }
+      return true;
+    }
+
 
   } else {
 
-    constexpr double epsilon = 1e-8;
+
     const bool out_top_left =
         isOutsideDrivableArea(top_left_pos, road_clearance_map, map_info, epsilon);
     const bool out_top_right =
