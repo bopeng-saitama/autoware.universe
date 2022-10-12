@@ -431,6 +431,11 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   point fp;
   polygon footprint;
   polygon drivable_area_polygon;
+
+  std::vector<point> result;
+  cv::Mat cv_image;
+  grid_map::GridMap grid_map;
+
   const double half_width = vehicle_param.width / 2.0;
   const double base_to_front = vehicle_param.length - vehicle_param.rear_overhang;
   const double base_to_rear = vehicle_param.rear_overhang;
@@ -439,52 +444,105 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, -base_to_left, 0.0)
       .position;
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, -half_width, 0.0).position;
-  fp = {top_left_pos.x, top_left_pos.y};
-  footprint.outer().push_back(fp);
   const auto top_right_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, base_to_right, 0.0)
       .position;
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, half_width, 0.0).position;
-  fp = {top_right_pos.x, top_right_pos.y};
-  footprint.outer().push_back(fp);
   const auto bottom_right_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, base_to_right, 0.0)
       .position;
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, half_width, 0.0).position;
-  fp = {bottom_right_pos.x, bottom_right_pos.y};
-  footprint.outer().push_back(fp);
   const auto bottom_left_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -base_to_left, 0.0)
       .position;
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -half_width, 0.0).position;
-  fp = {bottom_left_pos.x, bottom_left_pos.y};
 
-  footprint.outer().push_back(fp);
 
-  std::vector<point> result;
-  cv::Mat cv_image;
-  grid_map::GridMap grid_map;
-  grid_map::GridMapRosConverter::fromOccupancyGrid(drivable_area, "layer", grid_map);
-  grid_map::GridMapCvConverter::toImage<unsigned char, 1>(
+  if(enable_boost_check){
+
+    fp = {top_left_pos.x, top_left_pos.y};
+    footprint.outer().push_back(fp);
+    fp = {top_right_pos.x, top_right_pos.y};
+    footprint.outer().push_back(fp);
+    fp = {bottom_right_pos.x, bottom_right_pos.y};
+    footprint.outer().push_back(fp);
+    fp = {bottom_left_pos.x, bottom_left_pos.y};
+    footprint.outer().push_back(fp);
+    fp = {top_left_pos.x, top_left_pos.y};
+    footprint.outer().push_back(fp);
+
+    bg::correct(footprint);
+
+    grid_map::GridMapRosConverter::fromOccupancyGrid(drivable_area, "layer", grid_map);
+    grid_map::GridMapCvConverter::toImage<unsigned char, 1>(
     grid_map, "layer", CV_8UC1, 0, 100, cv_image);
-  cv::dilate(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
-  cv::erode(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
-  std::vector<std::vector<cv::Point>> contours;
-  cv::findContours(cv_image, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-  const auto & info = drivable_area.info;
-  for (const auto & contour : contours) {
-    point p;
-    for (const auto & point : contour) {
-      p = {
-        (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
-        (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y};
-    }
-    drivable_area_polygon.outer().push_back(p);
-  }
-  bg::intersection(footprint, drivable_area_polygon, result);
+    cv::dilate(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
+    cv::erode(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(cv_image, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
-  if (result.size == 1) {
-    return true;
+
+    for (const auto & contour : contours) {
+      geometry_msgs::msg::Pose pose;
+      for (const auto & point : contour) {
+        pose.position =
+          tier4_autoware_utils::calcOffsetPose(traj_point.pose,point.x, point.y, 0.0).position;
+        drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
+      }
+      drivable_area_polygon.outer().push_back({drivable_area_polygon.outer().front().x(), drivable_area_polygon.outer().front().y()});
+    }
+    bg::correct(drivable_area_polygon);
+
+    bg::intersection(footprint, drivable_area_polygon, result);
+    std::cout << bg::area(footprint) << std::endl;
+    std::cout << bg::area(drivable_area_polygon) << std::endl;
+
+    polygon poly;
+    for (const auto & p : result) {
+      point temp;
+      temp = {p.x(), p.y()};
+      poly.outer().push_back(temp);
+    }poly.outer().push_back({poly.outer().front().x(), poly.outer().front().y()});
+    std::cout << "****" << bg::area(poly) << std::endl;
+
+    return false;
+
+//    const auto & info = drivable_area.info;
+//    for (const auto & contour : contours) {
+//      geometry_msgs::msg::Pose pose;
+//      for (const auto & point : contour) {
+//        p = {
+//            (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
+//            (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y};
+//        pose.position =
+//          tier4_autoware_utils::calcOffsetPose(traj_point.pose,
+//                                               (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
+//                                               (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y, 0.0).position;
+//        std::cout << "point: " << pose.position.x << ", " << pose.position.y << std::endl;
+//        pose.position = tier4_autoware_utils::calcOffsetPose(traj_point.pose, point.x, point.y, 0.0).position;
+//
+//        drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
+//
+//        std::cout << "point: " << point.x << ", " << point.y << std::endl;
+//
+//      }
+//    }
+
+  } else {
+
+    constexpr double epsilon = 1e-8;
+    const bool out_top_left =
+        isOutsideDrivableArea(top_left_pos, road_clearance_map, map_info, epsilon);
+    const bool out_top_right =
+        isOutsideDrivableArea(top_right_pos, road_clearance_map, map_info, epsilon);
+    const bool out_bottom_left =
+        isOutsideDrivableArea(bottom_left_pos, road_clearance_map, map_info, epsilon);
+    const bool out_bottom_right =
+        isOutsideDrivableArea(bottom_right_pos, road_clearance_map, map_info, epsilon);
+
+    if (out_top_left || out_top_right || out_bottom_left || out_bottom_right) {
+      return true;
+    }
   }
 
   return false;
