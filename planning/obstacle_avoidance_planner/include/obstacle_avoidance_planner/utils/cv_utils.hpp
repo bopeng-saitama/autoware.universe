@@ -108,7 +108,9 @@ namespace cv_drivable_area_utils
 {
 bool isOutsideDrivableAreaFromRectangleFootprint(
   const autoware_auto_planning_msgs::msg::TrajectoryPoint & traj_point,
-  const VehicleParam & vehicle_param, const nav_msgs::msg::OccupancyGrid & drivable_area);
+  const cv::Mat & road_clearance_map, const nav_msgs::msg::MapMetaData & map_info,
+  const VehicleParam & vehicle_param, const nav_msgs::msg::OccupancyGrid & drivable_area,
+  const bool & enable_boost_check);
 
 bool isOutsideDrivableAreaFromCirclesFootprint(
   const autoware_auto_planning_msgs::msg::TrajectoryPoint & traj_point,
