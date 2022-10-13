@@ -34,12 +34,25 @@
 #include <limits>
 #include <vector>
 
-namespace bg = boost::geometry;
-using point = bg::model::d2::point_xy<double>;
-using polygon = bg::model::polygon<point>;
-
 namespace
 {
+namespace bg = boost::geometry;
+using tier4_autoware_utils::Point2d;
+using tier4_autoware_utils::Polygon2d;
+
+void appendPointToPolygon(Polygon2d & polygon, const geometry_msgs::msg::Point & geom_point)
+{
+  Point2d point;
+  point.x() = geom_point.x;
+  point.y() = geom_point.y;
+
+  bg::append(polygon.outer(), point);
+}
+
+[[maybe_unused]]void appendPointToPolygon(Polygon2d & polygon, const Point2d & point)
+{
+  bg::append(polygon.outer(), point);
+}
 boost::optional<double> getDistance(
   const cv::Mat & clearance_map, const geometry_msgs::msg::Point & map_point,
   const nav_msgs::msg::MapMetaData & map_info)
@@ -432,10 +445,12 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   polygon footprint;
   polygon drivable_area_polygon;
   polygon intersection_polygon;
+  Polygon2d footprint; // footprint boost polygon
 
-  std::vector<point> result;
-  cv::Mat cv_image;
-  grid_map::GridMap grid_map;
+
+//  std::vector<Point2d> result;
+//  cv::Mat cv_image;
+//  grid_map::GridMap grid_map;
 
   const double half_width = vehicle_param.width / 2.0;
   const double base_to_front = vehicle_param.length - vehicle_param.rear_overhang;
@@ -464,55 +479,52 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   if(enable_boost_check){
 
     std::cout << "boost check" << std::endl;
-    fp = {top_left_pos.x, top_left_pos.y};
-    footprint.outer().push_back(fp);
-    fp = {top_right_pos.x, top_right_pos.y};
-    footprint.outer().push_back(fp);
-    fp = {bottom_right_pos.x, bottom_right_pos.y};
-    footprint.outer().push_back(fp);
-    fp = {bottom_left_pos.x, bottom_left_pos.y};
-    footprint.outer().push_back(fp);
-    fp = {top_left_pos.x, top_left_pos.y};
-    footprint.outer().push_back(fp);
-
+    appendPointToPolygon(footprint, top_left_pos);
+    appendPointToPolygon(footprint, top_right_pos);
+    appendPointToPolygon(footprint, bottom_right_pos);
+    appendPointToPolygon(footprint, bottom_left_pos);
+    appendPointToPolygon(footprint, top_left_pos);
     bg::correct(footprint);
 
-    grid_map::GridMapRosConverter::fromOccupancyGrid(drivable_area, "layer", grid_map);
-    grid_map::GridMapCvConverter::toImage<unsigned char, 1>(
-    grid_map, "layer", CV_8UC1, 0, 100, cv_image);
-    cv::dilate(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
-    cv::erode(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(cv_image, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-    const auto & info = drivable_area.info;
+//    for(const auto & point : footprint.outer()){
+//      std::cout << "x: " << point.x() << " y: " << point.y() << std::endl;
+//    }
 
-    for (const auto & contour : contours) {
-      geometry_msgs::msg::Pose pose;
-      for (const auto & point : contour) {
-        pose.position =
-          tier4_autoware_utils::calcOffsetPose(traj_point.pose, (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
-                                               (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y, 0.0).position;
-        drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
-      }
-      drivable_area_polygon.outer().push_back({drivable_area_polygon.outer().at(0).x(), drivable_area_polygon.outer().at(0).y()});
-    }
-    bg::correct(drivable_area_polygon);
-
-    bg::intersection(footprint, drivable_area_polygon, result);
-
-    for (const auto & point : result) {
-      intersection_polygon.outer().push_back(point);
-    }
-    bg::correct(intersection_polygon);
-
-    if (bg::area(intersection_polygon) < bg::area(footprint) || std::fabs(bg::area(intersection_polygon) - bg::area(footprint)) > epsilon) {
-
-      return true;
-    }
+//    grid_map::GridMapRosConverter::fromOccupancyGrid(drivable_area, "layer", grid_map);
+//    grid_map::GridMapCvConverter::toImage<unsigned char, 1>(
+//    grid_map, "layer", CV_8UC1, 0, 100, cv_image);
+//    cv::dilate(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
+//    cv::erode(cv_image, cv_image, cv::Mat(), cv::Point(-1, -1), 2);
+//    std::vector<std::vector<cv::Point>> contours;
+//    cv::findContours(cv_image, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+//    const auto & info = drivable_area.info;
+//
+//    for (const auto & contour : contours) {
+//      geometry_msgs::msg::Pose pose;
+//      for (const auto & point : contour) {
+//        pose.position =
+//          tier4_autoware_utils::calcOffsetPose(traj_point.pose, (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x,
+//                                               (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y, 0.0).position;
+//        drivable_area_polygon.outer().push_back({pose.position.x, pose.position.y});
+//      }
+//      drivable_area_polygon.outer().push_back({drivable_area_polygon.outer().at(0).x(), drivable_area_polygon.outer().at(0).y()});
+//    }
+//    bg::correct(drivable_area_polygon);
+//
+//    bg::intersection(footprint, drivable_area_polygon, result);
+//
+//    for (const auto & point : result) {
+//      intersection_polygon.outer().push_back(point);
+//    }
+//    bg::correct(intersection_polygon);
+//
+//    if (bg::area(intersection_polygon) < bg::area(footprint) || std::fabs(bg::area(intersection_polygon) - bg::area(footprint)) > epsilon) {
+//
+//      return true;
+//    }
 
 
   } else {
-
 
     const bool out_top_left =
         isOutsideDrivableArea(top_left_pos, road_clearance_map, map_info, epsilon);
