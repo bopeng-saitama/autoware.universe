@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "obstacle_avoidance_planner/utils/cv_utils.hpp"
+
 #include "obstacle_avoidance_planner/utils/utils.hpp"
 
 #include <grid_map_cv/GridMapCvConverter.hpp>
@@ -422,7 +423,6 @@ boost::optional<Edges> getEdges(
 namespace cv_drivable_area_utils
 {
 
-
 bool isOutsideDrivableAreaFromRectangleFootprint(
   const autoware_auto_planning_msgs::msg::TrajectoryPoint & traj_point,
   const cv::Mat & road_clearance_map, const nav_msgs::msg::MapMetaData & map_info,
@@ -465,8 +465,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
       .position;
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -half_width, 0.0).position;
 
-  if(enable_boost_check){
-
+  if (enable_boost_check) {
     appendPointToPolygon(footprint, top_left_pos);
     appendPointToPolygon(footprint, top_right_pos);
     appendPointToPolygon(footprint, bottom_right_pos);
@@ -474,7 +473,8 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     bg::correct(footprint);
 
     grid_map::GridMapRosConverter::fromOccupancyGrid(drivable_area_grid, "layer", grid_map);
-    grid_map::GridMapCvConverter::toImage<unsigned char, 1>(grid_map, "layer", CV_8UC1, 0.0, 1.0, cv_image);
+    grid_map::GridMapCvConverter::toImage<unsigned char, 1>(
+      grid_map, "layer", CV_8UC1, 0.0, 1.0, cv_image);
     cv::findContours(cv_image, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     const auto & info = drivable_area_grid.info;
@@ -482,27 +482,26 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
       for (const auto & point : contour) {
         geometry_msgs::msg::Point p;
         p.x = (info.width - 1.0 - point.y) * info.resolution + info.origin.position.x;
-        p.y =  (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y;
+        p.y = (info.height - 1.0 - point.x) * info.resolution + info.origin.position.y;
         p.z = 0.0;
         appendPointToPolygon(drivable_area_polygon, p);
       }
     }
     bg::correct(drivable_area_polygon);
 
-    if(bg::intersects(footprint, drivable_area_polygon)){
+    if (bg::intersects(footprint, drivable_area_polygon)) {
       return true;
     }
 
   } else {
-
     const bool out_top_left =
-        isOutsideDrivableArea(top_left_pos, road_clearance_map, map_info, epsilon);
+      isOutsideDrivableArea(top_left_pos, road_clearance_map, map_info, epsilon);
     const bool out_top_right =
-        isOutsideDrivableArea(top_right_pos, road_clearance_map, map_info, epsilon);
+      isOutsideDrivableArea(top_right_pos, road_clearance_map, map_info, epsilon);
     const bool out_bottom_left =
-        isOutsideDrivableArea(bottom_left_pos, road_clearance_map, map_info, epsilon);
+      isOutsideDrivableArea(bottom_left_pos, road_clearance_map, map_info, epsilon);
     const bool out_bottom_right =
-        isOutsideDrivableArea(bottom_right_pos, road_clearance_map, map_info, epsilon);
+      isOutsideDrivableArea(bottom_right_pos, road_clearance_map, map_info, epsilon);
 
     if (out_top_left || out_top_right || out_bottom_left || out_bottom_right) {
       return true;

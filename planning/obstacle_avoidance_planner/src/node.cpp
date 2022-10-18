@@ -288,7 +288,6 @@ ObstacleAvoidancePlanner::ObstacleAvoidancePlanner(const rclcpp::NodeOptions & n
     skip_optimization_ = declare_parameter<bool>("option.skip_optimization");
     reset_prev_optimization_ = declare_parameter<bool>("option.reset_prev_optimization");
     enable_boost_check_ = declare_parameter<bool>("option.enable_boost_check");
-
   }
 
   {  // trajectory parameter
@@ -967,7 +966,8 @@ std::vector<TrajectoryPoint> ObstacleAvoidancePlanner::generateOptimizedTrajecto
 
   // insert 0 velocity when trajectory is over drivable area
   if (is_stopping_if_outside_drivable_area_) {
-    insertZeroVelocityOutsideDrivableArea(planner_data, optimal_trajs.model_predictive_trajectory, cv_maps);
+    insertZeroVelocityOutsideDrivableArea(
+      planner_data, optimal_trajs.model_predictive_trajectory, cv_maps);
   }
 
   publishDebugDataInOptimization(planner_data, optimal_trajs.model_predictive_trajectory);
@@ -1261,7 +1261,8 @@ void ObstacleAvoidancePlanner::insertZeroVelocityOutsideDrivableArea(
 
     // calculate the first point being outside drivable area
     const bool is_outside = cv_drivable_area_utils::isOutsideDrivableAreaFromRectangleFootprint(
-      traj_point, road_clearance_map, map_info, vehicle_param_, drivable_area_grid, enable_boost_check_);
+      traj_point, road_clearance_map, map_info, vehicle_param_, drivable_area_grid,
+      enable_boost_check_);
 
     // only insert zero velocity to the first point outside drivable area
     if (is_outside) {
