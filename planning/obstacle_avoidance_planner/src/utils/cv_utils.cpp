@@ -42,11 +42,6 @@ void appendPointToPolygon(Polygon2d & polygon, const geometry_msgs::msg::Point &
   bg::append(polygon.outer(), point);
 }
 
-[[maybe_unused]]void appendPointToPolygon(Polygon2d & polygon, const Point2d & point)
-{
-  bg::append(polygon.outer(), point);
-}
-
 boost::optional<double> getDistance(
   const cv::Mat & clearance_map, const geometry_msgs::msg::Point & map_point,
   const nav_msgs::msg::MapMetaData & map_info)
