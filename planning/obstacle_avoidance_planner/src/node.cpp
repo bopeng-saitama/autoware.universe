@@ -1239,7 +1239,7 @@ void ObstacleAvoidancePlanner::insertZeroVelocityOutsideDrivableArea(
 
   const auto & map_info = cv_maps.map_info;
   const auto & road_clearance_map = cv_maps.clearance_map;
-  const auto & drivable_area = planner_data.path.drivable_area;
+  const auto & drivable_area_grid = planner_data.path.drivable_area;
 
   const size_t nearest_idx = findEgoNearestIndex(traj_points, planner_data.ego_pose);
 
@@ -1261,7 +1261,7 @@ void ObstacleAvoidancePlanner::insertZeroVelocityOutsideDrivableArea(
 
     // calculate the first point being outside drivable area
     const bool is_outside = cv_drivable_area_utils::isOutsideDrivableAreaFromRectangleFootprint(
-      traj_point, road_clearance_map, map_info, vehicle_param_, drivable_area, enable_boost_check_);
+      traj_point, road_clearance_map, map_info, vehicle_param_, drivable_area_grid, enable_boost_check_);
 
     // only insert zero velocity to the first point outside drivable area
     if (is_outside) {
