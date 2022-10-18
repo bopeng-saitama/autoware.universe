@@ -489,9 +489,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     }
     bg::correct(drivable_area_polygon);
 
-    std::vector<Point2d> output;
-    bg::intersection(footprint, drivable_area_polygon, output);
-    if(!output.empty()){
+    if(bg::intersects(footprint, drivable_area_polygon)){
       return true;
     }
 
