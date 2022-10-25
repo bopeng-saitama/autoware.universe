@@ -13,4 +13,22 @@
       <arg name="param_file" value="$(var tier4_localization_launch_param_path)/ndt_scan_matcher.param.yaml"/>
     </include>
   </group>
+
+  <group>
+    <include file="$(find-pkg-share lidar_feature_extraction)/launch/lidar_feature_extraction.launch.py">
+      <arg name="rectified_scan_points_topic" value="/sensing/lidar/top/rectified/pointcloud_ex" />
+      <arg name="scan_edge_topic" value="/localization/pose_estimator/scan_edge" />
+      <arg name="scan_surface_topic" value="/localization/pose_estimator/scan_surface" />
+    </include>
+  </group>
+
+  <group>
+    <include file="$(find-pkg-share lidar_feature_localization)/launch/lidar_feature_localization.launch.py">
+      <arg name="scan_edge_topic" value="/localization/pose_estimator/scan_edge" />
+      <arg name="scan_surface_topic" value="/localization/pose_estimator/scan_surface" />
+      <arg name="optimization_start_pose" value="/localization/pose_twist_fusion_filter/biased_pose_with_covariance" />
+      <arg name="estimated_pose" value="/localization/pose_estimator/pose"/>
+      <arg name="estimated_pose_with_covariance" value="/localization/pose_estimator/loam_pose_with_covariance"/>
+    </include>
+  </group>
 </launch>

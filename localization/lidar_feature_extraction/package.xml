@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>lidar_feature_extraction</name>
+  <version>0.1.0</version>
+  <description>Lidar feature extraction</description>
+
+  <license>BSD 3-Clause</license>
+  <maintainer email="takeshi.ishita@tier4.jp">Takeshi Ishita</maintainer>
+  <author email="shant@mit.edu">Tixiao Shan</author>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
+
+  <depend>eigen</depend>
+  <depend>fmt</depend>
+  <depend>libpcl-all-dev</depend>
+  <depend>lidar_feature_library</depend>
+  <depend>pcl_conversions</depend>
+  <depend>pcl_ros</depend>
+  <depend>range-v3</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_cmake_gmock</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
