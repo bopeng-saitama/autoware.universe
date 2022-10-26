@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-#ifndef ACCELERATION_MAP_CALIBRATOR__ACCEL_BRAKE_MAP_CALIBRATOR_NODE_HPP_
-#define ACCELERATION_MAP_CALIBRATOR__ACCEL_BRAKE_MAP_CALIBRATOR_NODE_HPP_
+#ifndef ACCEL_BRAKE_MAP_CALIBRATOR__ACCELERATION_MAP_CALIBRATOR_NODE_HPP_
+#define ACCEL_BRAKE_MAP_CALIBRATOR__ACCELERATION_MAP_CALIBRATOR_NODE_HPP_
 
 #include "diagnostic_updater/diagnostic_updater.hpp"
 #include "raw_vehicle_cmd_converter/accel_map.hpp"
@@ -33,9 +33,9 @@
 
 #include <motion_utils/motion_utils.hpp>
 
+#include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
 #include "autoware_auto_vehicle_msgs/msg/steering_report.hpp"
 #include "autoware_auto_vehicle_msgs/msg/velocity_report.hpp"
-#include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "nav_msgs/msg/occupancy_grid.hpp"
 #include "std_msgs/msg/bool.hpp"
@@ -57,15 +57,64 @@
 #include <string>
 #include <vector>
 
-using raw_vehicle_cmd_converter::AccelMap;
-using raw_vehicle_cmd_converter::BrakeMap;
 using Map = std::vector<std::vector<double>>;
-using nav_msgs::msg::OccupancyGrid;
-using std_msgs::msg::Float32MultiArray;
-using tier4_debug_msgs::msg::Float32Stamped;
 using autoware_auto_control_msgs::msg::AckermannControlCommand;
 using autoware_auto_vehicle_msgs::msg::SteeringReport;
 using autoware_auto_vehicle_msgs::msg::VelocityReport;
+using nav_msgs::msg::OccupancyGrid;
+using std_msgs::msg::Float32MultiArray;
+using tier4_debug_msgs::msg::Float32Stamped;
+
+using namespace raw_vehicle_cmd_converter;
+
+class AccelerationMap
+{
+public:
+  bool readAccelerationMapFromCSV(const std::string & csv_path)
+  {
+    CSVLoader csv(csv_path);
+    std::vector<std::vector<std::string>> table;
+
+    if (!csv.readCSV(table)) {
+      return false;
+    }
+
+    vehicle_name_ = table[0][0];
+    vel_index_ = CSVLoader::getRowIndex(table);
+    acc_cmd_index_ = CSVLoader::getColumnIndex(table);
+    acceleration_map_ = CSVLoader::getMap(table);
+    return true;
+  }
+
+  bool getAcceleration(const double acc_des, const double vel, double & acc) const
+  {
+    std::vector<double> interpolated_acc_vec;
+    const double clamped_vel = CSVLoader::clampValue(vel, vel_index_, "acc_cmd: vel");
+
+    // (throttle, vel, acc) map => (throttle, acc) map by fixing vel
+    for (const auto & acc_vec : acceleration_map_) {
+      interpolated_acc_vec.push_back(interpolation::lerp(vel_index_, acc_vec, clamped_vel));
+    }
+
+    // calculate throttle
+    // When the desired acceleration is smaller than the throttle area, return min acc
+    // When the desired acceleration is greater than the throttle area, return max acc
+    const double clamped_acc = CSVLoader::clampValue(acc_des, acc_cmd_index_, "acc_cmd: acc");
+    acc = interpolation::lerp(acc_cmd_index_, interpolated_acc_vec, clamped_acc);
+
+    return true;
+  }
+  std::vector<double> getVelIdx() const { return vel_index_; }
+  std::vector<double> getAccCmdIdx() const { return acc_cmd_index_; }
+  std::vector<std::vector<double>> getAccCmdMap() const { return acceleration_map_; }
+
+private:
+  std::string vehicle_name_;
+  std::vector<double> vel_index_;
+  std::vector<double> acc_cmd_index_;
+  std::vector<std::vector<double>> acceleration_map_;
+};
+
 struct DataStamped
 {
   DataStamped(const double _data, const rclcpp::Time & _data_time)
@@ -116,13 +165,10 @@ private:
   geometry_msgs::msg::TwistStamped::ConstSharedPtr twist_ptr_;
   std::vector<std::shared_ptr<geometry_msgs::msg::TwistStamped>> twist_vec_;
   std::vector<DataStampedPtr> accel_pedal_vec_;  // for delayed pedal
-  std::vector<DataStampedPtr> brake_pedal_vec_;  // for delayed pedal
   SteeringReport::ConstSharedPtr steer_ptr_;
   DataStampedPtr accel_pedal_ptr_;
   DataStampedPtr acceleration_cmd_ptr_;
-  DataStampedPtr brake_pedal_ptr_;
   DataStampedPtr delayed_accel_pedal_ptr_;
-  DataStampedPtr delayed_brake_pedal_ptr_;
 
   // Diagnostic Updater
   std::shared_ptr<diagnostic_updater::Updater> updater_ptr_;
@@ -165,10 +211,10 @@ private:
   bool progress_file_output_ = false;
 
   // Algorithm
-  AccelMap accel_map_;
+  AccelerationMap accel_map_;
 
   // for evaluation
-  AccelMap new_accel_map_;
+  AccelerationMap new_accel_map_;
   std::vector<double> part_original_accel_mse_que_;
   std::vector<double> full_original_accel_mse_que_;
   std::vector<double> new_accel_mse_que_;
@@ -181,12 +227,10 @@ private:
 
   // Accel / Brake Map update
   Map accel_map_value_;
-  Map brake_map_value_;
   Map update_accel_map_value_;
-  Map update_brake_map_value_;
   std::vector<std::vector<std::vector<double>>> map_value_data_;
   std::vector<double> accel_vel_index_;
-  std::vector<double> accel_pedal_index_;
+  std::vector<double> acc_cmd_index_;
   bool update_success_;
   int update_success_count_ = 0;
   int update_count_ = 0;
@@ -214,8 +258,9 @@ private:
   void timerCallback();
   void timerCallbackOutputCSV();
   void executeUpdate(const int accel_pedal_index, const int accel_vel_index);
-  bool updateEachValOffset(const int accel_pedal_index, const int accel_vel_index,
-    const double measured_acc, const double map_acc);
+  bool updateEachValOffset(
+    const int accel_pedal_index, const int accel_vel_index, const double measured_acc,
+    const double map_acc);
   void updateTotalMapOffset(const double measured_acc, const double map_acc);
   void callbackControlCommand(const AckermannControlCommand::ConstSharedPtr msg);
   void callbackActuationStatus(
@@ -241,23 +286,24 @@ private:
   int nearestValueSearch(const std::vector<double> value_index, const double value);
   int nearestPedalSearch();
   int nearestVelSearch();
-  void takeConsistencyOfAccelMap();
+  void takeConsistencyOfAccelerationMap();
   bool updateAccelBrakeMap();
   void publishFloat32(const std::string publish_type, const double val);
   void publishUpdateSuggestFlag();
   double getPitchCompensatedAcceleration();
   void executeEvaluation();
   double calculateEstimatedAcc(
-    const double throttle, const double vel, AccelMap & accel_map);
+    const double throttle, const double vel, AccelerationMap & accel_map);
   double calculateAccelSquaredError(
-    const double throttle, const double vel, AccelMap & accel_map);
+    const double throttle, const double vel, AccelerationMap & accel_map);
   void pushDataToQue(
     const geometry_msgs::msg::TwistStamped::ConstSharedPtr & data, const std::size_t max_size,
     std::queue<geometry_msgs::msg::TwistStamped::ConstSharedPtr> * que);
   template <class T>
   void pushDataToVec(const T data, const std::size_t max_size, std::vector<T> * vec);
   template <class T>
-  T getNearestTimeDataFromVec(const T base_data, const double back_time, const std::vector<T> & vec);
+  T getNearestTimeDataFromVec(
+    const T base_data, const double back_time, const std::vector<T> & vec);
   DataStampedPtr getNearestTimeDataFromVec(
     DataStampedPtr base_data, const double back_time, const std::vector<DataStampedPtr> & vec);
   double getAverage(const std::vector<double> & vec);
@@ -283,8 +329,7 @@ private:
   void addIndexToCSV(std::ofstream * csv_file);
   void addLogToCSV(
     std::ofstream * csv_file, const double & timestamp, const double velocity, const double accel,
-    const double pitched_accel, const double acceleration_cmd_,
-    const double pitch,
+    const double pitched_accel, const double acceleration_cmd_, const double pitch,
     const double steer, const double jerk, const double full_original_accel_mse,
     const double part_original_accel_mse, const double new_accel_mse);
 
@@ -318,4 +363,4 @@ public:
   explicit AccelBrakeMapCalibrator(const rclcpp::NodeOptions & node_options);
 };
 
-#endif  // ACCELERATION_MAP_CALIBRATOR__ACCEL_BRAKE_MAP_CALIBRATOR_NODE_HPP_
+#endif  // ACCEL_BRAKE_MAP_CALIBRATOR__ACCELERATION_MAP_CALIBRATOR_NODE_HPP_
