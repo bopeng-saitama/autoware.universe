@@ -258,9 +258,6 @@ private:
     const double throttle, const double vel, AccelMap & accel_map);
   double calculateAccelSquaredError(
     const double throttle, const double vel, AccelMap & accel_map);
-  std::vector<double> getMapColumnFromUnifiedIndex(
-    const std::vector<std::vector<double>> & accel_map_value,const std::size_t index);
-  double getPedalValueFromUnifiedIndex(const std::size_t index);
   void pushDataToQue(
     const geometry_msgs::msg::TwistStamped::ConstSharedPtr & data, const std::size_t max_size,
     std::queue<geometry_msgs::msg::TwistStamped::ConstSharedPtr> * que);
@@ -293,8 +290,8 @@ private:
   void addIndexToCSV(std::ofstream * csv_file);
   void addLogToCSV(
     std::ofstream * csv_file, const double & timestamp, const double velocity, const double accel,
-    const double pitched_accel, const double accel_pedal, const double brake_pedal,
-    const double accel_pedal_speed, const double brake_pedal_speed, const double pitch,
+    const double pitched_accel, const double accel_pedal,
+    const double accel_pedal_speed, const double pitch,
     const double steer, const double jerk, const double full_original_accel_mse,
     const double part_original_accel_mse, const double new_accel_mse);
 

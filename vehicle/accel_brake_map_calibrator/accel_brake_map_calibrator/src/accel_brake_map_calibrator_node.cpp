@@ -871,19 +871,6 @@ void AccelBrakeMapCalibrator::updateTotalMapOffset(const double measured_acc, co
   }
 }
 
-std::vector<double> AccelBrakeMapCalibrator::getMapColumnFromUnifiedIndex(
-  const std::vector<std::vector<double>> & accel_map_value,
-  const std::vector<std::vector<double>> & brake_map_value, const std::size_t index)
-{
-  if (index < brake_map_value.size()) {
-    // input brake map value
-    return brake_map_value.at(brake_map_value.size() - index - 1);
-  } else {
-    // input accel map value
-    return accel_map_value.at(index - brake_map_value.size() + 1);
-  }
-}
-
 int AccelBrakeMapCalibrator::getUnifiedIndexFromAccelBrakeIndex(
   const bool accel_map, const std::size_t index)
 {
@@ -1132,8 +1119,7 @@ void AccelBrakeMapCalibrator::publishMap(
   int_map_value.resize(h * w);
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      const double value =
-        getMapColumnFromUnifiedIndex(accel_map_value_, brake_map_value_, i).at(j);
+      const double value = accel_map_value.at(i).at(j);
       // convert acc to 0~100 int value
       int8_t int_value =
         static_cast<uint8_t>(MAX_OCC_VALUE * ((value - min_accel_) / (max_accel_ - min_accel_)));
@@ -1162,8 +1148,7 @@ void AccelBrakeMapCalibrator::publishMap(
   std::vector<float> vec(h * w, 0);
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      vec[i * w + j] = static_cast<float>(
-        getMapColumnFromUnifiedIndex(accel_map_value_, brake_map_value_, i).at(j));
+      vec[i * w + j] = static_cast<float>(accel_map_value.at(i).at(j));
     }
   }
   float_map.data = vec;
