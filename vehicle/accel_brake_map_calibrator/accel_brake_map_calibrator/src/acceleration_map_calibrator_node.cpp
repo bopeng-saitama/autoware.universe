@@ -63,7 +63,6 @@ AccelBrakeMapCalibrator::AccelBrakeMapCalibrator(const rclcpp::NodeOptions & nod
   csv_calibrated_map_dir_ =
     this->declare_parameter<std::string>("csv_calibrated_map_dir", std::string(""));
   output_accel_file_ = csv_calibrated_map_dir_ + "/accel_map.csv";
-  output_brake_file_ = csv_calibrated_map_dir_ + "/brake_map.csv";
   const std::string update_method_str =
     this->declare_parameter<std::string>("update_method", std::string("update_offset_each_cell"));
   if (update_method_str == std::string("update_offset_each_cell")) {
