@@ -884,17 +884,6 @@ std::vector<double> AccelBrakeMapCalibrator::getMapColumnFromUnifiedIndex(
   }
 }
 
-double AccelBrakeMapCalibrator::getPedalValueFromUnifiedIndex(const std::size_t index)
-{
-  if (index < brake_pedal_index_.size()) {
-    // brake index ( minus )
-    return -brake_pedal_index_.at(brake_pedal_index_.size() - index - 1);
-  } else {
-    // input accel map value
-    return accel_pedal_index_.at(index - brake_pedal_index_.size() + 1);
-  }
-}
-
 int AccelBrakeMapCalibrator::getUnifiedIndexFromAccelBrakeIndex(
   const bool accel_map, const std::size_t index)
 {
@@ -1292,7 +1281,7 @@ void AccelBrakeMapCalibrator::publishIndex()
 
   // pedal value
   for (int pedal_idx = 0; pedal_idx < h; pedal_idx++) {
-    const double pedal_value = getPedalValueFromUnifiedIndex(pedal_idx);
+    const double pedal_value = accel_pedal_index_.at(pedal_idx);
     marker.ns = "occ_pedal_index";
     marker.id = pedal_idx;
     marker.pose.position.x = -map_resolution_ * 0.5;
