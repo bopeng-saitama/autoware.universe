@@ -136,8 +136,6 @@ private:
   double pre_acceleration_time_;
   double jerk_ = 0.0;
   double control_command_ = 0.0;
-  double accel_pedal_speed_ = 0.0;
-  double brake_pedal_speed_ = 0.0;
   double pitch_ = 0.0;
   double update_hz_;
   double velocity_min_threshold_;
@@ -152,7 +150,6 @@ private:
   double pedal_to_accel_delay_;
   std::string csv_calibrated_map_dir_;
   std::string output_accel_file_;
-  std::string output_brake_file_;
 
   // for calculating differential of msg
   const double dif_twist_time_ = 0.2;   // 200ms
@@ -169,11 +166,9 @@ private:
 
   // Algorithm
   AccelMap accel_map_;
-  BrakeMap brake_map_;
 
   // for evaluation
   AccelMap new_accel_map_;
-  BrakeMap new_brake_map_;
   std::vector<double> part_original_accel_mse_que_;
   std::vector<double> full_original_accel_mse_que_;
   std::vector<double> new_accel_mse_que_;
@@ -191,9 +186,7 @@ private:
   Map update_brake_map_value_;
   std::vector<std::vector<std::vector<double>>> map_value_data_;
   std::vector<double> accel_vel_index_;
-  std::vector<double> brake_vel_index_;
   std::vector<double> accel_pedal_index_;
-  std::vector<double> brake_pedal_index_;
   bool update_success_;
   int update_success_count_ = 0;
   int update_count_ = 0;
@@ -290,8 +283,8 @@ private:
   void addIndexToCSV(std::ofstream * csv_file);
   void addLogToCSV(
     std::ofstream * csv_file, const double & timestamp, const double velocity, const double accel,
-    const double pitched_accel, const double accel_pedal,
-    const double accel_pedal_speed, const double pitch,
+    const double pitched_accel, const double acceleration_cmd_,
+    const double pitch,
     const double steer, const double jerk, const double full_original_accel_mse,
     const double part_original_accel_mse, const double new_accel_mse);
 

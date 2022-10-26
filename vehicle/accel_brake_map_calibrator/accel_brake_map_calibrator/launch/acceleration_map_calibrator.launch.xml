@@ -12,6 +12,7 @@
   <!-- calibration interface -->
   <node pkg="accel_brake_map_calibrator" exec="acceleration_map_calibrator" name="acceleration_map_calibrator" output="screen">
     <param from="$(var accel_brake_map_calib_param)"/>
+     <remap from="~/input/control_cmd" to="/control/command/control_cmd"/>
     <remap from="~/input/velocity" to="/vehicle/status/velocity_status"/>
     <remap from="~/input/steer" to="/vehicle/status/steering_status"/>
     <remap from="~/input/actuation_status" to="/vehicle/status/actuation_status"/>
