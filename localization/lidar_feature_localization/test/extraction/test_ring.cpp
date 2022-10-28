@@ -29,8 +29,10 @@
 
 #include <gmock/gmock.h>
 
+#include <algorithm>
 #include <iterator>
 #include <random>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 

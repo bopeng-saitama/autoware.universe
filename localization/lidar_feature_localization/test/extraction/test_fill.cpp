@@ -26,8 +26,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-
 #include <gmock/gmock.h>
+
+#include <vector>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

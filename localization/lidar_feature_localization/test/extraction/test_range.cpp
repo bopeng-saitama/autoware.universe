@@ -27,52 +27,48 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #include <gmock/gmock.h>
-
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
-#include "lidar_feature_extraction/label.hpp"
-#include "lidar_feature_extraction/point_label.hpp"
-#include "lidar_feature_extraction/color_points.hpp"
+#include <vector>
 
-using testing::ElementsAre;
+#include "lidar_feature_extraction/range.hpp"
 
-TEST(ColorPoints, ColorPointsByLabel)
+
+template<typename T>
+bool Equal(const T & a, const T & b)
 {
-  auto to_vector = [](const pcl::PointXYZRGB & p) {
-      return std::vector<float>{
-      static_cast<float>(p.x),
-      static_cast<float>(p.y),
-      static_cast<float>(p.z),
-      static_cast<float>(p.r),
-      static_cast<float>(p.g),
-      static_cast<float>(p.b)
-      };
+  return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+TEST(Range, IsInInclusiveRange) {
+  EXPECT_TRUE(IsInInclusiveRange(3., 1., 5.));
+  EXPECT_TRUE(IsInInclusiveRange(1., 1., 5.));
+  EXPECT_TRUE(IsInInclusiveRange(5., 1., 5.));
+
+  EXPECT_FALSE(IsInInclusiveRange(0., 1., 5.));
+  EXPECT_FALSE(IsInInclusiveRange(6., 1., 5.));
+}
+
+TEST(Range, Range) {
+  auto norm = [](const pcl::PointXYZ & p) {
+      return std::sqrt(p.x * p.x + p.y * p.y);
     };
 
-  std::vector<PointLabel> labels = InitLabels(6);
-  labels.at(0) = PointLabel::Default;
-  labels.at(1) = PointLabel::Edge;
-  labels.at(2) = PointLabel::EdgeNeighbor;
-  labels.at(3) = PointLabel::OutOfRange;
-  labels.at(4) = PointLabel::Occluded;
-  labels.at(5) = PointLabel::ParallelBeam;
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
-  cloud->push_back(pcl::PointXYZ(0, 0, 0));
-  cloud->push_back(pcl::PointXYZ(1, 0, 0));
-  cloud->push_back(pcl::PointXYZ(2, 0, 0));
-  cloud->push_back(pcl::PointXYZ(3, 0, 0));
-  cloud->push_back(pcl::PointXYZ(4, 0, 0));
-  cloud->push_back(pcl::PointXYZ(5, 0, 0));
+  cloud->push_back(pcl::PointXYZ(3., 4., 0.));
+  cloud->push_back(pcl::PointXYZ(1., 1., 0.));
+  cloud->push_back(pcl::PointXYZ(2., -3., 0.));
+  cloud->push_back(pcl::PointXYZ(-1., 3., 0.));
 
   const MappedPoints<pcl::PointXYZ> ref_points(cloud, irange(cloud->size()));
-  const auto colored = ColorPointsByLabel<pcl::PointXYZ>(ref_points, labels);
+  const Range<pcl::PointXYZ> range(ref_points);
 
-  EXPECT_THAT(to_vector(colored->at(0)), ElementsAre(0., 0., 0., 255., 255., 255.));
-  EXPECT_THAT(to_vector(colored->at(1)), ElementsAre(1., 0., 0., 255., 0., 0.));
-  EXPECT_THAT(to_vector(colored->at(2)), ElementsAre(2., 0., 0., 255., 63., 0.));
-  EXPECT_THAT(to_vector(colored->at(3)), ElementsAre(3., 0., 0., 127., 127., 127.));
-  EXPECT_THAT(to_vector(colored->at(4)), ElementsAre(4., 0., 0., 255., 0., 255.));
-  EXPECT_THAT(to_vector(colored->at(5)), ElementsAre(5., 0., 0., 0., 255., 0.));
+  EXPECT_EQ(range(1, 4).size(), static_cast<std::uint32_t>(3));
+  EXPECT_EQ(range(1, 3).size(), static_cast<std::uint32_t>(2));
+
+  const std::vector<double> ranges = range(0, 4);
+  for (unsigned int i = 0; i < cloud->size(); i++) {
+    EXPECT_NEAR(ranges.at(i), norm(cloud->at(i)), 1e-7);
+  }
 }

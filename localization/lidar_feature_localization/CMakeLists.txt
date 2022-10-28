@@ -17,32 +17,57 @@ set(INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nanoflann/include/)
 
-set(SOURCE_FILES
-  src/alignment.cpp
-  src/degenerate.cpp
-  src/edge.cpp
-  src/robust.cpp
-  src/jacobian.cpp
-  src/kdtree.cpp
-  src/optimizer.cpp
-  src/posevec.cpp)
+set(LOCALIZATION_SOURCE_FILES
+  src/localization/alignment.cpp
+  src/localization/degenerate.cpp
+  src/localization/edge.cpp
+  src/localization/robust.cpp
+  src/localization/jacobian.cpp
+  src/localization/kdtree.cpp
+  src/localization/optimizer.cpp
+  src/localization/posevec.cpp)
 
-ament_auto_add_library(lidar_feature_localization_lib SHARED ${SOURCE_FILES})
-target_include_directories(lidar_feature_localization_lib PUBLIC ${INCLUDE_DIRS})
+set(EXTRACTION_SOURCE_FILES
+  src/extraction/edge_surface_extraction.cpp
+  src/extraction/iterator.cpp
+  src/extraction/index_range.cpp
+  src/extraction/color_points.cpp
+  src/extraction/convolution.cpp
+  src/extraction/ring.cpp
+  src/extraction/math.cpp
+  src/extraction/curvature.cpp)
 
-foreach(suffix IN ITEMS "localization")
-  ament_auto_add_executable("lidar_feature_${suffix}" app/${suffix}.cpp)
-  target_link_libraries("lidar_feature_${suffix}" fmt lidar_feature_localization_lib)
-endforeach()
+ament_auto_add_library(localization_lib SHARED ${LOCALIZATION_SOURCE_FILES})
+ament_auto_add_library(extraction_lib SHARED ${EXTRACTION_SOURCE_FILES})
+target_include_directories(localization_lib PUBLIC ${INCLUDE_DIRS})
+target_include_directories(extraction_lib PUBLIC ${INCLUDE_DIRS})
+target_link_libraries(localization_lib fmt)
+target_link_libraries(extraction_lib fmt)
 
-function(add_testcase filepath)
+ament_auto_add_executable("lidar_feature_localization" app/localization.cpp)
+target_link_libraries("lidar_feature_localization" localization_lib extraction_lib)
+
+function(add_localization_testcase filepath)
   get_filename_component(filename ${filepath} NAME)
-  string(REGEX REPLACE ".cpp" "" test_name ${filename})
-
-  message("test_name = ${test_name}")
+  string(REGEX REPLACE ".cpp" "" test_name_suffix ${filename})
+  set(test_name "localization_${test_name_suffix}")
 
   ament_add_gmock(${test_name} ${filepath})
-  target_link_libraries("${test_name}" fmt lidar_feature_localization_lib)
+  target_link_libraries(${test_name} localization_lib)
+  ament_target_dependencies(${test_name} ${${PROJECT_NAME}_FOUND_BUILD_DEPENDS})
+endfunction()
+
+function(add_extraction_testcase filepath)
+  get_filename_component(filename ${filepath} NAME)
+  string(REGEX REPLACE ".cpp" "" test_name_suffix ${filename})
+  set(test_name "extraction_${test_name_suffix}")
+
+  message("test_name_suffix = ${test_name_suffix}")
+  message("test_name = ${test_name}")
+  message("filepath = ${filepath}")
+
+  ament_add_gmock(${test_name} ${filepath})
+  target_link_libraries("${test_name}" extraction_lib)
   ament_target_dependencies(${test_name} ${${PROJECT_NAME}_FOUND_BUILD_DEPENDS})
 endfunction()
 
@@ -61,24 +86,47 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_gmock REQUIRED)
 
-  set(TEST_FILES
-    test/test_posevec.cpp
-    test/test_optimizer.cpp
-    test/test_jacobian.cpp
-    test/test_edge.cpp
-    test/test_recent_scans.cpp
-    test/test_robust.cpp
-    test/test_kdtree.cpp
-    test/test_degenerate.cpp
-    test/test_odometry.cpp
-    test/test_pointcloud_to_matrix.cpp
-    test/test_stamp_sorted_objects.cpp
-    test/test_filter.cpp
-    test/test_math.cpp
-    test/test_alignment.cpp)
+  set(LOCALIZATION_TEST_FILES
+    test/localization/test_posevec.cpp
+    test/localization/test_optimizer.cpp
+    test/localization/test_jacobian.cpp
+    test/localization/test_edge.cpp
+    test/localization/test_recent_scans.cpp
+    test/localization/test_robust.cpp
+    test/localization/test_kdtree.cpp
+    test/localization/test_degenerate.cpp
+    test/localization/test_odometry.cpp
+    test/localization/test_pointcloud_to_matrix.cpp
+    test/localization/test_stamp_sorted_objects.cpp
+    test/localization/test_filter.cpp
+    test/localization/test_math.cpp
+    test/localization/test_alignment.cpp)
 
-  foreach(filepath ${TEST_FILES})
-    add_testcase(${filepath})
+  foreach(filepath ${LOCALIZATION_TEST_FILES})
+    add_localization_testcase(${filepath})
+  endforeach()
+
+  set(EXTRACTION_TEST_FILES
+    test/extraction/test_iterator.cpp
+    test/extraction/test_algorithm.cpp
+    test/extraction/test_convolution.cpp
+    test/extraction/test_color_points.cpp
+    test/extraction/test_mapped_points.cpp
+    test/extraction/test_curvature.cpp
+    test/extraction/test_occlusion.cpp
+    test/extraction/test_out_of_range.cpp
+    test/extraction/test_range_message.cpp
+    test/extraction/test_range.cpp
+    test/extraction/test_neighbor.cpp
+    test/extraction/test_label.cpp
+    test/extraction/test_fill.cpp
+    test/extraction/test_parallel_beam.cpp
+    test/extraction/test_math.cpp
+    test/extraction/test_ring.cpp
+    test/extraction/test_index_range.cpp)
+
+  foreach(filepath ${EXTRACTION_TEST_FILES})
+    add_extraction_testcase(${filepath})
   endforeach()
 endif()
 

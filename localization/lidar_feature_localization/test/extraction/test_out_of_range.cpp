@@ -26,53 +26,33 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-
 #include <gmock/gmock.h>
 
-#include "lidar_feature_extraction/math.hpp"
+#include <vector>
+
+#include "lidar_feature_extraction/out_of_range.hpp"
 
 
-TEST(Math, XYNorm)
+TEST(Label, LabelOutOfRange)
 {
-  EXPECT_EQ(XYNorm(0., 0.), 0.);
-  EXPECT_EQ(XYNorm(-1., 0.), 1.);
-  EXPECT_EQ(XYNorm(3., 4.), 5.);
-}
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  cloud->push_back(pcl::PointXYZ(1.9, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(2.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 5.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 8.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 8.1, 0.0));
 
-TEST(Math, CalcRadian)
-{
-  const double threshold = 1e-7;
+  const MappedPoints<pcl::PointXYZ> ref_points(cloud, irange(cloud->size()));
+  const Range<pcl::PointXYZ> range(ref_points);
 
-  EXPECT_NEAR(CalcRadian(1., 1., 1., 1.), 0., threshold);
-  EXPECT_NEAR(CalcRadian(-1., 1., -1., 1.), 0., threshold);
-  EXPECT_NEAR(CalcRadian(1., 0., 0., 1.), M_PI / 2., threshold);
-  EXPECT_NEAR(CalcRadian(0., 1., 1., 0.), M_PI / 2., threshold);
-  EXPECT_NEAR(CalcRadian(1., -1., 1., 1.), M_PI / 2., threshold);
-  EXPECT_NEAR(CalcRadian(-1., -1., 1., 1.), M_PI, threshold);
-  EXPECT_NEAR(CalcRadian(1., 1., -1., -1.), M_PI, threshold);
-  EXPECT_NEAR(CalcRadian(-1., 1., 0., 1.), M_PI / 4., threshold);
-  EXPECT_NEAR(CalcRadian(0., 1., -1., 1.), M_PI / 4., threshold);
-
-  EXPECT_THROW(
-    try {
-    CalcRadian(0., 0., 0., 0.);
-  } catch (const std::invalid_argument & e) {
-    EXPECT_STREQ("All input values are zero. Angle cannot be calculated", e.what());
-    throw e;
-  }
-    ,
-    std::invalid_argument);
-}
-
-TEST(Math, InnerProduct)
-{
-  std::vector<int> a{1, 0, 2, 4};
-  std::vector<int> b{3, 1, 0, 2};
-
-  EXPECT_EQ(InnerProduct(a.begin(), a.end(), b.begin()), 11);
-
-  std::vector<int> c{1, 4};
-  std::vector<int> d{3, 1};
-
-  EXPECT_EQ(InnerProduct(c.begin(), c.end(), d.begin()), 7);
+  std::vector<PointLabel> labels = InitLabels(ref_points.size());
+  LabelOutOfRange(labels, range, 2.0, 8.0);
+  EXPECT_THAT(
+    labels,
+    testing::ElementsAre(
+      PointLabel::OutOfRange,
+      PointLabel::Default,
+      PointLabel::Default,
+      PointLabel::Default,
+      PointLabel::OutOfRange));
 }

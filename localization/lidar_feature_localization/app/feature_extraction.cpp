@@ -26,38 +26,51 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#include "lidar_feature_library/algorithm.hpp"
+#include "lidar_feature_library/convert_point_cloud_type.hpp"
+#include "lidar_feature_library/degree_to_radian.hpp"
+#include "lidar_feature_library/qos.hpp"
+#include "lidar_feature_library/ros_msg.hpp"
 
-#include <gmock/gmock.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+using PointType = pcl::PointXYZ;
+using PointToVector = PointXYZToVector;
+using Subscriber = LocalizationSubscriber<Localizer<PointToVector, PointType>, PointType>;
 
-#include "lidar_feature_extraction/mapped_points.hpp"
+constexpr int max_iter = 40;
+constexpr std::string edge_map_path = "/map/edge.pcd";
+constexpr std::string surface_map_path = "/map/surface.pcd";
 
-
-TEST(MappedPoints, MappedPoints)
+bool CheckMapPathExists(const std::string & map_path)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
-  cloud->push_back(pcl::PointXYZ(0.0, 0.0, 0.0));
-  cloud->push_back(pcl::PointXYZ(0.0, 1.0, 0.0));
-  cloud->push_back(pcl::PointXYZ(0.0, 2.0, 0.0));
-  cloud->push_back(pcl::PointXYZ(0.0, 3.0, 0.0));
+  bool exists = rcpputils::fs::exists(map_path);
+  if (!exists) {
+    RCLCPP_ERROR(
+      rclcpp::get_logger("lidar_feature_localization"),
+      "Map %s does not exist!", map_path.c_str());
+  }
+  return exists;
+}
 
-  const std::vector<int> indices{2, 0, 1, 3, 0, 1};
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
 
-  const MappedPoints<pcl::PointXYZ> mapped_points(cloud, indices);
+  if (!CheckMapPathExists(edge_map_path)) {
+    return -1;
+  }
 
-  EXPECT_EQ(mapped_points.size(), 6);
+  if (!CheckMapPathExists(surface_map_path)) {
+    return -1;
+  }
 
-  EXPECT_EQ(mapped_points.at(0).y, 2.);
-  EXPECT_EQ(mapped_points.at(1).y, 0.);
-  EXPECT_EQ(mapped_points.at(2).y, 1.);
-  EXPECT_EQ(mapped_points.at(3).y, 3.);
-  EXPECT_EQ(mapped_points.at(4).y, 0.);
-  EXPECT_EQ(mapped_points.at(5).y, 1.);
+  pcl::PointCloud<PointType>::Ptr edge_map(new pcl::PointCloud<PointType>());
+  pcl::io::loadPCDFile(edge_map_path, *edge_map);
 
-  const MappedPoints<pcl::PointXYZ> sliced = mapped_points.Slice(1, 4);
-  EXPECT_EQ(sliced.size(), 3);
-  EXPECT_EQ(sliced.at(0).y, 0.);
-  EXPECT_EQ(sliced.at(1).y, 1.);
-  EXPECT_EQ(sliced.at(2).y, 3.);
+  pcl::PointCloud<PointType>::Ptr surface_map(new pcl::PointCloud<PointType>());
+  pcl::io::loadPCDFile(surface_map_path, *surface_map);
+
+  Localizer<PointToVector, PointType> localizer(edge_map, surface_map, max_iter);
+  rclcpp::spin(std::make_shared<Subscriber>(localizer));
+  rclcpp::shutdown();
+  return 0;
 }

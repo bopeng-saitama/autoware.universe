@@ -26,32 +26,40 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#ifndef LIDAR_FEATURE_LOCALIZATION__EDGE_SURFACE_EXTRACTION_
+#define LIDAR_FEATURE_LOCALIZATION__EDGE_SURFACE_EXTRACTION_
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <tuple>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_extraction/curvature.hpp"
+#include "lidar_feature_extraction/hyper_parameter.hpp"
+#include "lidar_feature_extraction/label.hpp"
+#include "lidar_feature_extraction/occlusion.hpp"
+#include "lidar_feature_extraction/out_of_range.hpp"
+#include "lidar_feature_extraction/parallel_beam.hpp"
+#include "lidar_feature_extraction/ring.hpp"
 
-#include <inttypes.h>
-
-#include <memory>
-#include <string>
-
-#include <rclcpp/rclcpp.hpp>
-
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
-
+#include "lidar_feature_library/algorithm.hpp"
+#include "lidar_feature_library/convert_point_cloud_type.hpp"
+#include "lidar_feature_library/degree_to_radian.hpp"
 #include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+class EdgeSurfaceExtraction
+{
+public:
+  explicit EdgeSurfaceExtraction(const HyperParameters & params);
+  ~EdgeSurfaceExtraction() {}
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+  std::tuple<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr>
+  Run(const pcl::PointCloud<PointXYZIR>::Ptr & input_cloud) const;
+
+private:
+  const HyperParameters params_;
+  const EdgeLabel edge_label_;
+  const SurfaceLabel surface_label_;
+  const rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_subscriber_;
+  const rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr edge_publisher_;
+  const rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr surface_publisher_;
+};
+
+#endif  // LIDAR_FEATURE_LOCALIZATION__EDGE_SURFACE_EXTRACTION_
