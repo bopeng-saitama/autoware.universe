@@ -28,7 +28,6 @@ set(LOCALIZATION_SOURCE_FILES
   src/localization/posevec.cpp)
 
 set(EXTRACTION_SOURCE_FILES
-  src/extraction/edge_surface_extraction.cpp
   src/extraction/iterator.cpp
   src/extraction/index_range.cpp
   src/extraction/color_points.cpp

@@ -164,16 +164,13 @@ void AssignLabel(
 }
 
 template<typename InputPointT>
-void AppendXYZIR(
-  typename pcl::PointCloud<PointXYZIR>::Ptr output_cloud,
-  const std::vector<InputPointT> & points,
-  const std::vector<double> & curvature)
+void AppendXYZ(
+  typename pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud,
+  const std::vector<InputPointT> & points)
 {
-  assert(points.size() == curvature.size());
-
   for (size_t i = 0; i < points.size(); i++) {
     const InputPointT & p = points[i];
-    const PointXYZIR q(p.x, p.y, p.z, curvature[i], p.ring);
+    const pcl::PointXYZ q(p.x, p.y, p.z);
     output_cloud->push_back(q);
   }
 }

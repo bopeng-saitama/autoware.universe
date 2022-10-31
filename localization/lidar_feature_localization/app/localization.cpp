@@ -48,6 +48,8 @@
 #include "lidar_feature_extraction/hyper_parameter.hpp"
 #include "lidar_feature_extraction/ring.hpp"
 
+#include "lidar_feature_library/point_type.hpp"
+
 
 using Odometry = nav_msgs::msg::Odometry;
 using PoseWithCovarianceStamped = geometry_msgs::msg::PoseWithCovarianceStamped;
@@ -80,6 +82,7 @@ Matrix6d MakeCovariance()
   return covariance;
 }
 
+template<typename PointType>
 class FeatureExtraction : public rclcpp::Node
 {
 public:
@@ -136,7 +139,7 @@ private:
       return;
     }
 
-    const auto input_cloud = GetPointCloud<PointXYZIR>(*cloud_msg);
+    const auto input_cloud = GetPointCloud<PointType>(*cloud_msg);
 
     if (!input_cloud->is_dense) {
       RCLCPP_ERROR(
@@ -187,7 +190,7 @@ private:
   tf2_ros::TransformBroadcaster tf_broadcaster_;
   StampSortedObjects<Eigen::Isometry3d> prior_poses_;
   const HyperParameters params_;
-  const EdgeSurfaceExtraction extraction_;
+  const EdgeSurfaceExtraction<PointType> extraction_;
   const rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_subscriber_;
   const rclcpp::Subscription<PoseWithCovarianceStamped>::SharedPtr optimization_start_pose_subscriber_;
   const rclcpp::Publisher<PoseStamped>::SharedPtr pose_publisher_;
@@ -208,7 +211,7 @@ int main(int argc, char * argv[])
   constexpr int max_iter = 40;
 
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<FeatureExtraction>(edge_map, surface_map, max_iter));
+  rclcpp::spin(std::make_shared<FeatureExtraction<PointXYZIRADT>>(edge_map, surface_map, max_iter));
   rclcpp::shutdown();
   return 0;
 }
