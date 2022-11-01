@@ -49,9 +49,11 @@
 #include "lidar_feature_extraction/ring.hpp"
 
 #include "lidar_feature_library/point_type.hpp"
+#include "lidar_feature_library/ros_msg.hpp"
 
 
 using Odometry = nav_msgs::msg::Odometry;
+using PointCloud2 = sensor_msgs::msg::PointCloud2;
 using PoseWithCovarianceStamped = geometry_msgs::msg::PoseWithCovarianceStamped;
 using PoseStamped = geometry_msgs::msg::PoseStamped;
 
@@ -105,8 +107,9 @@ public:
         std::bind(
           &FeatureExtraction::OptimizationStartPoseCallback, this, std::placeholders::_1),
         MutuallyExclusiveOption(*this))),
-    pose_publisher_(
-      this->create_publisher<PoseStamped>("estimated_pose", 10)),
+    edge_publisher_(this->create_publisher<PointCloud2>("edge_features", 10)),
+    surface_publisher_(this->create_publisher<PointCloud2>("surface_features", 10)),
+    pose_publisher_(this->create_publisher<PoseStamped>("estimated_pose", 10)),
     pose_with_covariance_publisher_(
       this->create_publisher<PoseWithCovarianceStamped>("estimated_pose_with_covariance", 10))
   {
@@ -149,38 +152,35 @@ private:
     }
 
     if (!RingIsAvailable(cloud_msg->fields)) {
-      RCLCPP_ERROR(
-        this->get_logger(),
-        "Ring channel could not be found");
+      RCLCPP_ERROR(this->get_logger(), "Ring channel could not be found");
       rclcpp::shutdown();
     }
 
     const auto [edge, surface] = extraction_.Run(input_cloud);
 
-    const double msg_stamp_nanosec = Nanoseconds(cloud_msg->header.stamp);
+    const std::string lidar_frame = "lidar_feature_base_link";
+    const rclcpp::Time stamp = cloud_msg->header.stamp;
+    edge_publisher_->publish(ToRosMsg<pcl::PointXYZ>(edge, stamp, lidar_frame));
+    surface_publisher_->publish(ToRosMsg<pcl::PointXYZ>(surface, stamp, lidar_frame));
+
+    const double msg_stamp_nanosec = Nanoseconds(stamp);
     const auto [prior_stamp_nanosec, prior] = prior_poses_.GetClosest(msg_stamp_nanosec);
     prior_poses_.RemoveOlderThan(msg_stamp_nanosec + 1e9);  // 1e9 msg_stamp_nanosec = 1s
 
-    RCLCPP_INFO(
-      this->get_logger(),
-      "Received scan message of time %lf", msg_stamp_nanosec / 1e9);
-    RCLCPP_INFO(
-      this->get_logger(),
-      "Obtained a prior pose of time %lf", prior_stamp_nanosec / 1e9);
     localizer_.Init(prior);
     localizer_.Update(std::make_tuple(edge, surface));
 
     const Eigen::Isometry3d pose = localizer_.Get();
-    pose_publisher_->publish(MakePoseStamped(pose, cloud_msg->header.stamp, "map"));
+    pose_publisher_->publish(MakePoseStamped(pose, stamp, "map"));
 
     const Matrix6d covariance = MakeCovariance();
 
     pose_with_covariance_publisher_->publish(
-      MakePoseWithCovarianceStamped(pose, covariance, cloud_msg->header.stamp, "map")
+      MakePoseWithCovarianceStamped(pose, covariance, stamp, "map")
     );
 
     tf_broadcaster_.sendTransform(
-      MakeTransformStamped(pose, cloud_msg->header.stamp, "map", "lidar_feature_base_link")
+      MakeTransformStamped(pose, stamp, "map", "lidar_feature_base_link")
     );
 
     RCLCPP_INFO(this->get_logger(), "Pose update done");
@@ -191,8 +191,10 @@ private:
   StampSortedObjects<Eigen::Isometry3d> prior_poses_;
   const HyperParameters params_;
   const EdgeSurfaceExtraction<PointType> extraction_;
-  const rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_subscriber_;
+  const rclcpp::Subscription<PointCloud2>::SharedPtr cloud_subscriber_;
   const rclcpp::Subscription<PoseWithCovarianceStamped>::SharedPtr optimization_start_pose_subscriber_;
+  const rclcpp::Publisher<PointCloud2>::SharedPtr edge_publisher_;
+  const rclcpp::Publisher<PointCloud2>::SharedPtr surface_publisher_;
   const rclcpp::Publisher<PoseStamped>::SharedPtr pose_publisher_;
   const rclcpp::Publisher<PoseWithCovarianceStamped>::SharedPtr pose_with_covariance_publisher_;
 };
