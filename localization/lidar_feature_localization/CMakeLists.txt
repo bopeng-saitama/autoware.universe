@@ -39,7 +39,6 @@ set(LOCALIZATION_SOURCE_FILES
 set(EXTRACTION_SOURCE_FILES
   src/extraction/iterator.cpp
   src/extraction/index_range.cpp
-  src/extraction/color_points.cpp
   src/extraction/convolution.cpp
   src/extraction/ring.cpp
   src/extraction/math.cpp
@@ -123,7 +122,6 @@ if(BUILD_TESTING)
     test/extraction/test_iterator.cpp
     test/extraction/test_algorithm.cpp
     test/extraction/test_convolution.cpp
-    test/extraction/test_color_points.cpp
     test/extraction/test_mapped_points.cpp
     test/extraction/test_curvature.cpp
     test/extraction/test_occlusion.cpp
