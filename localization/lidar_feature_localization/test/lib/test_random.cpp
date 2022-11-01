@@ -31,8 +31,10 @@
 
 #include <Eigen/Core>
 
+#include <algorithm>
 #include <cmath>
 #include <unordered_set>
+#include <vector>
 
 #include "lidar_feature_library/random.hpp"
 
@@ -49,7 +51,7 @@ TEST(RandomizedUniqueIndices, SmokeTest)
   const size_t min = *std::min_element(indices.begin(), indices.end());
   const size_t max = *std::max_element(indices.begin(), indices.end());
   ASSERT_EQ(min, 0U);
-  ASSERT_EQ(max, size-1);
+  ASSERT_EQ(max, size - 1);
 
   // checks if indices are randomized
 

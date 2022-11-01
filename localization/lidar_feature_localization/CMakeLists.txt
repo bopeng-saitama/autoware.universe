@@ -17,6 +17,15 @@ set(INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nanoflann/include/)
 
+set(LIBRARY_SOURCE_FILES
+  src/lib/algorithm.cpp
+  src/lib/lib.cpp
+  src/lib/eigen.cpp
+  src/lib/pcl_utils.cpp
+  src/lib/ros_msg.cpp
+  src/lib/random.cpp
+  src/lib/stats.cpp)
+
 set(LOCALIZATION_SOURCE_FILES
   src/localization/alignment.cpp
   src/localization/degenerate.cpp
@@ -36,15 +45,20 @@ set(EXTRACTION_SOURCE_FILES
   src/extraction/math.cpp
   src/extraction/curvature.cpp)
 
-ament_auto_add_library(localization_lib SHARED ${LOCALIZATION_SOURCE_FILES})
-ament_auto_add_library(extraction_lib SHARED ${EXTRACTION_SOURCE_FILES})
-target_include_directories(localization_lib PUBLIC ${INCLUDE_DIRS})
-target_include_directories(extraction_lib PUBLIC ${INCLUDE_DIRS})
-target_link_libraries(localization_lib fmt)
-target_link_libraries(extraction_lib fmt)
+ament_auto_add_library(library SHARED ${LIBRARY_SOURCE_FILES})
+ament_auto_add_library(localization SHARED ${LOCALIZATION_SOURCE_FILES})
+ament_auto_add_library(extraction SHARED ${EXTRACTION_SOURCE_FILES})
+
+target_include_directories(library PUBLIC ${INCLUDE_DIRS})
+target_include_directories(localization PUBLIC ${INCLUDE_DIRS})
+target_include_directories(extraction PUBLIC ${INCLUDE_DIRS})
+
+target_link_libraries(library ${PCL_LIBRARIES})
+target_link_libraries(localization fmt)
+target_link_libraries(extraction fmt)
 
 ament_auto_add_executable("lidar_feature_localization" app/localization.cpp)
-target_link_libraries("lidar_feature_localization" localization_lib extraction_lib)
+target_link_libraries("lidar_feature_localization" library localization extraction)
 
 function(add_localization_testcase filepath)
   get_filename_component(filename ${filepath} NAME)
@@ -52,7 +66,7 @@ function(add_localization_testcase filepath)
   set(test_name "localization_${test_name_suffix}")
 
   ament_add_gmock(${test_name} ${filepath})
-  target_link_libraries(${test_name} localization_lib)
+  target_link_libraries(${test_name} library localization)
   ament_target_dependencies(${test_name} ${${PROJECT_NAME}_FOUND_BUILD_DEPENDS})
 endfunction()
 
@@ -66,7 +80,7 @@ function(add_extraction_testcase filepath)
   message("filepath = ${filepath}")
 
   ament_add_gmock(${test_name} ${filepath})
-  target_link_libraries("${test_name}" extraction_lib)
+  target_link_libraries("${test_name}" library extraction)
   ament_target_dependencies(${test_name} ${${PROJECT_NAME}_FOUND_BUILD_DEPENDS})
 endfunction()
 

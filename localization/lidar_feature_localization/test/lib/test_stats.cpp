@@ -26,22 +26,62 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "lidar_feature_library/numeric.hpp"
+#include "lidar_feature_library/stats.hpp"
 
-TEST(Numeric, HasNan)
+
+TEST(Median, EmptyInput)
 {
-  const double nan = std::nan("");
-  EXPECT_TRUE(HasNan(Eigen::Vector3d(0, nan, nan)));
-  EXPECT_TRUE(HasNan(Eigen::Vector3d(nan, 0, 0)));
-  EXPECT_FALSE(HasNan(Eigen::Vector3d(0, 0, 0)));
+  Eigen::VectorXd v(0);
+
+  EXPECT_THROW(
+  {
+    try {
+      Median(v);
+    } catch (std::invalid_argument & e) {
+      EXPECT_STREQ(e.what(), "Empty array is passed to the median function");
+      throw e;
+    }
+  },
+    std::invalid_argument
+  );
 }
 
-TEST(Numeric, HasInf)
+TEST(Median, OddLengthInput)
 {
-  const double inf = std::numeric_limits<double>::infinity();
-  EXPECT_TRUE(HasInf(Eigen::Vector3d(0, inf, inf)));
-  EXPECT_TRUE(HasInf(Eigen::Vector3d(inf, 0, 0)));
-  EXPECT_FALSE(HasInf(Eigen::Vector3d(0, 0, 0)));
+  {
+    Eigen::VectorXd v(9);
+    v << 7, 8, 2, 0, 5, 1, 3, 4, 6;
+
+    EXPECT_EQ(Median(v), 4);
+  }
+
+  {
+    Eigen::VectorXd v(5);
+    v << 1, 2, -2, -1, 0;
+
+    EXPECT_EQ(Median(v), 0);
+  }
+}
+
+TEST(Median, EvenLengthInput)
+{
+  {
+    Eigen::VectorXd v(10);
+    v << 7, 8, 2, 0, 5, 9, 1, 3, 4, 6;
+    EXPECT_EQ(Median(v), 4.5);
+  }
+
+  {
+    Eigen::VectorXd v(6);
+    v << -6, -1, -4, -5, -3, -2;
+    EXPECT_EQ(Median(v), -3.5);
+  }
+
+  {
+    Eigen::VectorXd v(6);
+    v << 4.5, 0.5, 0.5, 3.5, 1.5, 2.5;
+    EXPECT_EQ(Median(v), 2.0);
+  }
 }

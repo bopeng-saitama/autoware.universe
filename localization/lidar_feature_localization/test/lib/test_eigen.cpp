@@ -29,6 +29,8 @@
 #include <gmock/gmock.h>
 #include <tf2/LinearMath/Quaternion.h>
 
+#include <vector>
+
 #include "lidar_feature_library/eigen.hpp"
 
 

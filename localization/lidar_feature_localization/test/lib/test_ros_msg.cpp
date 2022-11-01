@@ -29,7 +29,10 @@
 
 #include <gmock/gmock.h>
 
+#include <string>
+
 #include "lidar_feature_library/ros_msg.hpp"
+
 
 TEST(RosMsg, MakePoint)
 {
