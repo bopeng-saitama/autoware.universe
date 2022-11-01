@@ -54,10 +54,9 @@ void FillFromLeft(
     throw std::invalid_argument(s);
   }
 
-  for (int i = begin_index; i < end_index - 1; i++) {
+  for (int i = begin_index; i < end_index; i++) {
     labels.at(i) = label;
   }
-  labels.at(end_index - 1) = label;
 }
 
 template<typename Container>
@@ -78,10 +77,9 @@ void FillFromRight(
     throw std::invalid_argument(s);
   }
 
-  for (int i = end_index; i > begin_index + 1; i--) {
+  for (int i = end_index; i > begin_index; i--) {
     labels.at(i) = label;
   }
-  labels.at(begin_index + 1) = label;
 }
 
 template<typename Container>
