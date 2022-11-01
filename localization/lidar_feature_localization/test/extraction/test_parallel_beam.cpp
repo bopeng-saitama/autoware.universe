@@ -26,32 +26,50 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gmock/gmock.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <vector>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_extraction/parallel_beam.hpp"
 
-#include <inttypes.h>
 
-#include <memory>
-#include <string>
+TEST(ParallelBeam, LabelParallelBeamPoints)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  cloud->push_back(pcl::PointXYZ(8.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(8.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(2.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(8.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(8.0, 0.0, 0.0));
 
-#include <rclcpp/rclcpp.hpp>
+  const MappedPoints<pcl::PointXYZ> ref_points(cloud, irange(cloud->size()));
+  const Range<pcl::PointXYZ> range(ref_points);
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+  {
+    std::vector<PointLabel> labels = InitLabels(ref_points.size());
+    LabelParallelBeamPoints(labels, range, 3.0);
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+    EXPECT_THAT(
+      labels,
+      testing::ElementsAre(
+        PointLabel::Default,
+        PointLabel::Default,
+        PointLabel::Default,
+        PointLabel::Default,
+        PointLabel::Default));
+  }
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+  {
+    std::vector<PointLabel> labels = InitLabels(ref_points.size());
+    LabelParallelBeamPoints(labels, range, 2.9);
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+    EXPECT_THAT(
+      labels,
+      testing::ElementsAre(
+        PointLabel::Default,
+        PointLabel::Default,
+        PointLabel::ParallelBeam,
+        PointLabel::Default,
+        PointLabel::Default));
+  }
+}

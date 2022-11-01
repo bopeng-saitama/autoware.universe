@@ -26,32 +26,57 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <gmock/gmock.h>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <vector>
 
-#include <inttypes.h>
+#include "lidar_feature_library/span.hpp"
 
-#include <memory>
-#include <string>
 
-#include <rclcpp/rclcpp.hpp>
+TEST(Span, NonConstSpan)
+{
+  std::vector<int> v{0, 1, 2, 3, 4, 5, 6};
+  span<int> span(v.begin(), v.end());
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+  EXPECT_EQ(span.size(), 7);
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  EXPECT_EQ(span.at(0), 0);
+  EXPECT_EQ(span.at(4), 4);
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+  EXPECT_EQ(span.begin(), v.begin());
+  EXPECT_EQ(span.end(), v.end());
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+  span.at(3) = 9;
+  EXPECT_EQ(span.at(3), 9);
+
+  EXPECT_THROW(
+    try {
+    span.at(-1);
+  } catch (std::out_of_range & e) {
+    EXPECT_STREQ(e.what(), "Index out of range. -1 < 0");
+    throw e;
+  }
+    ,
+    std::out_of_range
+  );
+
+  EXPECT_THROW(
+    try {
+    span.at(7);
+  } catch (std::out_of_range & e) {
+    EXPECT_STREQ(e.what(), "Index out of range. 7 >= this->size()");
+    throw e;
+  }
+    ,
+    std::out_of_range
+  );
+}
+
+TEST(Span, ConstSpan)
+{
+  const std::vector<int> v{0, 1, 2, 3, 4, 5, 6};
+  const const_span<int> span(v.begin(), v.end());
+
+  EXPECT_EQ(span.size(), 7);
+}

@@ -26,32 +26,62 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gtest/gtest.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include "lidar_feature_library/stats.hpp"
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
-#include <inttypes.h>
+TEST(Median, EmptyInput)
+{
+  Eigen::VectorXd v(0);
 
-#include <memory>
-#include <string>
+  EXPECT_THROW(
+  {
+    try {
+      Median(v);
+    } catch (std::invalid_argument & e) {
+      EXPECT_STREQ(e.what(), "Empty array is passed to the median function");
+      throw e;
+    }
+  },
+    std::invalid_argument
+  );
+}
 
-#include <rclcpp/rclcpp.hpp>
+TEST(Median, OddLengthInput)
+{
+  {
+    Eigen::VectorXd v(9);
+    v << 7, 8, 2, 0, 5, 1, 3, 4, 6;
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+    EXPECT_EQ(Median(v), 4);
+  }
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  {
+    Eigen::VectorXd v(5);
+    v << 1, 2, -2, -1, 0;
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+    EXPECT_EQ(Median(v), 0);
+  }
+}
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+TEST(Median, EvenLengthInput)
+{
+  {
+    Eigen::VectorXd v(10);
+    v << 7, 8, 2, 0, 5, 9, 1, 3, 4, 6;
+    EXPECT_EQ(Median(v), 4.5);
+  }
+
+  {
+    Eigen::VectorXd v(6);
+    v << -6, -1, -4, -5, -3, -2;
+    EXPECT_EQ(Median(v), -3.5);
+  }
+
+  {
+    Eigen::VectorXd v(6);
+    v << 4.5, 0.5, 0.5, 3.5, 1.5, 2.5;
+    EXPECT_EQ(Median(v), 2.0);
+  }
+}

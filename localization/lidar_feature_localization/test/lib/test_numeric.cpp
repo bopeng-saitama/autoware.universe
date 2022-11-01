@@ -26,32 +26,24 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gmock/gmock.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <limits>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_library/numeric.hpp"
 
-#include <inttypes.h>
+TEST(Numeric, HasNan)
+{
+  const double nan = std::nan("");
+  EXPECT_TRUE(HasNan(Eigen::Vector3d(0, nan, nan)));
+  EXPECT_TRUE(HasNan(Eigen::Vector3d(nan, 0, 0)));
+  EXPECT_FALSE(HasNan(Eigen::Vector3d(0, 0, 0)));
+}
 
-#include <memory>
-#include <string>
-
-#include <rclcpp/rclcpp.hpp>
-
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
-
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
-
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
-
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+TEST(Numeric, HasInf)
+{
+  const double inf = std::numeric_limits<double>::infinity();
+  EXPECT_TRUE(HasInf(Eigen::Vector3d(0, inf, inf)));
+  EXPECT_TRUE(HasInf(Eigen::Vector3d(inf, 0, 0)));
+  EXPECT_FALSE(HasInf(Eigen::Vector3d(0, 0, 0)));
+}

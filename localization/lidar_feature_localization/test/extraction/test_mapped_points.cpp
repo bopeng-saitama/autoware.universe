@@ -26,32 +26,39 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
-
+#include <gmock/gmock.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <inttypes.h>
+#include <vector>
 
-#include <memory>
-#include <string>
+#include "lidar_feature_extraction/mapped_points.hpp"
 
-#include <rclcpp/rclcpp.hpp>
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+TEST(MappedPoints, MappedPoints)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  cloud->push_back(pcl::PointXYZ(0.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 1.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 2.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 3.0, 0.0));
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  const std::vector<int> indices{2, 0, 1, 3, 0, 1};
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+  const MappedPoints<pcl::PointXYZ> mapped_points(cloud, indices);
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+  EXPECT_EQ(mapped_points.size(), 6);
+
+  EXPECT_EQ(mapped_points.at(0).y, 2.);
+  EXPECT_EQ(mapped_points.at(1).y, 0.);
+  EXPECT_EQ(mapped_points.at(2).y, 1.);
+  EXPECT_EQ(mapped_points.at(3).y, 3.);
+  EXPECT_EQ(mapped_points.at(4).y, 0.);
+  EXPECT_EQ(mapped_points.at(5).y, 1.);
+
+  const MappedPoints<pcl::PointXYZ> sliced = mapped_points.Slice(1, 4);
+  EXPECT_EQ(sliced.size(), 3);
+  EXPECT_EQ(sliced.at(0).y, 0.);
+  EXPECT_EQ(sliced.at(1).y, 1.);
+  EXPECT_EQ(sliced.at(2).y, 3.);
+}

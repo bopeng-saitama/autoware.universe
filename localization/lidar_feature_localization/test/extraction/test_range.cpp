@@ -26,32 +26,49 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
-
+#include <gmock/gmock.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <inttypes.h>
+#include <vector>
 
-#include <memory>
-#include <string>
+#include "lidar_feature_extraction/range.hpp"
 
-#include <rclcpp/rclcpp.hpp>
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+template<typename T>
+bool Equal(const T & a, const T & b)
+{
+  return a.x == b.x && a.y == b.y && a.z == b.z;
+}
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+TEST(Range, IsInInclusiveRange) {
+  EXPECT_TRUE(IsInInclusiveRange(3., 1., 5.));
+  EXPECT_TRUE(IsInInclusiveRange(1., 1., 5.));
+  EXPECT_TRUE(IsInInclusiveRange(5., 1., 5.));
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+  EXPECT_FALSE(IsInInclusiveRange(0., 1., 5.));
+  EXPECT_FALSE(IsInInclusiveRange(6., 1., 5.));
+}
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+TEST(Range, Range) {
+  auto norm = [](const pcl::PointXYZ & p) {
+      return std::sqrt(p.x * p.x + p.y * p.y);
+    };
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  cloud->push_back(pcl::PointXYZ(3., 4., 0.));
+  cloud->push_back(pcl::PointXYZ(1., 1., 0.));
+  cloud->push_back(pcl::PointXYZ(2., -3., 0.));
+  cloud->push_back(pcl::PointXYZ(-1., 3., 0.));
+
+  const MappedPoints<pcl::PointXYZ> ref_points(cloud, irange(cloud->size()));
+  const Range<pcl::PointXYZ> range(ref_points);
+
+  EXPECT_EQ(range(1, 4).size(), static_cast<std::uint32_t>(3));
+  EXPECT_EQ(range(1, 3).size(), static_cast<std::uint32_t>(2));
+
+  const std::vector<double> ranges = range(0, 4);
+  for (unsigned int i = 0; i < cloud->size(); i++) {
+    EXPECT_NEAR(ranges.at(i), norm(cloud->at(i)), 1e-7);
+  }
+}

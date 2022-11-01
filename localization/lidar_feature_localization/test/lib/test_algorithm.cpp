@@ -26,32 +26,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gmock/gmock.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <vector>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_library/algorithm.hpp"
 
-#include <inttypes.h>
 
-#include <memory>
-#include <string>
+TEST(Algorithm, GetIndicesByValue)
+{
+  std::vector<int> array{0, 3, 2, 3, 4};
+  EXPECT_THAT(GetIndicesByValue(array, 3), testing::ElementsAre(1, 3));
+  EXPECT_THAT(GetIndicesByValue(array, 2), testing::ElementsAre(2));
+}
 
-#include <rclcpp/rclcpp.hpp>
+TEST(Algorithm, GetByIndices)
+{
+  std::vector<int> array{0, 3, 2, 3, 5};
+  EXPECT_THAT(GetByIndices(std::vector<size_t>{0, 1}, array), testing::ElementsAre(0, 3));
+  EXPECT_THAT(GetByIndices(std::vector<size_t>{2, 4}, array), testing::ElementsAre(2, 5));
+}
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+TEST(Algorithm, SortThreeValues)
+{
+  {
+    Eigen::Vector3d expected(0, 1, 2);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(0, 1, 2)) - expected).norm(), 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(0, 2, 1)) - expected).norm(), 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(1, 0, 2)) - expected).norm(), 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(1, 2, 0)) - expected).norm(), 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(2, 0, 1)) - expected).norm(), 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(2, 1, 0)) - expected).norm(), 0);
+  }
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  {
+    Eigen::Vector3d expected(0, 1, 1);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(1, 1, 0)) - expected).norm(), 0);
+  }
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
-
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+  {
+    Eigen::Vector3d expected(0, 0, 0);
+    EXPECT_EQ((SortThreeValues(Eigen::Vector3d(0, 0, 0)) - expected).norm(), 0);
+  }
+}

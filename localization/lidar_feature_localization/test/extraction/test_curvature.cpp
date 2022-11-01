@@ -26,32 +26,42 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gmock/gmock.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <vector>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_extraction/curvature.hpp"
 
-#include <inttypes.h>
+TEST(Curvature, MakeWeight)
+{
+  EXPECT_THAT(MakeWeight(2), testing::ElementsAre(1., 1., -4., 1., 1.));
+  EXPECT_THAT(MakeWeight(3), testing::ElementsAre(1., 1., 1., -6., 1., 1., 1.));
+}
 
-#include <memory>
-#include <string>
+TEST(Curvature, CalcCurvature)
+{
+  {
+    const std::vector<double> range{1., 1., 2., 0., 1., 1., 0.};
+    const int padding = 2;
+    const std::vector<double> result = CalcCurvature(range, padding);
 
-#include <rclcpp/rclcpp.hpp>
+    const double e0 = 1 * 1 + 1 * 1 + 2 * (-4) + 0 * 1 + 1 * 1;
+    const double e1 = 1 * 1 + 2 * 1 + 0 * (-4) + 1 * 1 + 1 * 1;
+    const double e2 = 2 * 1 + 0 * 1 + 1 * (-4) + 1 * 1 + 0 * 1;
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+    EXPECT_THAT(result.size(), range.size());
+    EXPECT_THAT(result, testing::ElementsAre(0., 0., e0 * e0, e1 * e1, e2 * e2, 0., 0.));
+  }
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  {
+    const std::vector<double> range{4., 4., 1., 2., 0., 5., 3., 6.};
+    const int padding = 3;
+    const std::vector<double> result = CalcCurvature(range, padding);
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+    const double e0 = 4 * 1 + 4 * 1 + 1 * 1 + 2 * (-6) + 0 * 1 + 5 * 1 + 3 * 1;
+    const double e1 = 4 * 1 + 1 * 1 + 2 * 1 + 0 * (-6) + 5 * 1 + 3 * 1 + 6 * 1;
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+    EXPECT_THAT(result.size(), range.size());
+    EXPECT_THAT(result, testing::ElementsAre(0., 0., 0., e0 * e0, e1 * e1, 0., 0., 0.));
+  }
+}

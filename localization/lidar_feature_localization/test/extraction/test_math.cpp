@@ -26,32 +26,55 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <gmock/gmock.h>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <vector>
 
-#include <inttypes.h>
+#include "lidar_feature_extraction/math.hpp"
 
-#include <memory>
-#include <string>
 
-#include <rclcpp/rclcpp.hpp>
+TEST(Math, XYNorm)
+{
+  EXPECT_EQ(XYNorm(0., 0.), 0.);
+  EXPECT_EQ(XYNorm(-1., 0.), 1.);
+  EXPECT_EQ(XYNorm(3., 4.), 5.);
+}
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
+TEST(Math, CalcRadian)
+{
+  const double threshold = 1e-7;
 
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
+  EXPECT_NEAR(CalcRadian(1., 1., 1., 1.), 0., threshold);
+  EXPECT_NEAR(CalcRadian(-1., 1., -1., 1.), 0., threshold);
+  EXPECT_NEAR(CalcRadian(1., 0., 0., 1.), M_PI / 2., threshold);
+  EXPECT_NEAR(CalcRadian(0., 1., 1., 0.), M_PI / 2., threshold);
+  EXPECT_NEAR(CalcRadian(1., -1., 1., 1.), M_PI / 2., threshold);
+  EXPECT_NEAR(CalcRadian(-1., -1., 1., 1.), M_PI, threshold);
+  EXPECT_NEAR(CalcRadian(1., 1., -1., -1.), M_PI, threshold);
+  EXPECT_NEAR(CalcRadian(-1., 1., 0., 1.), M_PI / 4., threshold);
+  EXPECT_NEAR(CalcRadian(0., 1., -1., 1.), M_PI / 4., threshold);
 
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
+  EXPECT_THROW(
+    try {
+    CalcRadian(0., 0., 0., 0.);
+  } catch (const std::invalid_argument & e) {
+    EXPECT_STREQ("All input values are zero. Angle cannot be calculated", e.what());
+    throw e;
+  }
+    ,
+    std::invalid_argument);
+}
 
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+TEST(Math, InnerProduct)
+{
+  std::vector<int> a{1, 0, 2, 4};
+  std::vector<int> b{3, 1, 0, 2};
+
+  EXPECT_EQ(InnerProduct(a.begin(), a.end(), b.begin()), 11);
+
+  std::vector<int> c{1, 4};
+  std::vector<int> d{3, 1};
+
+  EXPECT_EQ(InnerProduct(c.begin(), c.end(), d.begin()), 7);
+}

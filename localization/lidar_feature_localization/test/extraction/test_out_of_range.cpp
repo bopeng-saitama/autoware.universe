@@ -26,32 +26,33 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#include <gmock/gmock.h>
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+#include <vector>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include "lidar_feature_extraction/out_of_range.hpp"
 
-#include <inttypes.h>
 
-#include <memory>
-#include <string>
+TEST(Label, LabelOutOfRange)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  cloud->push_back(pcl::PointXYZ(1.9, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(2.0, 0.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 5.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 8.0, 0.0));
+  cloud->push_back(pcl::PointXYZ(0.0, 8.1, 0.0));
 
-#include <rclcpp/rclcpp.hpp>
+  const MappedPoints<pcl::PointXYZ> ref_points(cloud, irange(cloud->size()));
+  const Range<pcl::PointXYZ> range(ref_points);
 
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
-
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
-
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
-
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+  std::vector<PointLabel> labels = InitLabels(ref_points.size());
+  LabelOutOfRange(labels, range, 2.0, 8.0);
+  EXPECT_THAT(
+    labels,
+    testing::ElementsAre(
+      PointLabel::OutOfRange,
+      PointLabel::Default,
+      PointLabel::Default,
+      PointLabel::Default,
+      PointLabel::OutOfRange));
+}

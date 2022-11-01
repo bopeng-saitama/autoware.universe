@@ -26,32 +26,42 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
-#define LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#ifndef LIDAR_FEATURE_EXTRACTION__HYPER_PARAMETER_HPP_
+#define LIDAR_FEATURE_EXTRACTION__HYPER_PARAMETER_HPP_
 
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
+struct HyperParameters
+{
+  explicit HyperParameters(rclcpp::Node & node)
+  : padding(node.declare_parameter("convolution_padding", 5)),
+    neighbor_degree_threshold(node.declare_parameter("neighbor_degree_threshold", 2.0)),
+    distance_diff_threshold(node.declare_parameter("distance_diff_threshold", 0.3)),
+    parallel_beam_min_range_ratio(node.declare_parameter("parallel_beam_min_range_ratio", 0.02)),
+    edge_threshold(node.declare_parameter("edge_threshold", 50.0)),
+    surface_threshold(node.declare_parameter("surface_threshold", 0.05)),
+    min_range(node.declare_parameter("min_range", 0.1)),
+    max_range(node.declare_parameter("max_range", 1000.0)),
+    n_blocks(node.declare_parameter("n_blocks", 6))
+  {
+    assert(padding > 0);
+    assert(neighbor_degree_threshold > 0);
+    assert(distance_diff_threshold > 0);
+    assert(parallel_beam_min_range_ratio > 0);
+    assert(edge_threshold > 0);
+    assert(surface_threshold > 0);
+    assert(min_range > 0);
+    assert(max_range > 0);
+    assert(n_blocks > 0);
+  }
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+  const int padding;
+  const double neighbor_degree_threshold;
+  const double distance_diff_threshold;
+  const double parallel_beam_min_range_ratio;
+  const double edge_threshold;
+  const double surface_threshold;
+  const double min_range;
+  const double max_range;
+  const int n_blocks;
+};
 
-#include <inttypes.h>
-
-#include <memory>
-#include <string>
-
-#include <rclcpp/rclcpp.hpp>
-
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <tf2_eigen/tf2_eigen.h>
-
-#include "lidar_feature_library/point_type.hpp"
-#include "lidar_feature_library/qos.hpp"
-#include "lidar_feature_library/ros_msg.hpp"
-
-#include "lidar_feature_localization/stamp_sorted_objects.hpp"
-
-#endif  // LIDAR_FEATURE_LOCALIZATION__SUBSCRIBER_HPP_
+#endif  // LIDAR_FEATURE_EXTRACTION__HYPER_PARAMETER_HPP_

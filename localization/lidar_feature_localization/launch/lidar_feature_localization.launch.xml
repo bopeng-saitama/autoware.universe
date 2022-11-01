@@ -1,6 +1,7 @@
 <launch>
-  <arg name="scan_edge_topic" default="/scan_edge" description="Output edge features"/>
-  <arg name="scan_surface_topic" default="/scan_surface" description="Output surface features"/>
+  <arg name="rectified_scan_points_topic" default="/points_raw" description="Input rectified point cloud" />
+  <arg name="edge_features_topic" default="/edge_features" description="Extracted edge features" />
+  <arg name="surface_features_topic" default="/surface_features" description="Extracted surface features" />
   <arg name="optimization_start_pose_topic" default="/optimization_start_pose" />
   <arg name="estimated_pose_topic" default="/estimated_pose" />
   <arg name="estimated_pose_with_covariance_topic" default="/estimated_pose_with_covariance" />
@@ -8,10 +9,12 @@
   <arg name="node_name" default="lidar_feature_localization" />
 
   <node pkg="lidar_feature_localization" exec="lidar_feature_localization" name="$(var node_name)" output="log">
-    <remap from="scan_edge" to="$(var scan_edge_topic)"/>
-    <remap from="scan_surface" to="$(var scan_surface_topic)"/>
+    <remap from="points_raw" to="$(var rectified_scan_points_topic)"/>
+    <remap from="edge_features" to="$(var edge_features_topic)"/>
+    <remap from="surface_features" to="$(var surface_features_topic)"/>
     <remap from="optimization_start_pose" to="$(var optimization_start_pose_topic)" />
     <remap from="estimated_pose" to="$(var estimated_pose_topic)" />
     <remap from="estimated_pose_with_covariance" to="$(var estimated_pose_with_covariance_topic)" />
+    <param from="$(find-pkg-share lidar_feature_localization)/config/extraction.param.yaml" />
   </node>
 </launch>
