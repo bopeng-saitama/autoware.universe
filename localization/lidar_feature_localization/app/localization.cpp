@@ -50,6 +50,7 @@
 
 #include "lidar_feature_library/point_type.hpp"
 #include "lidar_feature_library/ros_msg.hpp"
+#include "lidar_feature_library/warning.hpp"
 
 
 using Odometry = nav_msgs::msg::Odometry;
@@ -95,6 +96,7 @@ public:
   : Node("lidar_feature_extraction"),
     localizer_(edge_map, surface_map, max_iter),
     tf_broadcaster_(*this),
+    warning_(this),
     params_(HyperParameters(*this)),
     extraction_(params_),
     cloud_subscriber_(
@@ -113,8 +115,8 @@ public:
     pose_with_covariance_publisher_(
       this->create_publisher<PoseWithCovarianceStamped>("estimated_pose_with_covariance", 10))
   {
-    RCLCPP_INFO(this->get_logger(), "edge_threshold_ : %lf", params_.edge_threshold);
-    RCLCPP_INFO(this->get_logger(), "surface_threshold_ : %lf", params_.surface_threshold);
+    warning_.Info(fmt::format("edge threshold    = {}", params_.edge_threshold));
+    warning_.Info(fmt::format("surface threshold = {}", params_.surface_threshold));
     pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
   }
 
@@ -130,29 +132,27 @@ private:
   void SetOptimizationStartPose(const rclcpp::Time & stamp, const geometry_msgs::msg::Pose & pose)
   {
     const double msg_stamp_nanosec = Nanoseconds(stamp);
-    RCLCPP_INFO(this->get_logger(), "Received a prior pose of time %lf", msg_stamp_nanosec);
+    warning_.Info(fmt::format("Received a prior pose of time {}", msg_stamp_nanosec));
     prior_poses_.Insert(msg_stamp_nanosec, GetIsometry3d(pose));
   }
 
   void Callback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr cloud_msg)
   {
-    RCLCPP_ERROR(this->get_logger(), "Received a cloud message");
+    warning_.Info("Received a cloud message");
     if (prior_poses_.Size() == 0) {
-      RCLCPP_INFO(this->get_logger(), "Received an edge message but there's no pose in the prior queue");
+      warning_.Warn("Received an edge message but there's no pose in the prior queue");
       return;
     }
 
     const auto input_cloud = GetPointCloud<PointType>(*cloud_msg);
 
     if (!input_cloud->is_dense) {
-      RCLCPP_ERROR(
-        this->get_logger(),
-        "Point cloud is not in dense format, please remove NaN points first!");
+      warning_.Error("Point cloud must be in the dense format");
       rclcpp::shutdown();
     }
 
     if (!RingIsAvailable(cloud_msg->fields)) {
-      RCLCPP_ERROR(this->get_logger(), "Ring channel could not be found");
+      warning_.Error("Ring channel could not be found");
       rclcpp::shutdown();
     }
 
@@ -183,12 +183,13 @@ private:
       MakeTransformStamped(pose, stamp, "map", "lidar_feature_base_link")
     );
 
-    RCLCPP_INFO(this->get_logger(), "Pose update done");
+    warning_.Info("Pose update done");
   }
 
   Localizer<PointXYZToVector, pcl::PointXYZ> localizer_;
   tf2_ros::TransformBroadcaster tf_broadcaster_;
   StampSortedObjects<Eigen::Isometry3d> prior_poses_;
+  const Warning warning_;
   const HyperParameters params_;
   const EdgeSurfaceExtraction<PointType> extraction_;
   const rclcpp::Subscription<PointCloud2>::SharedPtr cloud_subscriber_;
