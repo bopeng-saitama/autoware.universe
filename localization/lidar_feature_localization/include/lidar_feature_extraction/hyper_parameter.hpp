@@ -36,10 +36,10 @@ struct HyperParameters
     neighbor_degree_threshold(node.declare_parameter("neighbor_degree_threshold", 2.0)),
     distance_diff_threshold(node.declare_parameter("distance_diff_threshold", 0.3)),
     parallel_beam_min_range_ratio(node.declare_parameter("parallel_beam_min_range_ratio", 0.02)),
-    edge_threshold(node.declare_parameter("edge_threshold", 0.05)),
+    edge_threshold(node.declare_parameter("edge_threshold", 50.0)),
     surface_threshold(node.declare_parameter("surface_threshold", 0.05)),
     min_range(node.declare_parameter("min_range", 0.1)),
-    max_range(node.declare_parameter("max_range", 100.0)),
+    max_range(node.declare_parameter("max_range", 1000.0)),
     n_blocks(node.declare_parameter("n_blocks", 6))
   {
     assert(padding > 0);
