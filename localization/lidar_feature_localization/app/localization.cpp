@@ -197,10 +197,29 @@ private:
   const rclcpp::Publisher<PoseWithCovarianceStamped>::SharedPtr pose_with_covariance_publisher_;
 };
 
+bool CheckMapPathExists(const std::string & map_path)
+{
+  bool exists = rcpputils::fs::exists(map_path);
+  if (!exists) {
+    RCLCPP_ERROR(
+      rclcpp::get_logger("lidar_feature_localization"),
+      "Map %s does not exist!", map_path.c_str());
+  }
+  return exists;
+}
+
 int main(int argc, char * argv[])
 {
   const std::string edge_map_path = "/map/edge.pcd";
   const std::string surface_map_path = "/map/surface.pcd";
+
+  if (!CheckMapPathExists(edge_map_path)) {
+    return -1;
+  }
+
+  if (!CheckMapPathExists(surface_map_path)) {
+    return -1;
+  }
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr edge_map(new pcl::PointCloud<pcl::PointXYZ>());
   pcl::io::loadPCDFile(edge_map_path, *edge_map);
