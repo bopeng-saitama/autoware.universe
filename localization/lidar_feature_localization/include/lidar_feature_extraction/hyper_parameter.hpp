@@ -42,6 +42,25 @@ struct HyperParameters
     max_range(node.declare_parameter("max_range", 1000.0)),
     n_blocks(node.declare_parameter("n_blocks", 6))
   {
+    RCLCPP_INFO(
+      node.get_logger(), "convolution_padding = %d", padding);
+    RCLCPP_INFO(
+      node.get_logger(), "neighbor_degree_threshold = %lf", neighbor_degree_threshold);
+    RCLCPP_INFO(
+      node.get_logger(), "distance_diff_threshold = %lf", distance_diff_threshold);
+    RCLCPP_INFO(
+      node.get_logger(), "parallel_beam_min_range_ratio = %lf", parallel_beam_min_range_ratio);
+    RCLCPP_INFO(
+      node.get_logger(), "edge_threshold = %lf", edge_threshold);
+    RCLCPP_INFO(
+      node.get_logger(), "surface_threshold = %lf", surface_threshold);
+    RCLCPP_INFO(
+      node.get_logger(), "min_range = %lf", min_range);
+    RCLCPP_INFO(
+      node.get_logger(), "max_range = %lf", max_range);
+    RCLCPP_INFO(
+      node.get_logger(), "n_blocks = %d", n_blocks);
+
     assert(padding > 0);
     assert(neighbor_degree_threshold > 0);
     assert(distance_diff_threshold > 0);

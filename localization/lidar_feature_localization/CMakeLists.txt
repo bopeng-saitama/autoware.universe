@@ -37,12 +37,13 @@ set(LOCALIZATION_SOURCE_FILES
   src/localization/posevec.cpp)
 
 set(EXTRACTION_SOURCE_FILES
-  src/extraction/iterator.cpp
-  src/extraction/index_range.cpp
   src/extraction/convolution.cpp
-  src/extraction/ring.cpp
+  src/extraction/curvature.cpp
+  src/extraction/index_range.cpp
+  src/extraction/iterator.cpp
+  src/extraction/label.cpp
   src/extraction/math.cpp
-  src/extraction/curvature.cpp)
+  src/extraction/ring.cpp)
 
 ament_auto_add_library(library SHARED ${LIBRARY_SOURCE_FILES})
 ament_auto_add_library(localization SHARED ${LOCALIZATION_SOURCE_FILES})

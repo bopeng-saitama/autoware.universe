@@ -80,7 +80,6 @@ public:
     for (const auto & [ring, indices] : rings) {
       const MappedPoints<PointType> ref_points(input_cloud, indices);
       const double radian_threshold = DegreeToRadian(params_.neighbor_degree_threshold);
-      const NeighborCheckXY<PointType> is_neighbor(ref_points, radian_threshold);
       const Range<PointType> range(ref_points);
 
       try {
@@ -90,10 +89,9 @@ public:
         const std::vector<double> curvature = CalcCurvature(ranges, params_.padding);
         const PaddedIndexRange index_range(range.size(), params_.n_blocks, params_.padding);
 
-        AssignLabel(labels, curvature, is_neighbor, index_range, edge_label_, surface_label_);
+        AssignLabel(labels, curvature, index_range, edge_label_, surface_label_);
 
-        LabelOccludedPoints(
-          labels, is_neighbor, range, params_.padding, params_.distance_diff_threshold);
+        LabelOccludedPoints(labels, range, params_.padding, params_.distance_diff_threshold);
         LabelOutOfRange(labels, range, params_.min_range, params_.max_range);
         LabelParallelBeamPoints(labels, range, params_.parallel_beam_min_range_ratio);
 

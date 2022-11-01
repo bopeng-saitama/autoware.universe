@@ -41,10 +41,9 @@
 TEST(Label, FillFromLeft)
 {
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(5);
 
-    FillFromLeft(labels, is_neighbor, 1, 4, PointLabel::Edge);
+    FillFromLeft(labels, 1, 4, PointLabel::Edge);
 
     EXPECT_THAT(
       labels,
@@ -57,10 +56,9 @@ TEST(Label, FillFromLeft)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 1, 1});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(5);
 
-    FillFromLeft(labels, is_neighbor, 1, 5, PointLabel::Edge);
+    FillFromLeft(labels, 1, 5, PointLabel::Edge);
 
     EXPECT_THAT(
       labels,
@@ -68,19 +66,18 @@ TEST(Label, FillFromLeft)
         PointLabel::Default,
         PointLabel::Edge,
         PointLabel::Edge,
-        PointLabel::Default,
-        PointLabel::Default));
+        PointLabel::Edge,
+        PointLabel::Edge));
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(3);
 
-    FillFromLeft(labels, is_neighbor, 1, 3, PointLabel::Default);
+    FillFromLeft(labels, 1, 3, PointLabel::Default);
 
     EXPECT_THROW(
       try {
-      FillFromLeft(labels, is_neighbor, 1, 4, PointLabel::Default);
+      FillFromLeft(labels, 1, 4, PointLabel::Default);
     } catch (const std::invalid_argument & e) {
       EXPECT_STREQ("end_index (which is 4) > labels.size() (which is 3)", e.what());
       throw e;
@@ -89,10 +86,10 @@ TEST(Label, FillFromLeft)
       std::invalid_argument
     );
 
-    FillFromLeft(labels, is_neighbor, 0, 2, PointLabel::Default);
+    FillFromLeft(labels, 0, 2, PointLabel::Default);
     EXPECT_THROW(
       try {
-      FillFromLeft(labels, is_neighbor, -1, 2, PointLabel::Default);
+      FillFromLeft(labels, -1, 2, PointLabel::Default);
     } catch (const std::invalid_argument & e) {
       EXPECT_STREQ("begin_index (which is -1) < 0 (which is 0)", e.what());
       throw e;
@@ -106,10 +103,9 @@ TEST(Label, FillFromLeft)
 TEST(Label, FillFromRight)
 {
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(5);
 
-    FillFromRight(labels, is_neighbor, 0, 2, PointLabel::Edge);
+    FillFromRight(labels, 0, 2, PointLabel::Edge);
 
     EXPECT_THAT(
       labels,
@@ -122,10 +118,9 @@ TEST(Label, FillFromRight)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(5);
 
-    FillFromRight(labels, is_neighbor, 1, 3, PointLabel::Edge);
+    FillFromRight(labels, 1, 3, PointLabel::Edge);
 
     EXPECT_THAT(
       labels,
@@ -138,29 +133,27 @@ TEST(Label, FillFromRight)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 1, 1});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(5);
 
-    FillFromRight(labels, is_neighbor, 1, 4, PointLabel::Edge);
+    FillFromRight(labels, 1, 4, PointLabel::Edge);
 
     EXPECT_THAT(
       labels,
       testing::ElementsAre(
         PointLabel::Default,
         PointLabel::Default,
-        PointLabel::Default,
+        PointLabel::Edge,
         PointLabel::Edge,
         PointLabel::Edge));
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(3);
 
-    FillFromRight(labels, is_neighbor, 1, 2, PointLabel::Default);
+    FillFromRight(labels, 1, 2, PointLabel::Default);
     EXPECT_THROW(
       try {
-      FillFromRight(labels, is_neighbor, 1, 3, PointLabel::Default);
+      FillFromRight(labels, 1, 3, PointLabel::Default);
     } catch (const std::invalid_argument & e) {
       EXPECT_STREQ("end_index (which is 3) >= labels.size() (which is 3)", e.what());
       throw e;
@@ -169,10 +162,10 @@ TEST(Label, FillFromRight)
       std::invalid_argument
     );
 
-    FillFromRight(labels, is_neighbor, -1, 2, PointLabel::Default);
+    FillFromRight(labels, -1, 2, PointLabel::Default);
     EXPECT_THROW(
       try {
-      FillFromRight(labels, is_neighbor, -2, 2, PointLabel::Default);
+      FillFromRight(labels, -2, 2, PointLabel::Default);
     } catch (const std::invalid_argument & e) {
       EXPECT_STREQ("begin_index (which is -2) < -1 (which is -1)", e.what());
       throw e;
@@ -186,10 +179,9 @@ TEST(Label, FillFromRight)
 TEST(Label, FillNeighbors)
 {
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(6);
 
-    FillNeighbors(labels, is_neighbor, 3, 2, PointLabel::EdgeNeighbor);
+    FillNeighbors(labels, 3, 2, PointLabel::EdgeNeighbor);
 
     EXPECT_THAT(
       labels,
@@ -203,16 +195,15 @@ TEST(Label, FillNeighbors)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 1, 1, 1, 1, 2, 2});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(8);
 
-    FillNeighbors(labels, is_neighbor, 3, 2, PointLabel::EdgeNeighbor);
+    FillNeighbors(labels, 3, 2, PointLabel::EdgeNeighbor);
 
     EXPECT_THAT(
       labels,
       testing::ElementsAre(
         PointLabel::Default,
-        PointLabel::Default,
+        PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
@@ -222,10 +213,9 @@ TEST(Label, FillNeighbors)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{0, 0, 0, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(6);
 
-    FillNeighbors(labels, is_neighbor, 1, 2, PointLabel::EdgeNeighbor);
+    FillNeighbors(labels, 1, 2, PointLabel::EdgeNeighbor);
 
     EXPECT_THAT(
       labels,
@@ -239,27 +229,25 @@ TEST(Label, FillNeighbors)
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{1, 1, 1, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(6);
 
-    FillNeighbors(labels, is_neighbor, 4, 2, PointLabel::EdgeNeighbor);
+    FillNeighbors(labels, 4, 2, PointLabel::EdgeNeighbor);
 
     EXPECT_THAT(
       labels,
       testing::ElementsAre(
         PointLabel::Default,
         PointLabel::Default,
-        PointLabel::Default,
+        PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor));
   }
 
   {
-    const NeighborCheckDebug is_neighbor(std::vector<int>{1, 1, 1, 0, 0, 0});
-    std::vector<PointLabel> labels = InitLabels(is_neighbor.size());
+    std::vector<PointLabel> labels = InitLabels(6);
 
-    FillNeighbors(labels, is_neighbor, 2, 2, PointLabel::EdgeNeighbor);
+    FillNeighbors(labels, 2, 2, PointLabel::EdgeNeighbor);
 
     EXPECT_THAT(
       labels,
@@ -267,8 +255,8 @@ TEST(Label, FillNeighbors)
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
         PointLabel::EdgeNeighbor,
-        PointLabel::Default,
-        PointLabel::Default,
+        PointLabel::EdgeNeighbor,
+        PointLabel::EdgeNeighbor,
         PointLabel::Default));
   }
 }

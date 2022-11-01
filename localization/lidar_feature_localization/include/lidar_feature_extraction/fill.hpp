@@ -40,13 +40,10 @@
 template<typename Container>
 void FillFromLeft(
   Container & labels,
-  const NeighborCheckBase & is_neighbor,
   const int begin_index,
   const int end_index,
   const PointLabel & label)
 {
-  assert(static_cast<int>(labels.size()) == is_neighbor.size());
-
   if (end_index > static_cast<int>(labels.size())) {
     auto s = RangeMessageLargerThan("end_index", "labels.size()", end_index, labels.size());
     throw std::invalid_argument(s);
@@ -59,10 +56,6 @@ void FillFromLeft(
 
   for (int i = begin_index; i < end_index - 1; i++) {
     labels.at(i) = label;
-
-    if (!is_neighbor(i + 0, i + 1)) {
-      return;
-    }
   }
   labels.at(end_index - 1) = label;
 }
@@ -70,13 +63,10 @@ void FillFromLeft(
 template<typename Container>
 void FillFromRight(
   Container & labels,
-  const NeighborCheckBase & is_neighbor,
   const int begin_index,
   const int end_index,
   const PointLabel & label)
 {
-  assert(static_cast<int>(labels.size()) == is_neighbor.size());
-
   if (end_index >= static_cast<int>(labels.size())) {
     auto s = RangeMessageLargerThanOrEqualTo(
       "end_index", "labels.size()", end_index, labels.size());
@@ -90,10 +80,6 @@ void FillFromRight(
 
   for (int i = end_index; i > begin_index + 1; i--) {
     labels.at(i) = label;
-
-    if (!is_neighbor(i - 0, i - 1)) {
-      return;
-    }
   }
   labels.at(begin_index + 1) = label;
 }
@@ -101,19 +87,17 @@ void FillFromRight(
 template<typename Container>
 void FillNeighbors(
   Container & labels,
-  const NeighborCheckBase & is_neighbor,
   const int index,
   const int padding,
   const PointLabel & label)
 {
   const int label_size = static_cast<int>(labels.size());
-  assert(label_size == is_neighbor.size());
 
   const int min = std::max(-1, index - padding - 1);
   const int max = std::min(index + 1 + padding, label_size);
 
-  FillFromRight(labels, is_neighbor, min, index, label);
-  FillFromLeft(labels, is_neighbor, index, max, label);
+  FillFromRight(labels, min, index, label);
+  FillFromLeft(labels, index, max, label);
 }
 
 #endif  // LIDAR_FEATURE_EXTRACTION__FILL_HPP_

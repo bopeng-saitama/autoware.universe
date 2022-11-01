@@ -72,11 +72,9 @@ public:
   template<typename ContainerA, typename ContainerB>
   void Assign(
     ContainerA & labels,
-    const ContainerB & curvature,
-    const NeighborCheckBase & is_neighbor) const
+    const ContainerB & curvature) const
   {
     assert(curvature.size() == labels.size());
-    assert(is_neighbor.size() == static_cast<int>(labels.size()));
 
     auto is_edge = [&](const int i) {
         return curvature.at(i) >= threshold_;
@@ -89,7 +87,7 @@ public:
         continue;
       }
 
-      FillNeighbors(labels, is_neighbor, index, padding_, PointLabel::EdgeNeighbor);
+      FillNeighbors(labels, index, padding_, PointLabel::EdgeNeighbor);
       labels.at(index) = PointLabel::Edge;
     }
   }
@@ -113,10 +111,8 @@ public:
   template<typename ContainerA, typename ContainerB>
   void Assign(
     ContainerA & labels,
-    const ContainerB & curvature,
-    const NeighborCheckBase & is_neighbor) const
+    const ContainerB & curvature) const
   {
-    assert(is_neighbor.size());
     auto is_surface = [&](const int i) {
         return curvature.at(i) <= threshold_;
       };
@@ -128,7 +124,7 @@ public:
         continue;
       }
 
-      FillNeighbors(labels, is_neighbor, index, padding_, PointLabel::SurfaceNeighbor);
+      FillNeighbors(labels, index, padding_, PointLabel::SurfaceNeighbor);
       labels.at(index) = PointLabel::Surface;
     }
   }
@@ -137,31 +133,6 @@ private:
   const int padding_;
   const double threshold_;
 };
-
-template<typename PointT>
-void AssignLabel(
-  std::vector<PointLabel> & labels,
-  const std::vector<double> & curvature,
-  const NeighborCheckXY<PointT> & is_neighbor,
-  const PaddedIndexRange & index_range,
-  const EdgeLabel & edge_label,
-  const SurfaceLabel & surface_label)
-{
-  assert(curvature.size() == labels.size());
-  assert(is_neighbor.size() == static_cast<int>(labels.size()));
-
-  for (int j = 0; j < index_range.NBlocks(); j++) {
-    const int begin = index_range.Begin(j);
-    const int end = index_range.End(j);
-
-    span<PointLabel> label_view(labels.begin() + begin, labels.begin() + end);
-    const const_span<double> curvature_view(curvature.begin() + begin, curvature.begin() + end);
-    const NeighborCheckXY<PointT> sliced_neighbor = is_neighbor.Slice(begin, end);
-
-    edge_label.Assign(label_view, curvature_view, sliced_neighbor);
-    surface_label.Assign(label_view, curvature_view, sliced_neighbor);
-  }
-}
 
 template<typename InputPointT>
 void AppendXYZ(
@@ -174,5 +145,12 @@ void AppendXYZ(
     output_cloud->push_back(q);
   }
 }
+
+void AssignLabel(
+  std::vector<PointLabel> & labels,
+  const std::vector<double> & curvature,
+  const PaddedIndexRange & index_range,
+  const EdgeLabel & edge_label,
+  const SurfaceLabel & surface_label);
 
 #endif  // LIDAR_FEATURE_EXTRACTION__LABEL_HPP_
