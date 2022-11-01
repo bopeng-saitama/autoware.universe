@@ -33,7 +33,6 @@ struct HyperParameters
 {
   explicit HyperParameters(rclcpp::Node & node)
   : padding(node.declare_parameter("convolution_padding", 5)),
-    neighbor_degree_threshold(node.declare_parameter("neighbor_degree_threshold", 2.0)),
     distance_diff_threshold(node.declare_parameter("distance_diff_threshold", 0.3)),
     parallel_beam_min_range_ratio(node.declare_parameter("parallel_beam_min_range_ratio", 0.02)),
     edge_threshold(node.declare_parameter("edge_threshold", 50.0)),
@@ -44,8 +43,6 @@ struct HyperParameters
   {
     RCLCPP_INFO(
       node.get_logger(), "convolution_padding = %d", padding);
-    RCLCPP_INFO(
-      node.get_logger(), "neighbor_degree_threshold = %lf", neighbor_degree_threshold);
     RCLCPP_INFO(
       node.get_logger(), "distance_diff_threshold = %lf", distance_diff_threshold);
     RCLCPP_INFO(
@@ -62,7 +59,6 @@ struct HyperParameters
       node.get_logger(), "n_blocks = %d", n_blocks);
 
     assert(padding > 0);
-    assert(neighbor_degree_threshold > 0);
     assert(distance_diff_threshold > 0);
     assert(parallel_beam_min_range_ratio > 0);
     assert(edge_threshold > 0);
@@ -73,7 +69,6 @@ struct HyperParameters
   }
 
   const int padding;
-  const double neighbor_degree_threshold;
   const double distance_diff_threshold;
   const double parallel_beam_min_range_ratio;
   const double edge_threshold;

@@ -79,7 +79,6 @@ public:
 
     for (const auto & [ring, indices] : rings) {
       const MappedPoints<PointType> ref_points(input_cloud, indices);
-      const double radian_threshold = DegreeToRadian(params_.neighbor_degree_threshold);
       const Range<PointType> range(ref_points);
 
       try {

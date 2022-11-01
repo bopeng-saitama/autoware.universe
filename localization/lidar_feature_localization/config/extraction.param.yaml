@@ -1,7 +1,6 @@
 /**:
   ros__parameters:
     convolution_padding: 2
-    neighbor_degree_threshold: 3.0
     distance_diff_threshold: 0.3
     parallel_beam_min_range_ratio: 0.02
     edge_threshold: 50.0
