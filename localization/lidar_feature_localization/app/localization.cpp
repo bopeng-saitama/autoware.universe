@@ -86,10 +86,10 @@ Matrix6d MakeCovariance()
 }
 
 template<typename PointType>
-class FeatureExtraction : public rclcpp::Node
+class Localization : public rclcpp::Node
 {
 public:
-  FeatureExtraction(
+  Localization(
     const pcl::PointCloud<pcl::PointXYZ>::Ptr & edge_map,
     const pcl::PointCloud<pcl::PointXYZ>::Ptr & surface_map,
     const int max_iter)
@@ -102,12 +102,12 @@ public:
     cloud_subscriber_(
       this->create_subscription<sensor_msgs::msg::PointCloud2>(
         "points_raw", QOS_BEST_EFFORT_VOLATILE,
-        std::bind(&FeatureExtraction::Callback, this, std::placeholders::_1))),
+        std::bind(&Localization::Callback, this, std::placeholders::_1))),
     optimization_start_pose_subscriber_(
       this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
         "optimization_start_pose", QOS_BEST_EFFORT_VOLATILE,
         std::bind(
-          &FeatureExtraction::OptimizationStartPoseCallback, this, std::placeholders::_1),
+          &Localization::OptimizationStartPoseCallback, this, std::placeholders::_1),
         MutuallyExclusiveOption(*this))),
     edge_publisher_(this->create_publisher<PointCloud2>("edge_features", 10)),
     surface_publisher_(this->create_publisher<PointCloud2>("surface_features", 10)),
@@ -120,7 +120,7 @@ public:
     pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
   }
 
-  ~FeatureExtraction() {}
+  ~Localization() {}
 
 private:
   void OptimizationStartPoseCallback(
@@ -233,7 +233,7 @@ int main(int argc, char * argv[])
   constexpr int max_iter = 40;
 
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<FeatureExtraction<PointXYZIRADT>>(edge_map, surface_map, max_iter));
+  rclcpp::spin(std::make_shared<Localization<PointXYZIRADT>>(edge_map, surface_map, max_iter));
   rclcpp::shutdown();
   return 0;
 }
