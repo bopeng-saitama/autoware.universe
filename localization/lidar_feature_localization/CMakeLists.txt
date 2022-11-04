@@ -59,6 +59,9 @@ target_link_libraries(extraction fmt)
 ament_auto_add_executable("lidar_feature_localization" app/localization.cpp)
 target_link_libraries("lidar_feature_localization" library localization extraction)
 
+ament_auto_add_executable("lidar_feature_convergence" app/convergence.cpp)
+target_link_libraries("lidar_feature_convergence" library localization extraction)
+
 function(add_localization_testcase filepath)
   get_filename_component(filename ${filepath} NAME)
   string(REGEX REPLACE ".cpp" "" test_name_suffix ${filename})
