@@ -28,48 +28,29 @@
 
 #include <vector>
 
-#include "lidar_feature_extraction/color_points.hpp"
+#include "lidar_feature_extraction/index_range.hpp"
+#include "lidar_feature_extraction/label.hpp"
+#include "lidar_feature_extraction/point_label.hpp"
 
-inline void ThrowIfInvalidLabelDetected(const PointLabel & label)
+#include "lidar_feature_library/span.hpp"
+
+void AssignLabel(
+  std::vector<PointLabel> & labels,
+  const std::vector<double> & curvature,
+  const PaddedIndexRange & index_range,
+  const EdgeLabel & edge_label,
+  const SurfaceLabel & surface_label)
 {
-  const uint8_t x = static_cast<uint8_t>(label);
-  throw std::invalid_argument(fmt::format("Invalid label {}", x));
-}
+  assert(curvature.size() == labels.size());
 
-std::vector<uint8_t> LabelToColor(const PointLabel & label)
-{
-  if (label == PointLabel::Default) {
-    return std::vector<uint8_t>{255, 255, 255};
-  }
-  if (label == PointLabel::Edge) {
-    return std::vector<uint8_t>{255, 0, 0};
-  }
-  if (label == PointLabel::EdgeNeighbor) {
-    return std::vector<uint8_t>{255, 63, 0};
-  }
-  if (label == PointLabel::Surface) {
-    return std::vector<uint8_t>{255, 0, 0};
-  }
-  if (label == PointLabel::SurfaceNeighbor) {
-    return std::vector<uint8_t>{255, 63, 0};
-  }
-  if (label == PointLabel::OutOfRange) {
-    return std::vector<uint8_t>{127, 127, 127};
-  }
-  if (label == PointLabel::Occluded) {
-    return std::vector<uint8_t>{255, 0, 255};
-  }
-  if (label == PointLabel::ParallelBeam) {
-    return std::vector<uint8_t>{0, 255, 0};
-  }
+  for (int j = 0; j < index_range.NBlocks(); j++) {
+    const int begin = index_range.Begin(j);
+    const int end = index_range.End(j);
 
-  ThrowIfInvalidLabelDetected(label);
-  return std::vector<uint8_t>{};  // should not reach here
-}
+    span<PointLabel> label_view(labels.begin() + begin, labels.begin() + end);
+    const const_span<double> curvature_view(curvature.begin() + begin, curvature.begin() + end);
 
-std::vector<uint8_t> ValueToColor(const double value, const double min, const double max)
-{
-  const double v = std::clamp(value, min, max);
-  const uint8_t c = static_cast<uint8_t>(255. * v / (max - min));
-  return std::vector<uint8_t>{c, c, c};
+    edge_label.Assign(label_view, curvature_view);
+    surface_label.Assign(label_view, curvature_view);
+  }
 }

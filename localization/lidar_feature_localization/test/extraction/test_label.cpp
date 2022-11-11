@@ -81,8 +81,7 @@ TEST(Extraction, EdgeLabel)
 
     std::vector<PointLabel> labels = InitLabels(8);
     const std::vector<double> curvature{3, 1, 2, 1, 1, 4, 1, 1};
-    const NeighborCheckDebug is_neighbor({0, 0, 0, 0, 0, 0, 0, 0});
-    label.Assign(labels, curvature, is_neighbor);
+    label.Assign(labels, curvature);
 
     EXPECT_THAT(
       labels,
@@ -107,8 +106,7 @@ TEST(Extraction, EdgeLabel)
 
     std::vector<PointLabel> labels = InitLabels(8);
     const std::vector<double> curvature{0, 2, 4, 1, 0, 2, 1, 1};
-    const NeighborCheckDebug is_neighbor({0, 0, 0, 0, 1, 1, 1, 1});
-    label.Assign(labels, curvature, is_neighbor);
+    label.Assign(labels, curvature);
 
     EXPECT_THAT(
       labels,
@@ -125,3 +123,8 @@ TEST(Extraction, EdgeLabel)
     );
   }
 }
+
+// TODO(IshitaTakeshi) Add surface label test
+// TEST(Extraction, EdgeLabel)
+// {
+// }

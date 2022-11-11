@@ -112,27 +112,4 @@ private:
   const double radian_threshold_;
 };
 
-
-class NeighborCheckDebug : public NeighborCheckBase
-{
-public:
-  explicit NeighborCheckDebug(const std::vector<int> & values)
-  : values_(values)
-  {
-  }
-
-  bool operator()(const int index1, const int index2) const override
-  {
-    return values_.at(index1) == values_.at(index2);
-  }
-
-  int size() const override
-  {
-    return values_.size();
-  }
-
-private:
-  const std::vector<int> values_;
-};
-
 #endif  // LIDAR_FEATURE_EXTRACTION__NEIGHBOR_HPP_

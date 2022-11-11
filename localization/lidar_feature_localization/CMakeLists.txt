@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(lidar_feature_localization)
 
-set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS
-  "-pg -g -O3 -Wall -Wextra -Wpedantic -Werror -fprofile-arcs -ftest-coverage")
+add_compile_options(-pg -g -O3 -Wall -Wextra -Wpedantic -Werror)
+
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
 
 find_package(ament_cmake REQUIRED)
@@ -37,13 +36,13 @@ set(LOCALIZATION_SOURCE_FILES
   src/localization/posevec.cpp)
 
 set(EXTRACTION_SOURCE_FILES
-  src/extraction/iterator.cpp
-  src/extraction/index_range.cpp
-  src/extraction/color_points.cpp
   src/extraction/convolution.cpp
-  src/extraction/ring.cpp
+  src/extraction/curvature.cpp
+  src/extraction/index_range.cpp
+  src/extraction/iterator.cpp
+  src/extraction/label.cpp
   src/extraction/math.cpp
-  src/extraction/curvature.cpp)
+  src/extraction/ring.cpp)
 
 ament_auto_add_library(library SHARED ${LIBRARY_SOURCE_FILES})
 ament_auto_add_library(localization SHARED ${LOCALIZATION_SOURCE_FILES})
@@ -123,7 +122,6 @@ if(BUILD_TESTING)
     test/extraction/test_iterator.cpp
     test/extraction/test_algorithm.cpp
     test/extraction/test_convolution.cpp
-    test/extraction/test_color_points.cpp
     test/extraction/test_mapped_points.cpp
     test/extraction/test_curvature.cpp
     test/extraction/test_occlusion.cpp
