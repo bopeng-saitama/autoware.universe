@@ -1,3 +1,23 @@
+# lidar_feature_localization
+
+## Input / Output
+
+### Input
+
+| Name                             | Type                                            | Description                                                   |
+|:---------------------------------|:------------------------------------------------|:--------------------------------------------------------------|
+| `points_raw`                     | `sensor_msgs::msg::PointCloud2`                 | Rectified LiDAR scan                                          |
+| `optimization_start_pose`        | `geometry_msgs::msg::PoseWithCovarianceStamped` | Prior pose obtained from other estimators such as GNSS or EKF |
+
+### Output
+
+| Name                             | Type                                            | Description                                               |
+|:---------------------------------|:------------------------------------------------|:----------------------------------------------------------|
+| `edge_features`                  | `sensor_msgs::msg::PointCloud2`                 | Edge features extracted from LiDAR scan                   |
+| `surface_features`               | `sensor_msgs::msg::PointCloud2`                 | Surface features extracted from LiDAR scan                |
+| `estimated_pose`                 | `geometry_msgs::msg::PoseStamped`               | Estimated LiDAR pose on the map coordinate                |
+| `estimated_pose_with_covariance` | `geometry_msgs::msg::PoseWithCovarianceStamped` | Estimated LiDAR pose and covariance on the map coordinate |
+
 ## Citation
 
 This code makes use of LIO-SAM and LeGO-LOAM.
