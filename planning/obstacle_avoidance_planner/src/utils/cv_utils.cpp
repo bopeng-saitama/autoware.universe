@@ -427,7 +427,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   const autoware_auto_planning_msgs::msg::TrajectoryPoint & traj_point,
   const cv::Mat & road_clearance_map, const nav_msgs::msg::MapMetaData & map_info,
   const VehicleParam & vehicle_param, const nav_msgs::msg::OccupancyGrid & drivable_area_grid,
-  const bool & enable_boost_check)
+  const bool enable_boost_check)
 {
   const double base_to_right = (vehicle_param.wheel_tread / 2.0) + vehicle_param.right_overhang;
   const double base_to_left = (vehicle_param.wheel_tread / 2.0) + vehicle_param.left_overhang;
