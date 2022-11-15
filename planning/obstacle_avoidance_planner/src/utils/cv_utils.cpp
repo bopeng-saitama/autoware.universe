@@ -466,6 +466,14 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -half_width, 0.0).position;
 
   if (enable_boost_check) {
+
+    Polygon2d footprint;
+    Polygon2d drivable_area_polygon;
+
+    cv::Mat cv_image;
+    grid_map::GridMap grid_map;
+    std::vector<std::vector<cv::Point>> contours;
+
     appendPointToPolygon(footprint, top_left_pos);
     appendPointToPolygon(footprint, top_right_pos);
     appendPointToPolygon(footprint, bottom_right_pos);
