@@ -10,7 +10,6 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>eigen</depend>
-  <depend>lidar_feature_library</depend>
   <depend>nav_msgs</depend>
   <depend>pcl_ros</depend>
   <depend>rcpputils</depend>
