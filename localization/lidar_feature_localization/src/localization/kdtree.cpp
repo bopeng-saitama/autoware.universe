@@ -26,39 +26,41 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <memory>
-#include <tuple>
 #include <vector>
 
 #include "lidar_feature_localization/kdtree.hpp"
 
-KDTreeEigen::KDTreeEigen(
-  const Eigen::MatrixXd & map,
-  const int max_leaf_size)
-: map_(map),
-  kdtree_(std::make_shared<KDTreeType>(map.cols(), std::ref(map_), max_leaf_size))
+
+pcl::KdTreeFLANN<pcl::PointXYZ> MakeKDTree(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr & map)
+{
+  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+  kdtree.setInputCloud(map);
+  return kdtree;
+}
+
+KDTree::KDTree(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr & map)
+: map_(map), kdtree_(MakeKDTree(map))
 {
 }
 
-std::tuple<Eigen::MatrixXd, std::vector<double>> KDTreeEigen::NearestKSearch(
-  const Eigen::VectorXd & query, const int n_neighbors) const
+pcl::PointCloud<pcl::PointXYZ> KDTree::Get(const std::vector<int> & indices) const
+{
+  pcl::PointCloud<pcl::PointXYZ> points;
+  for (const auto i : indices) {
+    points.push_back(map_->at(i));
+  }
+  return points;
+}
+
+pcl::PointCloud<pcl::PointXYZ> KDTree::NearestKSearch(
+  const pcl::PointXYZ & query, const size_t n_neighbors) const
 {
   assert(map_.cols() == query.size());
 
-  std::vector<std::uint64_t> indices(n_neighbors);
-  std::vector<double> distances(n_neighbors);
+  std::vector<int> indices(n_neighbors);
+  std::vector<float> distances(n_neighbors);
 
-  nanoflann::KNNResultSet<double> result(n_neighbors);
+  kdtree_.nearestKSearch(query, n_neighbors, indices, distances);
 
-  result.init(&indices[0], &distances[0]);
-  std::vector<double> queryvec(query.size());
-  Eigen::VectorXd::Map(&queryvec[0], query.size()) = query;
-  kdtree_->index->findNeighbors(result, &queryvec[0], nanoflann::SearchParams(10));
-  // kdtree_->query(&query[0], n_neighbors, &indices[0], &distances[0]);
-
-  indices.resize(n_neighbors);
-  distances.resize(n_neighbors);
-
-  const Eigen::MatrixXd X = GetRows(map_, indices);
-  return std::make_tuple(X, distances);
+  return this->Get(indices);
 }

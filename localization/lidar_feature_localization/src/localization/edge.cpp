@@ -84,10 +84,13 @@ Eigen::Vector3d MakeEdgeResidual(
   return (p - p1).cross(p - p2);
 }
 
-Eigen::MatrixXd GetXYZ(const Eigen::MatrixXd & matrix)
+Eigen::MatrixXd GetXYZ(const pcl::PointCloud<pcl::PointXYZ> & map)
 {
-  const int rows = matrix.rows();
-  return matrix.block(0, 0, rows, 3);
+  Eigen::MatrixXd X(map.size(), 3);
+  for (size_t i = 0; i < map.size(); i++) {
+    X.row(i) = PointXYZToVector::Convert(map.at(i));
+  }
+  return X;
 }
 
 bool PrincipalIsReliable(const Eigen::Vector3d & eigenvalues)

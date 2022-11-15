@@ -12,9 +12,7 @@ find_package(fmt REQUIRED)
 
 ament_auto_find_build_dependencies()
 
-set(INCLUDE_DIRS
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nanoflann/include/)
+set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(LIBRARY_SOURCE_FILES
   src/lib/algorithm.cpp

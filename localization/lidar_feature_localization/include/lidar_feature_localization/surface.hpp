@@ -92,14 +92,11 @@ Eigen::Matrix<double, 1, 7> MakeJacobianRow(
   return (Eigen::Matrix<double, 1, 7>() << u.transpose() * drpdq, u.transpose()).finished();
 }
 
-template<typename PointToVector>
 class Surface
 {
 public:
-  using PointType = typename PointToVector::PointType;
-
   Surface(const pcl::PointCloud<pcl::PointXYZ>::Ptr & surface_map, const int n_neighbors)
-  : kdtree_(MakeKDTree<PointToVector, PointType>(surface_map)), n_neighbors_(n_neighbors)
+  : kdtree_(surface_map), n_neighbors_(n_neighbors)
   {
   }
 
@@ -117,28 +114,36 @@ private:
     const pcl::PointCloud<pcl::PointXYZ>::Ptr & scan,
     const Eigen::Isometry3d & point_to_map) const
   {
-    const int n = scan->size();
     const Eigen::Quaterniond q(point_to_map.rotation());
+
+    const int n = scan->size();
+
+    pcl::PointCloud<pcl::PointXYZ> transformed;
+    pcl::transformPointCloud<pcl::PointXYZ, double>(*scan, transformed, point_to_map);
 
     std::vector<Eigen::MatrixXd> jacobians(n);
     std::vector<Eigen::VectorXd> residuals(n);
 
     for (int i = 0; i < n; i++) {
-      const Eigen::Vector3d p = GetXYZ(scan->at(i));
-      const Eigen::Vector3d point_on_map = point_to_map * p;
+      const pcl::PointXYZ query = transformed.at(i);
 
-      const auto [X, squared_distances] = kdtree_->NearestKSearch(point_on_map, n_neighbors_);
+      const pcl::PointCloud<pcl::PointXYZ> neighbors = kdtree_.NearestKSearch(query, n_neighbors_);
+
+      const Eigen::MatrixXd X = GetXYZ(neighbors);
 
       const Eigen::Vector3d w = EstimatePlaneCoefficients(X);
 
+      const Eigen::Vector3d p = PointXYZToVector::Convert(scan->at(i));
+      const Eigen::Vector3d g = PointXYZToVector::Convert(query);
+
       jacobians[i] = MakeJacobianRow(w, q, p);
-      residuals[i] = SignedPointPlaneDistanceVector1d(w, point_on_map);
+      residuals[i] = SignedPointPlaneDistanceVector1d(w, g);
     }
 
     return std::make_tuple(jacobians, residuals);
   }
 
-  const std::shared_ptr<KDTreeEigen> kdtree_;
+  const KDTree kdtree_;
   const int n_neighbors_;
 };
 

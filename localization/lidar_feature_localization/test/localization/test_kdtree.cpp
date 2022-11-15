@@ -34,44 +34,43 @@
 #include "lidar_feature_localization/kdtree.hpp"
 
 
+bool equal(const pcl::PointXYZ & p1, const pcl::PointXYZ & p2)
+{
+  return p1.x == p2.x && p1.y == p2.y && p1.z == p2.z;
+}
+
 TEST(KDTree, KDTreeEigen)
 {
-  Eigen::MatrixXd points(4, 3);
-  points <<
-    2, 0, 1,
-    2, 0, 0,
-    0, 0, 4,
-    0, 2, 4;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr points(new pcl::PointCloud<pcl::PointXYZ>());
 
-  const KDTreeEigen kdtree(points, 1);
+  points->push_back(pcl::PointXYZ(2, 0, 1));
+  points->push_back(pcl::PointXYZ(2, 0, 0));
+  points->push_back(pcl::PointXYZ(0, 0, 4));
+  points->push_back(pcl::PointXYZ(0, 2, 4));
+
+  const KDTree kdtree(points);
 
   {
-    const auto [X, squared_distances] = kdtree.NearestKSearch(Eigen::Vector3d(0, 0, 0), 2);
-    const Eigen::MatrixXd expected =
-      (Eigen::MatrixXd(2, 3) <<
-      2, 0, 0,
-      2, 0, 1
-      ).finished();
-
-    ASSERT_THAT(X.rows(), 2);
-    ASSERT_THAT(X.cols(), 3);
-    EXPECT_EQ((X - expected).norm(), 0.);
-    EXPECT_THAT(squared_distances, testing::ElementsAre(4., 5.));
+    const auto neighbors = kdtree.NearestKSearch(pcl::PointXYZ(0, 0, 0), 2);
+    equal(neighbors.at(0), pcl::PointXYZ(2, 0, 0));
+    equal(neighbors.at(1), pcl::PointXYZ(2, 0, 1));
   }
 
   {
-    const auto [X, squared_distances] = kdtree.NearestKSearch(Eigen::Vector3d(0, 0, 0), 4);
+    const auto neighbors = kdtree.NearestKSearch(pcl::PointXYZ(0, 0, 0), 4);
 
-    const Eigen::MatrixXd expected =
-      (Eigen::MatrixXd(4, 3) <<
-      2, 0, 0,
-      2, 0, 1,
-      0, 0, 4,
-      0, 2, 4
-      ).finished();
-    ASSERT_THAT(X.rows(), 4);
-    ASSERT_THAT(X.cols(), 3);
-    EXPECT_EQ((X - expected).norm(), 0.);
-    EXPECT_THAT(squared_distances, testing::ElementsAre(4., 5., 16., 20.));
+    equal(neighbors.at(0), pcl::PointXYZ(2, 0, 0));
+    equal(neighbors.at(1), pcl::PointXYZ(2, 0, 1));
+    equal(neighbors.at(2), pcl::PointXYZ(0, 0, 4));
+    equal(neighbors.at(3), pcl::PointXYZ(0, 2, 4));
+  }
+
+  {
+    const auto neighbors = kdtree.NearestKSearch(pcl::PointXYZ(0, 0, 4), 4);
+
+    equal(neighbors.at(0), pcl::PointXYZ(0, 0, 4));
+    equal(neighbors.at(1), pcl::PointXYZ(0, 2, 4));
+    equal(neighbors.at(2), pcl::PointXYZ(2, 0, 1));
+    equal(neighbors.at(3), pcl::PointXYZ(2, 0, 0));
   }
 }

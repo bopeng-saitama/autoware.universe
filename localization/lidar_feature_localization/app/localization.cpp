@@ -186,7 +186,7 @@ private:
     warning_.Info("Pose update done");
   }
 
-  Localizer<PointXYZToVector, pcl::PointXYZ> localizer_;
+  Localizer localizer_;
   tf2_ros::TransformBroadcaster tf_broadcaster_;
   StampSortedObjects<Eigen::Isometry3d> prior_poses_;
   const Warning warning_;

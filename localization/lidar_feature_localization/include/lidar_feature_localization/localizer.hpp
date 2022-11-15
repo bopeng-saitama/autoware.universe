@@ -46,19 +46,16 @@
 constexpr size_t N_NEIGHBORS = 15;
 
 
-template<typename PointToVector, typename PointType>
 class Localizer
 {
-  using OptimizerType = Optimizer<
-    LOAMOptimizationProblem<PointToVector>,
-    EdgeSurfaceScan>;
+  using OptimizerType = Optimizer<LOAMOptimizationProblem, EdgeSurfaceScan>;
 
 public:
   explicit Localizer(
-    const typename pcl::PointCloud<PointType>::Ptr & edge_map,
+    const pcl::PointCloud<pcl::PointXYZ>::Ptr & edge_map,
     const pcl::PointCloud<pcl::PointXYZ>::Ptr & surface_map,
     const int max_iter)
-  : problem_(LOAMOptimizationProblem<PointToVector>(edge_map, surface_map, N_NEIGHBORS)),
+  : problem_(LOAMOptimizationProblem(edge_map, surface_map, N_NEIGHBORS)),
     optimizer_(problem_, max_iter),
     is_initialized_(false),
     pose_(Eigen::Isometry3d::Identity())
@@ -90,7 +87,7 @@ public:
   }
 
 private:
-  const LOAMOptimizationProblem<PointToVector> problem_;
+  const LOAMOptimizationProblem problem_;
   const OptimizerType optimizer_;
 
   bool is_initialized_;

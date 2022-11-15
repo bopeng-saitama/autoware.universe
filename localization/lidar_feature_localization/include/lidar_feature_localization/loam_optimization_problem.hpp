@@ -47,7 +47,6 @@
 #include "lidar_feature_localization/surface.hpp"
 
 
-template<typename PointToVector>
 class LOAMOptimizationProblem
 {
 public:
@@ -84,8 +83,8 @@ public:
   }
 
 private:
-  const Edge<PointToVector> edge_;
-  const Surface<PointToVector> surface_;
+  const Edge edge_;
+  const Surface surface_;
 };
 
 #endif  // LIDAR_FEATURE_LOCALIZATION__LOAM_OPTIMIZATION_PROBLEM_HPP_
