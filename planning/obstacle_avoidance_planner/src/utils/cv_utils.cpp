@@ -492,6 +492,7 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     if (bg::intersects(footprint, drivable_area_polygon)) {
       return true;
     }
+    return false;
 
   } else {
     const bool out_top_left =
@@ -506,9 +507,8 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     if (out_top_left || out_top_right || out_bottom_left || out_bottom_right) {
       return true;
     }
+    return false;
   }
-
-  return false;
 }
 
 [[maybe_unused]] bool isOutsideDrivableAreaFromCirclesFootprint(
