@@ -466,7 +466,6 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -half_width, 0.0).position;
 
   if (enable_boost_check) {
-
     Polygon2d footprint;
     Polygon2d drivable_area_polygon;
 
