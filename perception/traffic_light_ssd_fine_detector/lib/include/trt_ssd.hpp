@@ -72,7 +72,7 @@ public:
   void save(const std::string & path);
 
   // Infer using pre-allocated GPU buffers {data, scores, boxes}
-  void infer(std::vector<void *> & buffers, const int batch_size);
+  void infer(const int batch_size);
 
   // Get (c, h, w) size of the fixed input
   std::vector<int> getInputSize();
@@ -90,6 +90,8 @@ private:
   unique_ptr<nvinfer1::IHostMemory> plan_ = nullptr;
   unique_ptr<nvinfer1::ICudaEngine> engine_ = nullptr;
   unique_ptr<nvinfer1::IExecutionContext> context_ = nullptr;
+  std::string name_tensor_in_;
+  std::string name_tensor_out_;
   cudaStream_t stream_ = nullptr;
 
   void load(const std::string & path);

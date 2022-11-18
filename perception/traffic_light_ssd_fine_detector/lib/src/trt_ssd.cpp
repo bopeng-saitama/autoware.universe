@@ -55,6 +55,8 @@ Net::Net(const std::string & path, bool verbose)
   runtime_ = unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(logger));
   load(path);
   prepare();
+  name_tensor_in_ = engine_->getIOTensorName(0);
+  name_tensor_out_ = engine_->getIOTensorName(engine_->getNbIOTensors() - 1);
 }
 
 Net::~Net()
@@ -155,6 +157,8 @@ Net::Net(
     std::cout << "Fail to create context" << std::endl;
     return;
   }
+  name_tensor_in_ = engine_->getIOTensorName(0);
+  name_tensor_out_ = engine_->getIOTensorName(engine_->getNbIOTensors() - 1);
 }
 
 void Net::save(const std::string & path)
@@ -164,35 +168,37 @@ void Net::save(const std::string & path)
   file.write(reinterpret_cast<const char *>(plan_->data()), plan_->size());
 }
 
-void Net::infer(std::vector<void *> & buffers, const int batch_size)
+void Net::infer(const int batch_size)
 {
   if (!context_) {
     throw std::runtime_error("Fail to create context");
   }
-  auto input_dims = engine_->getBindingDimensions(0);
-  context_->setBindingDimensions(
-    0, nvinfer1::Dims4(batch_size, input_dims.d[1], input_dims.d[2], input_dims.d[3]));
-  context_->enqueueV2(buffers.data(), stream_, nullptr);
+  const auto input_dims = engine_->getTensorShape(name_tensor_in_.c_str());
+  context_->setInputShape(
+    name_tensor_in_.c_str(),
+    nvinfer1::Dims4(batch_size, input_dims.d[1], input_dims.d[2], input_dims.d[3]));
+  context_->enqueueV3(stream_);
   cudaStreamSynchronize(stream_);
 }
 
 std::vector<int> Net::getInputSize()
 {
-  auto dims = engine_->getBindingDimensions(0);
+  const auto dims = engine_->getTensorShape(name_tensor_in_.c_str());
   return {dims.d[1], dims.d[2], dims.d[3]};
 }
 
 std::vector<int> Net::getOutputScoreSize()
 {
-  auto dims = engine_->getBindingDimensions(1);
+  const auto dims = engine_->getTensorShape(name_tensor_out_.c_str());
   return {dims.d[1], dims.d[2]};
 }
 
 int Net::getMaxBatchSize()
 {
-  return engine_->getProfileDimensions(0, 0, nvinfer1::OptProfileSelector::kMAX).d[0];
+  return engine_->getProfileShape(name_tensor_in_.c_str(), 0, nvinfer1::OptProfileSelector::kMAX)
+    .d[0];
 }
 
-int Net::getMaxDetections() { return engine_->getBindingDimensions(1).d[1]; }
+int Net::getMaxDetections() { return engine_->getTensorShape(name_tensor_out_.c_str()).d[1]; }
 
 }  // namespace ssd

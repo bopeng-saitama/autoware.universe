@@ -144,7 +144,6 @@ void TrafficLightSSDFineDetectorNodelet::callback(
     auto data_d = cuda::make_unique<float[]>(num_infer * channel_ * width_ * height_);
     auto scores_d = cuda::make_unique<float[]>(num_infer * detection_per_class_ * class_num_);
     auto boxes_d = cuda::make_unique<float[]>(num_infer * detection_per_class_ * 4);
-    std::vector<void *> buffers = {data_d.get(), scores_d.get(), boxes_d.get()};
     std::vector<cv::Point> lts, rbs;
     std::vector<cv::Mat> cropped_imgs;
 
@@ -168,7 +167,7 @@ void TrafficLightSSDFineDetectorNodelet::callback(
     cudaMemcpy(data_d.get(), data.data(), data.size() * sizeof(float), cudaMemcpyHostToDevice);
 
     try {
-      net_ptr_->infer(buffers, num_infer);
+      net_ptr_->infer(num_infer);
     } catch (std::exception & e) {
       RCLCPP_ERROR(this->get_logger(), "%s", e.what());
       return;
