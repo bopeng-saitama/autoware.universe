@@ -138,13 +138,15 @@ private:
   cuda::unique_ptr<float[]> out_scores_d_ = nullptr;
   cuda::unique_ptr<float[]> out_boxes_d_ = nullptr;
   cuda::unique_ptr<float[]> out_classes_d_ = nullptr;
+  std::string name_tensor_in_;
+  std::string name_tensor_out_;
 
   void load(const std::string & path);
   bool prepare();
   std::vector<float> preprocess(
     const cv::Mat & in_img, const int c, const int h, const int w) const;
   // Infer using pre-allocated GPU buffers {data, scores, boxes}
-  void infer(std::vector<void *> & buffers, const int batch_size);
+  void infer(const int batch_size);
 };
 
 bool set_cuda_device(int gpu_id)
