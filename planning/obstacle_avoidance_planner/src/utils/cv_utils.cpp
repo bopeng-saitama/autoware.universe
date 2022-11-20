@@ -432,17 +432,6 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   const double base_to_right = (vehicle_param.wheel_tread / 2.0) + vehicle_param.right_overhang;
   const double base_to_left = (vehicle_param.wheel_tread / 2.0) + vehicle_param.left_overhang;
 
-  point fp;
-  polygon footprint;
-  polygon drivable_area_polygon;
-  polygon intersection_polygon;
-  Polygon2d footprint; // footprint boost polygon
-
-  cv::Mat cv_image;
-  grid_map::GridMap grid_map;
-  std::vector<std::vector<cv::Point>> contours;
-
-  const double half_width = vehicle_param.width / 2.0;
   const double base_to_front = vehicle_param.length - vehicle_param.rear_overhang;
   const double base_to_rear = vehicle_param.rear_overhang;
 
@@ -451,19 +440,15 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
   const auto top_left_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, -base_to_left, 0.0)
       .position;
-    tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, -half_width, 0.0).position;
   const auto top_right_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, base_to_right, 0.0)
       .position;
-    tier4_autoware_utils::calcOffsetPose(traj_point.pose, base_to_front, half_width, 0.0).position;
   const auto bottom_right_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, base_to_right, 0.0)
       .position;
-    tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, half_width, 0.0).position;
   const auto bottom_left_pos =
     tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -base_to_left, 0.0)
       .position;
-    tier4_autoware_utils::calcOffsetPose(traj_point.pose, -base_to_rear, -half_width, 0.0).position;
 
   if (enable_boost_check) {
     Polygon2d footprint;
