@@ -486,7 +486,6 @@ bool isOutsideDrivableAreaFromRectangleFootprint(
         appendPointToPolygon(drivable_area_polygon, p);
       }
     }
-    bg::correct(drivable_area_polygon);
 
     if (bg::intersects(footprint, drivable_area_polygon)) {
       return true;
