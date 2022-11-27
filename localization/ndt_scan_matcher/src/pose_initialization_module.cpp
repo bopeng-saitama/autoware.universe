@@ -15,7 +15,7 @@
 #include "ndt_scan_matcher/pose_initialization_module.hpp"
 
 PoseInitializationModule::PoseInitializationModule(
-  rclcpp::Node * node, std::mutex * ndt_ptr_mutex,
+  tilde::TildeNode  * node, std::mutex * ndt_ptr_mutex,
   std::shared_ptr<NormalDistributionsTransform> ndt_ptr,
   std::shared_ptr<Tf2ListenerModule> tf2_listener_module, std::string map_frame,
   rclcpp::CallbackGroup::SharedPtr main_callback_group,
@@ -32,9 +32,9 @@ PoseInitializationModule::PoseInitializationModule(
     node->declare_parameter("initial_estimate_particles_num", initial_estimate_particles_num_);
 
   sensor_aligned_pose_pub_ =
-    node->create_publisher<sensor_msgs::msg::PointCloud2>("monte_carlo_points_aligned", 10);
+    node->create_tilde_publisher<sensor_msgs::msg::PointCloud2>("monte_carlo_points_aligned", 10);
   ndt_monte_carlo_initial_pose_marker_pub_ =
-    node->create_publisher<visualization_msgs::msg::MarkerArray>(
+    node->create_tilde_publisher<visualization_msgs::msg::MarkerArray>(
       "monte_carlo_initial_pose_marker", 10);
 
   service_ = node->create_service<tier4_localization_msgs::srv::PoseWithCovarianceStamped>(

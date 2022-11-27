@@ -21,10 +21,13 @@
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <geometry_msgs/msg/twist_with_covariance_stamped.hpp>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 class StopCheckModule : public motion_utils::VehicleStopCheckerBase
 {
 public:
-  StopCheckModule(rclcpp::Node * node, double buffer_duration);
+  StopCheckModule(tilde::TildeNode * node, double buffer_duration);
 
 private:
   using TwistWithCovarianceStamped = geometry_msgs::msg::TwistWithCovarianceStamped;

@@ -24,13 +24,13 @@
 
 #include <algorithm>
 
-MapHeightFitter::MapHeightFitter() : Node("map_height_fitter"), tf2_listener_(tf2_buffer_)
+MapHeightFitter::MapHeightFitter() : TildeNode("map_height_fitter"), tf2_listener_(tf2_buffer_)
 {
   const auto durable_qos = rclcpp::QoS(1).transient_local();
   using std::placeholders::_1;
   using std::placeholders::_2;
 
-  sub_map_ = create_subscription<sensor_msgs::msg::PointCloud2>(
+  sub_map_ = create_tilde_subscription<sensor_msgs::msg::PointCloud2>(
     "pointcloud_map", durable_qos, std::bind(&MapHeightFitter::on_map, this, _1));
   srv_fit_ = create_service<RequestHeightFitting>(
     "fit_map_height", std::bind(&MapHeightFitter::on_fit, this, _1, _2));

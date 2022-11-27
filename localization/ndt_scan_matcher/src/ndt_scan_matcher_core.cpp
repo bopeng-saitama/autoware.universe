@@ -78,7 +78,7 @@ bool validate_local_optimal_solution_oscillation(
 }
 
 NDTScanMatcher::NDTScanMatcher()
-: Node("ndt_scan_matcher"),
+: TildeNode("ndt_scan_matcher"),
   tf2_broadcaster_(*this),
   ndt_ptr_(new NormalDistributionsTransform),
   state_ptr_(new std::map<std::string, std::string>),
@@ -160,46 +160,46 @@ NDTScanMatcher::NDTScanMatcher()
   auto main_sub_opt = rclcpp::SubscriptionOptions();
   main_sub_opt.callback_group = main_callback_group;
 
-  initial_pose_sub_ = this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+  initial_pose_sub_ = this->create_tilde_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "ekf_pose_with_covariance", 100,
     std::bind(&NDTScanMatcher::callback_initial_pose, this, std::placeholders::_1),
     initial_pose_sub_opt);
-  sensor_points_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+  sensor_points_sub_ = this->create_tilde_subscription<sensor_msgs::msg::PointCloud2>(
     "points_raw", rclcpp::SensorDataQoS().keep_last(points_queue_size),
     std::bind(&NDTScanMatcher::callback_sensor_points, this, std::placeholders::_1), main_sub_opt);
   regularization_pose_sub_ =
-    this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    this->create_tilde_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
       "regularization_pose_with_covariance", 100,
       std::bind(&NDTScanMatcher::callback_regularization_pose, this, std::placeholders::_1));
 
   sensor_aligned_pose_pub_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("points_aligned", 10);
-  ndt_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("ndt_pose", 10);
+    this->create_tilde_publisher<sensor_msgs::msg::PointCloud2>("points_aligned", 10);
+  ndt_pose_pub_ = this->create_tilde_publisher<geometry_msgs::msg::PoseStamped>("ndt_pose", 10);
   ndt_pose_with_covariance_pub_ =
-    this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    this->create_tilde_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
       "ndt_pose_with_covariance", 10);
   initial_pose_with_covariance_pub_ =
-    this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    this->create_tilde_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
       "initial_pose_with_covariance", 10);
-  exe_time_pub_ = this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>("exe_time_ms", 10);
+  exe_time_pub_ = this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>("exe_time_ms", 10);
   transform_probability_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>("transform_probability", 10);
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>("transform_probability", 10);
   nearest_voxel_transformation_likelihood_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>(
       "nearest_voxel_transformation_likelihood", 10);
   iteration_num_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Int32Stamped>("iteration_num", 10);
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Int32Stamped>("iteration_num", 10);
   initial_to_result_distance_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>("initial_to_result_distance", 10);
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>("initial_to_result_distance", 10);
   initial_to_result_distance_old_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>(
       "initial_to_result_distance_old", 10);
   initial_to_result_distance_new_pub_ =
-    this->create_publisher<tier4_debug_msgs::msg::Float32Stamped>(
+    this->create_tilde_publisher<tier4_debug_msgs::msg::Float32Stamped>(
       "initial_to_result_distance_new", 10);
-  ndt_marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("ndt_marker", 10);
+  ndt_marker_pub_ = this->create_tilde_publisher<visualization_msgs::msg::MarkerArray>("ndt_marker", 10);
   diagnostics_pub_ =
-    this->create_publisher<diagnostic_msgs::msg::DiagnosticArray>("/diagnostics", 10);
+    this->create_tilde_publisher<diagnostic_msgs::msg::DiagnosticArray>("/diagnostics", 10);
 
   service_trigger_node_ = this->create_service<std_srvs::srv::SetBool>(
     "trigger_node_srv",

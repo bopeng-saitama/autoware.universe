@@ -34,6 +34,9 @@
 #include <memory>
 #include <string>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 class PoseInitializationModule
 {
   using PointSource = pcl::PointXYZ;
@@ -43,7 +46,7 @@ class PoseInitializationModule
 
 public:
   PoseInitializationModule(
-    rclcpp::Node * node, std::mutex * ndt_ptr_mutex,
+    tilde::TildeNode  * node, std::mutex * ndt_ptr_mutex,
     std::shared_ptr<NormalDistributionsTransform> ndt_ptr,
     std::shared_ptr<Tf2ListenerModule> tf2_listener_module, std::string map_frame,
     rclcpp::CallbackGroup::SharedPtr main_callback_group,
@@ -62,8 +65,8 @@ private:
     const std::shared_ptr<const pcl::PointCloud<PointSource>> & sensor_points_mapTF_ptr);
 
   rclcpp::Service<tier4_localization_msgs::srv::PoseWithCovarianceStamped>::SharedPtr service_;
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr sensor_aligned_pose_pub_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr
+  tilde::TildePublisher<sensor_msgs::msg::PointCloud2>::SharedPtr sensor_aligned_pose_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr
     ndt_monte_carlo_initial_pose_marker_pub_;
   int initial_estimate_particles_num_;
 

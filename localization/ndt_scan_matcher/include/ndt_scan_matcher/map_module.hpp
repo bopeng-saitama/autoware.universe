@@ -25,6 +25,9 @@
 
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 class MapModule
 {
   using PointSource = pcl::PointXYZ;
@@ -34,7 +37,7 @@ class MapModule
 
 public:
   MapModule(
-    rclcpp::Node * node, std::mutex * ndt_ptr_mutex,
+    tilde::TildeNode * node, std::mutex * ndt_ptr_mutex,
     std::shared_ptr<NormalDistributionsTransform> ndt_ptr,
     rclcpp::CallbackGroup::SharedPtr map_callback_group);
 

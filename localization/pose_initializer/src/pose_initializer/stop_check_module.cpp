@@ -14,10 +14,10 @@
 
 #include "stop_check_module.hpp"
 
-StopCheckModule::StopCheckModule(rclcpp::Node * node, double buffer_duration)
+StopCheckModule::StopCheckModule(tilde::TildeNode * node, double buffer_duration)
 : VehicleStopCheckerBase(node, buffer_duration)
 {
-  sub_twist_ = node->create_subscription<TwistWithCovarianceStamped>(
+  sub_twist_ = node->create_tilde_subscription<TwistWithCovarianceStamped>(
     "stop_check_twist", 1, std::bind(&StopCheckModule::on_twist, this, std::placeholders::_1));
 }
 

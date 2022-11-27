@@ -23,12 +23,15 @@
 
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 class StopCheckModule;
 class NdtModule;
 class GnssModule;
 class LocalizationTriggerModule;
 
-class PoseInitializer : public rclcpp::Node
+class PoseInitializer : public tilde::TildeNode
 {
 public:
   PoseInitializer();
@@ -41,7 +44,7 @@ private:
   using PoseWithCovarianceStamped = geometry_msgs::msg::PoseWithCovarianceStamped;
 
   rclcpp::CallbackGroup::SharedPtr group_srv_;
-  rclcpp::Publisher<PoseWithCovarianceStamped>::SharedPtr pub_reset_;
+  tilde::TildePublisher<PoseWithCovarianceStamped>::SharedPtr pub_reset_;
   component_interface_utils::Publisher<State>::SharedPtr pub_state_;
   component_interface_utils::Service<Initialize>::SharedPtr srv_initialize_;
   State::Message state_;

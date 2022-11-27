@@ -27,7 +27,10 @@
 
 #include <string>
 
-class MapHeightFitter : public rclcpp::Node
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
+class MapHeightFitter : public tilde::TildeNode
 {
 public:
   MapHeightFitter();

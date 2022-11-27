@@ -48,7 +48,7 @@
 using std::placeholders::_1;
 
 EKFLocalizer::EKFLocalizer(const std::string & node_name, const rclcpp::NodeOptions & node_options)
-: rclcpp::Node(node_name, node_options),
+: TildeNode(node_name, node_options),
   warning_(this),
   params_(this),
   ekf_rate_(params_.ekf_rate),
@@ -71,22 +71,22 @@ EKFLocalizer::EKFLocalizer(const std::string & node_name, const rclcpp::NodeOpti
     this, get_clock(), rclcpp::Rate(params_.tf_rate_).period(),
     std::bind(&EKFLocalizer::timerTFCallback, this));
 
-  pub_pose_ = create_publisher<geometry_msgs::msg::PoseStamped>("ekf_pose", 1);
+  pub_pose_ = create_tilde_publisher<geometry_msgs::msg::PoseStamped>("ekf_pose", 1);
   pub_pose_cov_ =
-    create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("ekf_pose_with_covariance", 1);
-  pub_odom_ = create_publisher<nav_msgs::msg::Odometry>("ekf_odom", 1);
-  pub_twist_ = create_publisher<geometry_msgs::msg::TwistStamped>("ekf_twist", 1);
-  pub_twist_cov_ = create_publisher<geometry_msgs::msg::TwistWithCovarianceStamped>(
+    create_tilde_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("ekf_pose_with_covariance", 1);
+  pub_odom_ = create_tilde_publisher<nav_msgs::msg::Odometry>("ekf_odom", 1);
+  pub_twist_ = create_tilde_publisher<geometry_msgs::msg::TwistStamped>("ekf_twist", 1);
+  pub_twist_cov_ = create_tilde_publisher<geometry_msgs::msg::TwistWithCovarianceStamped>(
     "ekf_twist_with_covariance", 1);
-  pub_yaw_bias_ = create_publisher<tier4_debug_msgs::msg::Float64Stamped>("estimated_yaw_bias", 1);
-  pub_biased_pose_ = create_publisher<geometry_msgs::msg::PoseStamped>("ekf_biased_pose", 1);
-  pub_biased_pose_cov_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
+  pub_yaw_bias_ = create_tilde_publisher<tier4_debug_msgs::msg::Float64Stamped>("estimated_yaw_bias", 1);
+  pub_biased_pose_ = create_tilde_publisher<geometry_msgs::msg::PoseStamped>("ekf_biased_pose", 1);
+  pub_biased_pose_cov_ = create_tilde_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "ekf_biased_pose_with_covariance", 1);
-  sub_initialpose_ = create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+  sub_initialpose_ = create_tilde_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "initialpose", 1, std::bind(&EKFLocalizer::callbackInitialPose, this, _1));
-  sub_pose_with_cov_ = create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+  sub_pose_with_cov_ = create_tilde_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "in_pose_with_covariance", 1, std::bind(&EKFLocalizer::callbackPoseWithCovariance, this, _1));
-  sub_twist_with_cov_ = create_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
+  sub_twist_with_cov_ = create_tilde_subscription<geometry_msgs::msg::TwistWithCovarianceStamped>(
     "in_twist_with_covariance", 1, std::bind(&EKFLocalizer::callbackTwistWithCovariance, this, _1));
   service_trigger_node_ = create_service<std_srvs::srv::SetBool>(
     "trigger_node_srv",
@@ -106,8 +106,8 @@ EKFLocalizer::EKFLocalizer(const std::string & node_name, const rclcpp::NodeOpti
   pitch_filter_.set_proc_dev(0.01);
 
   /* debug */
-  pub_debug_ = create_publisher<tier4_debug_msgs::msg::Float64MultiArrayStamped>("debug", 1);
-  pub_measured_pose_ = create_publisher<geometry_msgs::msg::PoseStamped>("debug/measured_pose", 1);
+  pub_debug_ = create_tilde_publisher<tier4_debug_msgs::msg::Float64MultiArrayStamped>("debug", 1);
+  pub_measured_pose_ = create_tilde_publisher<geometry_msgs::msg::PoseStamped>("debug/measured_pose", 1);
 }
 
 /*

@@ -23,6 +23,9 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 struct Ellipse
 {
   double long_radius;
@@ -32,11 +35,11 @@ struct Ellipse
   double size_lateral_direction;
 };
 
-class LocalizationErrorMonitor : public rclcpp::Node
+class LocalizationErrorMonitor : public tilde::TildeNode
 {
 private:
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr ellipse_marker_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::Marker>::SharedPtr ellipse_marker_pub_;
 
   rclcpp::TimerBase::SharedPtr timer_;
   double scale_;

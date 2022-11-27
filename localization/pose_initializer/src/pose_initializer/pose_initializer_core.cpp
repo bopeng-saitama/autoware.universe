@@ -23,13 +23,13 @@
 #include <memory>
 #include <vector>
 
-PoseInitializer::PoseInitializer() : Node("pose_initializer")
+PoseInitializer::PoseInitializer() : TildeNode("pose_initializer")
 {
   const auto node = component_interface_utils::NodeAdaptor(this);
   group_srv_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
   node.init_pub(pub_state_);
   node.init_srv(srv_initialize_, this, &PoseInitializer::on_initialize, group_srv_);
-  pub_reset_ = create_publisher<PoseWithCovarianceStamped>("pose_reset", 1);
+  pub_reset_ = create_tilde_publisher<PoseWithCovarianceStamped>("pose_reset", 1);
 
   output_pose_covariance_ = get_covariance_parameter(this, "output_pose_covariance");
   gnss_particle_covariance_ = get_covariance_parameter(this, "gnss_particle_covariance");

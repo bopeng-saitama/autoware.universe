@@ -15,7 +15,7 @@
 #include "ndt_scan_matcher/map_module.hpp"
 
 MapModule::MapModule(
-  rclcpp::Node * node, std::mutex * ndt_ptr_mutex,
+  tilde::TildeNode * node, std::mutex * ndt_ptr_mutex,
   std::shared_ptr<NormalDistributionsTransform> ndt_ptr,
   rclcpp::CallbackGroup::SharedPtr map_callback_group)
 : ndt_ptr_(ndt_ptr), ndt_ptr_mutex_(ndt_ptr_mutex)
@@ -23,7 +23,7 @@ MapModule::MapModule(
   auto map_sub_opt = rclcpp::SubscriptionOptions();
   map_sub_opt.callback_group = map_callback_group;
 
-  map_points_sub_ = node->create_subscription<sensor_msgs::msg::PointCloud2>(
+  map_points_sub_ = node->create_tilde_subscription<sensor_msgs::msg::PointCloud2>(
     "pointcloud_map", rclcpp::QoS{1}.transient_local(),
     std::bind(&MapModule::callback_map_points, this, std::placeholders::_1), map_sub_opt);
 }
