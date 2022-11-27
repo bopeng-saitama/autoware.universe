@@ -27,6 +27,9 @@
 
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace pointcloud_preprocessor
 {
 class PolygonRemoverComponent : public pointcloud_preprocessor::Filter
@@ -54,7 +57,7 @@ private:
   PolygonCgal polygon_cgal_;
   visualization_msgs::msg::Marker marker_;
 
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr pub_marker_ptr_;
+  tilde::TildePublisher<visualization_msgs::msg::Marker>::SharedPtr pub_marker_ptr_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

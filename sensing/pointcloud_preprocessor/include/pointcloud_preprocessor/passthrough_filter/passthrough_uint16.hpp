@@ -60,6 +60,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace pcl
 {
 /** \brief @b PassThroughUInt16 passes points in a cloud based on constraints for one particular

@@ -71,7 +71,7 @@ VectorMapInsideAreaFilterComponent::VectorMapInsideAreaFilterComponent(
 
   using std::placeholders::_1;
   // Set subscriber
-  map_sub_ = this->create_subscription<autoware_auto_mapping_msgs::msg::HADMapBin>(
+  map_sub_ = this->create_tilde_subscription<autoware_auto_mapping_msgs::msg::HADMapBin>(
     "input/vector_map", rclcpp::QoS{1}.transient_local(),
     std::bind(&VectorMapInsideAreaFilterComponent::mapCallback, this, _1));
 }

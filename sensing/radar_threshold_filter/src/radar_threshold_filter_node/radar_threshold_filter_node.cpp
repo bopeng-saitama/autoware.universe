@@ -57,7 +57,7 @@ using radar_msgs::msg::RadarReturn;
 using radar_msgs::msg::RadarScan;
 
 RadarThresholdFilterNode::RadarThresholdFilterNode(const rclcpp::NodeOptions & node_options)
-: Node("radar_threshold_filter", node_options)
+: TildeNode("radar_threshold_filter", node_options)
 {
   // Parameter Server
   set_param_res_ = this->add_on_set_parameters_callback(
@@ -76,11 +76,11 @@ RadarThresholdFilterNode::RadarThresholdFilterNode(const rclcpp::NodeOptions & n
   node_param_.azimuth_max = declare_parameter<double>("node_params.azimuth_max", 0.0);
 
   // Subscriber
-  sub_radar_ = create_subscription<RadarScan>(
+  sub_radar_ = create_tilde_subscription<RadarScan>(
     "~/input/radar", rclcpp::QoS{1}, std::bind(&RadarThresholdFilterNode::onData, this, _1));
 
   // Publisher
-  pub_radar_ = create_publisher<RadarScan>("~/output/radar", 1);
+  pub_radar_ = create_tilde_publisher<RadarScan>("~/output/radar", 1);
 }
 
 rcl_interfaces::msg::SetParametersResult RadarThresholdFilterNode::onSetParam(

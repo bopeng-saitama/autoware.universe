@@ -24,12 +24,15 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace radar_threshold_filter
 {
 using radar_msgs::msg::RadarReturn;
 using radar_msgs::msg::RadarScan;
 
-class RadarThresholdFilterNode : public rclcpp::Node
+class RadarThresholdFilterNode : public tilde::TildeNode
 {
 public:
   explicit RadarThresholdFilterNode(const rclcpp::NodeOptions & node_options);
@@ -58,7 +61,7 @@ private:
   void onData(const RadarScan::ConstSharedPtr msg);
 
   // Publisher
-  rclcpp::Publisher<RadarScan>::SharedPtr pub_radar_{};
+  tilde::TildePublisher<RadarScan>::SharedPtr pub_radar_{};
 
   // Parameter Server
   OnSetParametersCallbackHandle::SharedPtr set_param_res_;
