@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__SIDE_SHIFT__SIDE_SHIFT_MODULE_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__SIDE_SHIFT__SIDE_SHIFT_MODULE_HPP_
 
@@ -26,6 +28,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace behavior_path_planner
 {
@@ -54,7 +59,7 @@ class SideShiftModule : public SceneModuleInterface
 {
 public:
   SideShiftModule(
-    const std::string & name, rclcpp::Node & node, const SideShiftParameters & parameters);
+    const std::string & name, tilde::TildeNode & node, const SideShiftParameters & parameters);
 
   bool isExecutionRequested() const override;
   bool isExecutionReady() const override;

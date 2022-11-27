@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "obstacle_stop_planner/adaptive_cruise_control.hpp"
 
 #include <boost/algorithm/clamp.hpp>
@@ -121,7 +123,7 @@ constexpr double sign(const double value)
 namespace motion_planning
 {
 AdaptiveCruiseController::AdaptiveCruiseController(
-  rclcpp::Node * node, const double vehicle_width, const double vehicle_length,
+  tilde::TildeNode * node, const double vehicle_width, const double vehicle_length,
   const double baselink2front)
 : node_(node),
   vehicle_width_(vehicle_width),
@@ -185,7 +187,7 @@ AdaptiveCruiseController::AdaptiveCruiseController(
   param_.rough_velocity_rate = node_->declare_parameter(acc_ns + "rough_velocity_rate", 0.9);
 
   /* publisher */
-  pub_debug_ = node_->create_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
+  pub_debug_ = node_->create_tilde_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
     "~/adaptive_cruise_control/debug_values", 1);
 }
 

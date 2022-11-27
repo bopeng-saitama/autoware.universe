@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/behavior_tree_manager.hpp"
 
 #include "behavior_path_planner/scene_module/scene_module_bt_node_interface.hpp"
@@ -28,7 +30,7 @@
 namespace behavior_path_planner
 {
 BehaviorTreeManager::BehaviorTreeManager(
-  rclcpp::Node & node, const BehaviorTreeManagerParam & param)
+  tilde::TildeNode & node, const BehaviorTreeManagerParam & param)
 : bt_manager_param_(param),
   logger_(node.get_logger().get_child("behavior_tree_manager")),
   clock_(*node.get_clock())

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/avoidance/avoidance_module.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -51,7 +53,7 @@ using tier4_autoware_utils::calcLateralDeviation;
 using tier4_planning_msgs::msg::AvoidanceDebugFactor;
 
 AvoidanceModule::AvoidanceModule(
-  const std::string & name, rclcpp::Node & node, std::shared_ptr<AvoidanceParameters> parameters)
+  const std::string & name, tilde::TildeNode & node, std::shared_ptr<AvoidanceParameters> parameters)
 : SceneModuleInterface{name, node},
   parameters_{std::move(parameters)},
   rtc_interface_left_(&node, "avoidance_left"),
@@ -1821,6 +1823,7 @@ void AvoidanceModule::generateExtendedDrivableArea(ShiftedPath * shifted_path) c
 
     // get left side lane
     const lanelet::ConstLanelets all_left_lanelets =
+      // code changed
       route_handler->getAllLeftSharedLinestringLanelets(current_lane, enable_opposite, true);
     if (!all_left_lanelets.empty()) {
       current_drivable_lanes.left_lane = all_left_lanelets.back();  // leftmost lanelet
@@ -1832,6 +1835,7 @@ void AvoidanceModule::generateExtendedDrivableArea(ShiftedPath * shifted_path) c
 
     // get right side lane
     const lanelet::ConstLanelets all_right_lanelets =
+      // code changed
       route_handler->getAllRightSharedLinestringLanelets(current_lane, enable_opposite, true);
     if (!all_right_lanelets.empty()) {
       current_drivable_lanes.right_lane = all_right_lanelets.back();  // rightmost lanelet

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_VELOCITY_PLANNER__NODE_HPP_
 #define BEHAVIOR_VELOCITY_PLANNER__NODE_HPP_
 
@@ -38,10 +40,13 @@
 #include <mutex>
 #include <string>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 using tier4_planning_msgs::msg::VelocityLimit;
-class BehaviorVelocityPlannerNode : public rclcpp::Node
+class BehaviorVelocityPlannerNode : public tilde::TildeNode
 {
 public:
   explicit BehaviorVelocityPlannerNode(const rclcpp::NodeOptions & node_options);
@@ -95,9 +100,9 @@ private:
   void onParam();
 
   // publisher
-  rclcpp::Publisher<autoware_auto_planning_msgs::msg::Path>::SharedPtr path_pub_;
-  rclcpp::Publisher<diagnostic_msgs::msg::DiagnosticStatus>::SharedPtr stop_reason_diag_pub_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_viz_pub_;
+  tilde::TildePublisher<autoware_auto_planning_msgs::msg::Path>::SharedPtr path_pub_;
+  tilde::TildePublisher<diagnostic_msgs::msg::DiagnosticStatus>::SharedPtr stop_reason_diag_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_viz_pub_;
 
   void publishDebugMarker(const autoware_auto_planning_msgs::msg::Path & path);
 

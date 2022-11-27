@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <lanelet2_extension/utility/query.hpp>
 #include <scene_module/detection_area/manager.hpp>
 
@@ -28,7 +30,7 @@ namespace behavior_velocity_planner
 {
 using lanelet::autoware::DetectionArea;
 
-DetectionAreaModuleManager::DetectionAreaModuleManager(rclcpp::Node & node)
+DetectionAreaModuleManager::DetectionAreaModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterfaceWithRTC(node, getModuleName())
 {
   const std::string ns(getModuleName());

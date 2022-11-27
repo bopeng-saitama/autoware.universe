@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <scene_module/occlusion_spot/manager.hpp>
 #include <scene_module/occlusion_spot/scene_occlusion_spot.hpp>
 #include <utilization/util.hpp>
@@ -27,7 +29,7 @@ namespace behavior_velocity_planner
 using occlusion_spot_utils::DETECTION_METHOD;
 using occlusion_spot_utils::PASS_JUDGE;
 
-OcclusionSpotModuleManager::OcclusionSpotModuleManager(rclcpp::Node & node)
+OcclusionSpotModuleManager::OcclusionSpotModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterface(node, getModuleName())
 {
   const std::string ns(getModuleName());

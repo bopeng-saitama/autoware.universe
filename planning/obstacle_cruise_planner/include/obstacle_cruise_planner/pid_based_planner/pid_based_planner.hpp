@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_CRUISE_PLANNER__PID_BASED_PLANNER__PID_BASED_PLANNER_HPP_
 #define OBSTACLE_CRUISE_PLANNER__PID_BASED_PLANNER__PID_BASED_PLANNER_HPP_
 
@@ -28,6 +30,9 @@
 
 #include <memory>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 using tier4_debug_msgs::msg::Float32MultiArrayStamped;
 
@@ -52,7 +57,7 @@ public:
   };
 
   PIDBasedPlanner(
-    rclcpp::Node & node, const LongitudinalInfo & longitudinal_info,
+    tilde::TildeNode & node, const LongitudinalInfo & longitudinal_info,
     const vehicle_info_util::VehicleInfo & vehicle_info, const EgoNearestParam & ego_nearest_param);
 
   Trajectory generateCruiseTrajectory(
@@ -92,7 +97,7 @@ private:
     stop_watch_;
 
   // publisher
-  rclcpp::Publisher<Float32MultiArrayStamped>::SharedPtr debug_values_pub_;
+  tilde::TildePublisher<Float32MultiArrayStamped>::SharedPtr debug_values_pub_;
 
   boost::optional<double> prev_target_vel_;
 

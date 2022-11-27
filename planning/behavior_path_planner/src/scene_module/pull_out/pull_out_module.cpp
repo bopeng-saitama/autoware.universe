@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/pull_out/pull_out_module.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -34,7 +36,7 @@ using tier4_autoware_utils::calcOffsetPose;
 namespace behavior_path_planner
 {
 PullOutModule::PullOutModule(
-  const std::string & name, rclcpp::Node & node, const PullOutParameters & parameters)
+  const std::string & name, tilde::TildeNode & node, const PullOutParameters & parameters)
 : SceneModuleInterface{name, node},
   parameters_{parameters},
   vehicle_info_{vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo()}

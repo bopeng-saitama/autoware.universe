@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_CRUISE_PLANNER__OPTIMIZATION_BASED_PLANNER__OPTIMIZATION_BASED_PLANNER_HPP_
 #define OBSTACLE_CRUISE_PLANNER__OPTIMIZATION_BASED_PLANNER__OPTIMIZATION_BASED_PLANNER_HPP_
 
@@ -34,6 +36,9 @@
 #include <tuple>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 using autoware_auto_perception_msgs::msg::ObjectClassification;
 using autoware_auto_perception_msgs::msg::PredictedPath;
 using autoware_auto_planning_msgs::msg::TrajectoryPoint;
@@ -43,7 +48,7 @@ class OptimizationBasedPlanner : public PlannerInterface
 {
 public:
   OptimizationBasedPlanner(
-    rclcpp::Node & node, const LongitudinalInfo & longitudinal_info,
+    tilde::TildeNode & node, const LongitudinalInfo & longitudinal_info,
     const vehicle_info_util::VehicleInfo & vehicle_info, const EgoNearestParam & ego_nearest_param);
 
   Trajectory generateCruiseTrajectory(
@@ -97,10 +102,10 @@ private:
   std::shared_ptr<VelocityOptimizer> velocity_optimizer_ptr_;
 
   // Publisher
-  rclcpp::Publisher<Trajectory>::SharedPtr boundary_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr optimized_sv_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr optimized_st_graph_pub_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_wall_marker_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr boundary_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr optimized_sv_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr optimized_st_graph_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_wall_marker_pub_;
 
   // Resampling Parameter
   double dense_resampling_time_interval_;

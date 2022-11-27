@@ -32,6 +32,10 @@
   <depend>route_handler</depend>
   <depend>tier4_autoware_utils</depend>
   <depend>vehicle_info_util</depend>
+  
+  <depend>tilde_cmake</depend>
+  <depend>tilde</depend>
+  <depend>tilde_msg</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
 

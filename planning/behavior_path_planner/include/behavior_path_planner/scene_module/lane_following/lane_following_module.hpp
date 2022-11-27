@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__LANE_FOLLOWING__LANE_FOLLOWING_MODULE_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__LANE_FOLLOWING__LANE_FOLLOWING_MODULE_HPP_
 
@@ -23,6 +25,9 @@
 
 #include <memory>
 #include <string>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace behavior_path_planner
 {
@@ -40,7 +45,7 @@ class LaneFollowingModule : public SceneModuleInterface
 {
 public:
   LaneFollowingModule(
-    const std::string & name, rclcpp::Node & node, const LaneFollowingParameters & parameters);
+    const std::string & name, tilde::TildeNode & node, const LaneFollowingParameters & parameters);
 
   bool isExecutionRequested() const override;
   bool isExecutionReady() const override;

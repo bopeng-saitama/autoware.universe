@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "motion_velocity_smoother/smoother/analytical_jerk_constrained_smoother/analytical_jerk_constrained_smoother.hpp"
 
 #include "motion_utils/resample/resample.hpp"
@@ -65,7 +67,7 @@ bool applyMaxVelocity(
 
 namespace motion_velocity_smoother
 {
-AnalyticalJerkConstrainedSmoother::AnalyticalJerkConstrainedSmoother(rclcpp::Node & node)
+AnalyticalJerkConstrainedSmoother::AnalyticalJerkConstrainedSmoother(tilde::TildeNode & node)
 : SmootherBase(node)
 {
   auto & p = smoother_param_;

@@ -16,6 +16,10 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>tier4_planning_msgs</depend>
+  
+  <depend>tilde_cmake</depend>
+  <depend>tilde</depend>
+  <depend>tilde_msg</depend>
 
   <exec_depend>ros2cli</exec_depend>
   <exec_depend>topic_tools</exec_depend>

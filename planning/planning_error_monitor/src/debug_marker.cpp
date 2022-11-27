@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "planning_error_monitor/debug_marker.hpp"
 
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
@@ -24,11 +26,11 @@ using visualization_msgs::msg::Marker;
 
 PlanningErrorMonitorDebugNode::PlanningErrorMonitorDebugNode() {}
 
-void PlanningErrorMonitorDebugNode::initialize(rclcpp::Node * node)
+void PlanningErrorMonitorDebugNode::initialize(tilde::TildeNode * node)
 {
   node_ = node;
   debug_viz_pub_ =
-    node_->create_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
+    node_->create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
   initialized = true;
 }
 

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/lane_change/lane_change_module.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -41,7 +43,7 @@ namespace behavior_path_planner
 using autoware_auto_perception_msgs::msg::ObjectClassification;
 
 LaneChangeModule::LaneChangeModule(
-  const std::string & name, rclcpp::Node & node, std::shared_ptr<LaneChangeParameters> parameters)
+  const std::string & name, tilde::TildeNode & node, std::shared_ptr<LaneChangeParameters> parameters)
 : SceneModuleInterface{name, node},
   parameters_{std::move(parameters)},
   rtc_interface_left_(&node, "lane_change_left"),

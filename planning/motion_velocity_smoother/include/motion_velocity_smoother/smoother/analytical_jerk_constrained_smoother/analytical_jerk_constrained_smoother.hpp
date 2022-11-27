@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef MOTION_VELOCITY_SMOOTHER__SMOOTHER__ANALYTICAL_JERK_CONSTRAINED_SMOOTHER__ANALYTICAL_JERK_CONSTRAINED_SMOOTHER_HPP_  // NOLINT
 #define MOTION_VELOCITY_SMOOTHER__SMOOTHER__ANALYTICAL_JERK_CONSTRAINED_SMOOTHER__ANALYTICAL_JERK_CONSTRAINED_SMOOTHER_HPP_  // NOLINT
 
@@ -27,6 +29,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace motion_velocity_smoother
 {
@@ -65,7 +70,7 @@ public:
     } backward;
   };
 
-  explicit AnalyticalJerkConstrainedSmoother(rclcpp::Node & node);
+  explicit AnalyticalJerkConstrainedSmoother(tilde::TildeNode & node);
 
   bool apply(
     const double initial_vel, const double initial_acc, const TrajectoryPoints & input,

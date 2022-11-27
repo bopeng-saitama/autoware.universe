@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__INTERSECTION__MANAGER_HPP_
 #define SCENE_MODULE__INTERSECTION__MANAGER_HPP_
 
@@ -26,12 +28,15 @@
 #include <functional>
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class IntersectionModuleManager : public SceneModuleManagerInterfaceWithRTC
 {
 public:
-  explicit IntersectionModuleManager(rclcpp::Node & node);
+  explicit IntersectionModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "intersection"; }
 
@@ -47,7 +52,7 @@ private:
 class MergeFromPrivateModuleManager : public SceneModuleManagerInterface
 {
 public:
-  explicit MergeFromPrivateModuleManager(rclcpp::Node & node);
+  explicit MergeFromPrivateModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "merge_from_private"; }
 

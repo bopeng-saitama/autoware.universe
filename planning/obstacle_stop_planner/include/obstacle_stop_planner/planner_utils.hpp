@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_STOP_PLANNER__PLANNER_UTILS_HPP_
 #define OBSTACLE_STOP_PLANNER__PLANNER_UTILS_HPP_
 
@@ -35,6 +37,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace motion_planning
 {
@@ -166,7 +171,7 @@ TrajectoryPoints extendTrajectory(const TrajectoryPoints & input, const double e
 TrajectoryPoint getExtendTrajectoryPoint(
   double extend_distance, const TrajectoryPoint & goal_point);
 
-rclcpp::SubscriptionOptions createSubscriptionOptions(rclcpp::Node * node_ptr);
+rclcpp::SubscriptionOptions createSubscriptionOptions(tilde::TildeNode * node_ptr);
 
 }  // namespace motion_planning
 

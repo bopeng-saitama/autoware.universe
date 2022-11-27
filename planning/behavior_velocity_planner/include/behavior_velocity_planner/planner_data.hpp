@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_VELOCITY_PLANNER__PLANNER_DATA_HPP_
 #define BEHAVIOR_VELOCITY_PLANNER__PLANNER_DATA_HPP_
 
@@ -52,12 +54,15 @@
 #include <memory>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class BehaviorVelocityPlannerNode;
 struct PlannerData
 {
-  explicit PlannerData(rclcpp::Node & node)
+  explicit PlannerData(tilde::TildeNode & node)
   : vehicle_info_(vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo())
   {
     max_stop_acceleration_threshold = node.declare_parameter(

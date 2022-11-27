@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <lanelet2_extension/utility/utilities.hpp>
 #include <scene_module/intersection/manager.hpp>
 #include <utilization/boost_geometry_helper.hpp>
@@ -26,7 +28,7 @@
 
 namespace behavior_velocity_planner
 {
-IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
+IntersectionModuleManager::IntersectionModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterfaceWithRTC(node, getModuleName())
 {
   const std::string ns(getModuleName());
@@ -59,7 +61,7 @@ IntersectionModuleManager::IntersectionModuleManager(rclcpp::Node & node)
     node.declare_parameter(ns + ".enable_front_car_decel_prediction", false);
 }
 
-MergeFromPrivateModuleManager::MergeFromPrivateModuleManager(rclcpp::Node & node)
+MergeFromPrivateModuleManager::MergeFromPrivateModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterface(node, getModuleName())
 {
   const std::string ns(getModuleName());

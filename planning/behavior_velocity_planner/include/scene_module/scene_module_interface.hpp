@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__SCENE_MODULE_INTERFACE_HPP_
 #define SCENE_MODULE__SCENE_MODULE_INTERFACE_HPP_
 
@@ -43,6 +45,9 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <visualization_msgs/msg/marker_array.hpp>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace behavior_velocity_planner
 {
@@ -132,26 +137,26 @@ protected:
 class SceneModuleManagerInterface
 {
 public:
-  SceneModuleManagerInterface(rclcpp::Node & node, [[maybe_unused]] const char * module_name)
+  SceneModuleManagerInterface(tilde::TildeNode & node, [[maybe_unused]] const char * module_name)
   : clock_(node.get_clock()), logger_(node.get_logger())
   {
     const auto ns = std::string("~/debug/") + module_name;
-    pub_debug_ = node.create_publisher<visualization_msgs::msg::MarkerArray>(ns, 1);
+    pub_debug_ = node.create_tilde_publisher<visualization_msgs::msg::MarkerArray>(ns, 1);
     if (!node.has_parameter("is_publish_debug_path")) {
       is_publish_debug_path_ = node.declare_parameter("is_publish_debug_path", false);
     } else {
       is_publish_debug_path_ = node.get_parameter("is_publish_debug_path").as_bool();
     }
     if (is_publish_debug_path_) {
-      pub_debug_path_ = node.create_publisher<autoware_auto_planning_msgs::msg::PathWithLaneId>(
+      pub_debug_path_ = node.create_tilde_publisher<autoware_auto_planning_msgs::msg::PathWithLaneId>(
         std::string("~/debug/path_with_lane_id/") + module_name, 1);
     }
-    pub_virtual_wall_ = node.create_publisher<visualization_msgs::msg::MarkerArray>(
+    pub_virtual_wall_ = node.create_tilde_publisher<visualization_msgs::msg::MarkerArray>(
       std::string("~/virtual_wall/") + module_name, 5);
     pub_stop_reason_ =
-      node.create_publisher<tier4_planning_msgs::msg::StopReasonArray>("~/output/stop_reasons", 1);
+      node.create_tilde_publisher<tier4_planning_msgs::msg::StopReasonArray>("~/output/stop_reasons", 1);
     pub_infrastructure_commands_ =
-      node.create_publisher<tier4_v2x_msgs::msg::InfrastructureCommandArray>(
+      node.create_tilde_publisher<tier4_v2x_msgs::msg::InfrastructureCommandArray>(
         "~/output/infrastructure_commands", 1);
 
     processing_time_publisher_ = std::make_shared<DebugPublisher>(&node, "~/debug");
@@ -305,11 +310,11 @@ protected:
   // Debug
   bool is_publish_debug_path_ = {false};  // note : this is very heavy debug topic option
   rclcpp::Logger logger_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_virtual_wall_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_;
-  rclcpp::Publisher<autoware_auto_planning_msgs::msg::PathWithLaneId>::SharedPtr pub_debug_path_;
-  rclcpp::Publisher<tier4_planning_msgs::msg::StopReasonArray>::SharedPtr pub_stop_reason_;
-  rclcpp::Publisher<tier4_v2x_msgs::msg::InfrastructureCommandArray>::SharedPtr
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_virtual_wall_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_;
+  tilde::TildePublisher<autoware_auto_planning_msgs::msg::PathWithLaneId>::SharedPtr pub_debug_path_;
+  tilde::TildePublisher<tier4_planning_msgs::msg::StopReasonArray>::SharedPtr pub_stop_reason_;
+  tilde::TildePublisher<tier4_v2x_msgs::msg::InfrastructureCommandArray>::SharedPtr
     pub_infrastructure_commands_;
 
   std::shared_ptr<DebugPublisher> processing_time_publisher_;
@@ -318,7 +323,7 @@ protected:
 class SceneModuleManagerInterfaceWithRTC : public SceneModuleManagerInterface
 {
 public:
-  SceneModuleManagerInterfaceWithRTC(rclcpp::Node & node, const char * module_name)
+  SceneModuleManagerInterfaceWithRTC(tilde::TildeNode & node, const char * module_name)
   : SceneModuleManagerInterface(node, module_name), rtc_interface_(&node, module_name)
   {
   }

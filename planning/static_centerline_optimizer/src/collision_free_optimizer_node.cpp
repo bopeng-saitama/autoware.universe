@@ -15,6 +15,8 @@
 // NOTE: This file was copied from a part of implementation in
 // https://github.com/autowarefoundation/autoware.universe/blob/main/planning/obstacle_avoidance_planner/src/node.cpp
 
+// appply TILDE
+
 #include "static_centerline_optimizer/collision_free_optimizer_node.hpp"
 
 #include "interpolation/spline_interpolation_points_2d.hpp"
@@ -108,12 +110,12 @@ std::vector<TrajectoryPoint> convertToTrajectoryPoints(const std::vector<T> & po
 }  // namespace
 
 CollisionFreeOptimizerNode::CollisionFreeOptimizerNode(const rclcpp::NodeOptions & node_options)
-: Node("static_centerline_optimizer", node_options), logger_ros_clock_(RCL_ROS_TIME)
+: TildeNode("static_centerline_optimizer", node_options), logger_ros_clock_(RCL_ROS_TIME)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);
 
   // subscriber
-  path_sub_ = create_subscription<Path>(
+  path_sub_ = create_tilde_subscription<Path>(
     "debug/raw_centerline", rclcpp::QoS{1}.transient_local(),
     std::bind(&CollisionFreeOptimizerNode::pathCallback, this, std::placeholders::_1));
 

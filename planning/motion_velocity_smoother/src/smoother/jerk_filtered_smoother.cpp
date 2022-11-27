@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "motion_velocity_smoother/smoother/jerk_filtered_smoother.hpp"
 
 #include "eigen3/Eigen/Core"
@@ -28,7 +30,7 @@
 
 namespace motion_velocity_smoother
 {
-JerkFilteredSmoother::JerkFilteredSmoother(rclcpp::Node & node) : SmootherBase(node)
+JerkFilteredSmoother::JerkFilteredSmoother(tilde::TildeNode & node) : SmootherBase(node)
 {
   auto & p = smoother_param_;
   p.jerk_weight = node.declare_parameter("jerk_weight", 10.0);

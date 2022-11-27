@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__BEHAVIOR_PATH_PLANNER_NODE_HPP_
 #define BEHAVIOR_PATH_PLANNER__BEHAVIOR_PATH_PLANNER_NODE_HPP_
 
@@ -49,6 +51,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 template <typename T>
 inline void update_param(
   const std::vector<rclcpp::Parameter> & parameters, const std::string & name, T & value)
@@ -82,7 +87,7 @@ using tier4_planning_msgs::msg::PathChangeModule;
 using tier4_planning_msgs::msg::Scenario;
 using visualization_msgs::msg::MarkerArray;
 
-class BehaviorPathPlannerNode : public rclcpp::Node
+class BehaviorPathPlannerNode : public tilde::TildeNode
 {
 public:
   explicit BehaviorPathPlannerNode(const rclcpp::NodeOptions & node_options);
@@ -95,10 +100,10 @@ private:
   rclcpp::Subscription<Scenario>::SharedPtr scenario_subscriber_;
   rclcpp::Subscription<PredictedObjects>::SharedPtr perception_subscriber_;
   rclcpp::Subscription<OccupancyGrid>::SharedPtr occupancy_grid_subscriber_;
-  rclcpp::Publisher<PathWithLaneId>::SharedPtr path_publisher_;
-  rclcpp::Publisher<Path>::SharedPtr path_candidate_publisher_;
-  rclcpp::Publisher<TurnIndicatorsCommand>::SharedPtr turn_signal_publisher_;
-  rclcpp::Publisher<HazardLightsCommand>::SharedPtr hazard_signal_publisher_;
+  tilde::TildePublisher<PathWithLaneId>::SharedPtr path_publisher_;
+  tilde::TildePublisher<Path>::SharedPtr path_candidate_publisher_;
+  tilde::TildePublisher<TurnIndicatorsCommand>::SharedPtr turn_signal_publisher_;
+  tilde::TildePublisher<HazardLightsCommand>::SharedPtr hazard_signal_publisher_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::shared_ptr<PlannerData> planner_data_;
@@ -170,9 +175,9 @@ private:
     const std::vector<std::shared_ptr<SceneModuleStatus>> & statuses) const;
 
   // debug
-  rclcpp::Publisher<MarkerArray>::SharedPtr debug_drivable_area_lanelets_publisher_;
-  rclcpp::Publisher<AvoidanceDebugMsgArray>::SharedPtr debug_avoidance_msg_array_publisher_;
-  rclcpp::Publisher<LaneChangeDebugMsgArray>::SharedPtr debug_lane_change_msg_array_publisher_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr debug_drivable_area_lanelets_publisher_;
+  tilde::TildePublisher<AvoidanceDebugMsgArray>::SharedPtr debug_avoidance_msg_array_publisher_;
+  tilde::TildePublisher<LaneChangeDebugMsgArray>::SharedPtr debug_lane_change_msg_array_publisher_;
 
   /**
    * @brief check path if it is unsafe or forced

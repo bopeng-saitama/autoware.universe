@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__SCENE_MODULE_INTERFACE_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__SCENE_MODULE_INTERFACE_HPP_
 
@@ -41,6 +43,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace behavior_path_planner
 {
@@ -81,7 +86,7 @@ struct CandidateOutput
 class SceneModuleInterface
 {
 public:
-  SceneModuleInterface(const std::string & name, rclcpp::Node & node)
+  SceneModuleInterface(const std::string & name, tilde::TildeNode & node)
   : name_{name},
     logger_{node.get_logger().get_child(name)},
     clock_{node.get_clock()},
@@ -94,7 +99,7 @@ public:
     std::transform(name.begin(), name.end(), module_ns.begin(), tolower);
 
     const auto ns = std::string("~/debug/") + module_ns;
-    pub_debug_marker_ = node.create_publisher<MarkerArray>(ns, 20);
+    pub_debug_marker_ = node.create_tilde_publisher<MarkerArray>(ns, 20);
   }
 
   virtual ~SceneModuleInterface() = default;
@@ -251,7 +256,7 @@ private:
 
 protected:
   rclcpp::Clock::SharedPtr clock_;
-  rclcpp::Publisher<MarkerArray>::SharedPtr pub_debug_marker_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr pub_debug_marker_;
   mutable MarkerArray debug_marker_;
 
   std::shared_ptr<RTCInterface> rtc_interface_ptr_;

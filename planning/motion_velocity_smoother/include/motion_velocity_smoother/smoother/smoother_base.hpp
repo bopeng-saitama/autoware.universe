@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef MOTION_VELOCITY_SMOOTHER__SMOOTHER__SMOOTHER_BASE_HPP_
 #define MOTION_VELOCITY_SMOOTHER__SMOOTHER__SMOOTHER_BASE_HPP_
 
@@ -28,6 +30,9 @@
 
 #include <limits>
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace motion_velocity_smoother
 {
@@ -61,7 +66,7 @@ public:
     resampling::ResampleParam resample_param;
   };
 
-  explicit SmootherBase(rclcpp::Node & node);
+  explicit SmootherBase(tilde::TildeNode & node);
   virtual ~SmootherBase() = default;
   virtual bool apply(
     const double initial_vel, const double initial_acc, const TrajectoryPoints & input,

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef MISSION_PLANNER__ARRIVAL_CHECKER_HPP_
 #define MISSION_PLANNER__ARRIVAL_CHECKER_HPP_
 
@@ -21,13 +23,16 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace mission_planner
 {
 
 class ArrivalChecker
 {
 public:
-  explicit ArrivalChecker(rclcpp::Node * node);
+  explicit ArrivalChecker(tilde::TildeNode * node);
   void reset_goal();
   void reset_goal(const geometry_msgs::msg::PoseStamped & goal);
   bool is_arrived(const geometry_msgs::msg::PoseStamped & pose) const;

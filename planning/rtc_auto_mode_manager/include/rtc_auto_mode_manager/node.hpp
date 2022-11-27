@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef RTC_AUTO_MODE_MANAGER__NODE_HPP_
 #define RTC_AUTO_MODE_MANAGER__NODE_HPP_
 
@@ -22,9 +24,12 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace rtc_auto_mode_manager
 {
-class RTCAutoModeManagerNode : public rclcpp::Node
+class RTCAutoModeManagerNode : public tilde::TildeNode
 {
 public:
   explicit RTCAutoModeManagerNode(const rclcpp::NodeOptions & node_options);

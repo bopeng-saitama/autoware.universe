@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "motion_velocity_smoother/smoother/smoother_base.hpp"
 
 #include "motion_utils/resample/resample.hpp"
@@ -28,7 +30,7 @@ namespace motion_velocity_smoother
 {
 using vehicle_info_util::VehicleInfoUtil;
 
-SmootherBase::SmootherBase(rclcpp::Node & node)
+SmootherBase::SmootherBase(tilde::TildeNode & node)
 {
   auto & p = base_param_;
   p.max_accel = node.declare_parameter("normal.max_acc", 2.0);

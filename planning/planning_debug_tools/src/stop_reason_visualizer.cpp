@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <rclcpp/rclcpp.hpp>
 #include <tier4_autoware_utils/ros/marker_helper.hpp>
 
@@ -26,6 +28,9 @@
 #include <memory>
 #include <string>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace planning_debug_tools
 {
 using std::placeholders::_1;
@@ -34,14 +39,14 @@ using tier4_planning_msgs::msg::StopReasonArray;
 using visualization_msgs::msg::Marker;
 using visualization_msgs::msg::MarkerArray;
 
-class StopReasonVisualizerNode : public rclcpp::Node
+class StopReasonVisualizerNode : public tilde::TildeNode
 {
 public:
   explicit StopReasonVisualizerNode(const rclcpp::NodeOptions & options)
-  : Node("stop_reason_visualizer", options)
+  : TildeNode("stop_reason_visualizer", options)
   {
-    pub_stop_reasons_marker_ = create_publisher<MarkerArray>("~/debug/markers", 1);
-    sub_stop_reasons_ = create_subscription<StopReasonArray>(
+    pub_stop_reasons_marker_ = create_tilde_publisher<MarkerArray>("~/debug/markers", 1);
+    sub_stop_reasons_ = create_tilde_subscription<StopReasonArray>(
       "/planning/scenario_planning/status/stop_reasons", rclcpp::QoS{1},
       std::bind(&StopReasonVisualizerNode::onStopReasonArray, this, _1));
   }
@@ -119,7 +124,7 @@ private:
     }
     pub_stop_reasons_marker_->publish(all_marker_array);
   }
-  rclcpp::Publisher<MarkerArray>::SharedPtr pub_stop_reasons_marker_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr pub_stop_reasons_marker_;
   rclcpp::Subscription<StopReasonArray>::SharedPtr sub_stop_reasons_;
 };
 }  // namespace planning_debug_tools

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__OCCLUSION_SPOT__MANAGER_HPP_
 #define SCENE_MODULE__OCCLUSION_SPOT__MANAGER_HPP_
 
@@ -34,12 +36,15 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class OcclusionSpotModuleManager : public SceneModuleManagerInterface
 {
 public:
-  explicit OcclusionSpotModuleManager(rclcpp::Node & node);
+  explicit OcclusionSpotModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "occlusion_spot"; }
 

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_STOP_PLANNER__NODE_HPP_
 #define OBSTACLE_STOP_PLANNER__NODE_HPP_
 
@@ -60,6 +62,9 @@
 #include <mutex>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace motion_planning
 {
 
@@ -91,7 +96,7 @@ using vehicle_info_util::VehicleInfo;
 using TrajectoryPoints = std::vector<TrajectoryPoint>;
 using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
 
-class ObstacleStopPlannerNode : public rclcpp::Node
+class ObstacleStopPlannerNode : public tilde::TildeNode
 {
 public:
   explicit ObstacleStopPlannerNode(const rclcpp::NodeOptions & node_options);
@@ -109,13 +114,13 @@ private:
 
   rclcpp::Subscription<ExpandStopRange>::SharedPtr sub_expand_stop_range_;
 
-  rclcpp::Publisher<Trajectory>::SharedPtr pub_trajectory_;
+  tilde::TildePublisher<Trajectory>::SharedPtr pub_trajectory_;
 
-  rclcpp::Publisher<DiagnosticStatus>::SharedPtr pub_stop_reason_;
+  tilde::TildePublisher<DiagnosticStatus>::SharedPtr pub_stop_reason_;
 
-  rclcpp::Publisher<VelocityLimitClearCommand>::SharedPtr pub_clear_velocity_limit_;
+  tilde::TildePublisher<VelocityLimitClearCommand>::SharedPtr pub_clear_velocity_limit_;
 
-  rclcpp::Publisher<VelocityLimit>::SharedPtr pub_velocity_limit_;
+  tilde::TildePublisher<VelocityLimit>::SharedPtr pub_velocity_limit_;
 
   std::unique_ptr<AdaptiveCruiseController> acc_controller_;
   std::shared_ptr<ObstacleStopPlannerDebugNode> debug_ptr_;

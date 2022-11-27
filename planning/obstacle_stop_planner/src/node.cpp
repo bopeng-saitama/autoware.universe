@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <algorithm>
 #include <limits>
 #include <map>
@@ -53,7 +55,7 @@ using tier4_autoware_utils::getPose;
 using tier4_autoware_utils::getRPY;
 
 ObstacleStopPlannerNode::ObstacleStopPlannerNode(const rclcpp::NodeOptions & node_options)
-: Node("obstacle_stop_planner", node_options)
+: TildeNode("obstacle_stop_planner", node_options)
 {
   // Vehicle Parameters
   vehicle_info_ = vehicle_info_util::VehicleInfoUtil(*this).getVehicleInfo();
@@ -153,43 +155,43 @@ ObstacleStopPlannerNode::ObstacleStopPlannerNode(const rclcpp::NodeOptions & nod
   last_detect_time_collision_point_ = this->now();
 
   // Publishers
-  pub_trajectory_ = this->create_publisher<Trajectory>("~/output/trajectory", 1);
+  pub_trajectory_ = this->create_tilde_publisher<Trajectory>("~/output/trajectory", 1);
 
-  pub_stop_reason_ = this->create_publisher<DiagnosticStatus>("~/output/stop_reason", 1);
+  pub_stop_reason_ = this->create_tilde_publisher<DiagnosticStatus>("~/output/stop_reason", 1);
 
-  pub_clear_velocity_limit_ = this->create_publisher<VelocityLimitClearCommand>(
+  pub_clear_velocity_limit_ = this->create_tilde_publisher<VelocityLimitClearCommand>(
     "~/output/velocity_limit_clear_command", rclcpp::QoS{1}.transient_local());
 
-  pub_velocity_limit_ = this->create_publisher<VelocityLimit>(
+  pub_velocity_limit_ = this->create_tilde_publisher<VelocityLimit>(
     "~/output/max_velocity", rclcpp::QoS{1}.transient_local());
 
   // Subscribers
-  sub_point_cloud_ = this->create_subscription<PointCloud2>(
+  sub_point_cloud_ = this->create_tilde_subscription<PointCloud2>(
     "~/input/pointcloud", rclcpp::SensorDataQoS(),
     std::bind(&ObstacleStopPlannerNode::onPointCloud, this, std::placeholders::_1),
     createSubscriptionOptions(this));
 
-  sub_trajectory_ = this->create_subscription<Trajectory>(
+  sub_trajectory_ = this->create_tilde_subscription<Trajectory>(
     "~/input/trajectory", 1,
     std::bind(&ObstacleStopPlannerNode::onTrigger, this, std::placeholders::_1),
     createSubscriptionOptions(this));
 
-  sub_odometry_ = this->create_subscription<Odometry>(
+  sub_odometry_ = this->create_tilde_subscription<Odometry>(
     "~/input/odometry", 1,
     std::bind(&ObstacleStopPlannerNode::onOdometry, this, std::placeholders::_1),
     createSubscriptionOptions(this));
 
-  sub_acceleration_ = this->create_subscription<AccelWithCovarianceStamped>(
+  sub_acceleration_ = this->create_tilde_subscription<AccelWithCovarianceStamped>(
     "~/input/acceleration", 1,
     std::bind(&ObstacleStopPlannerNode::onAcceleration, this, std::placeholders::_1),
     createSubscriptionOptions(this));
 
-  sub_dynamic_objects_ = this->create_subscription<PredictedObjects>(
+  sub_dynamic_objects_ = this->create_tilde_subscription<PredictedObjects>(
     "~/input/objects", 1,
     std::bind(&ObstacleStopPlannerNode::onDynamicObjects, this, std::placeholders::_1),
     createSubscriptionOptions(this));
 
-  sub_expand_stop_range_ = this->create_subscription<ExpandStopRange>(
+  sub_expand_stop_range_ = this->create_tilde_subscription<ExpandStopRange>(
     "~/input/expand_stop_range", 1,
     std::bind(&ObstacleStopPlannerNode::onExpandStopRange, this, std::placeholders::_1),
     createSubscriptionOptions(this));

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__LANE_CHANGE__LANE_CHANGE_MODULE_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__LANE_CHANGE__LANE_CHANGE_MODULE_HPP_
 
@@ -38,6 +40,9 @@
 #include <utility>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_path_planner
 {
 using autoware_auto_planning_msgs::msg::PathWithLaneId;
@@ -51,7 +56,7 @@ class LaneChangeModule : public SceneModuleInterface
 {
 public:
   LaneChangeModule(
-    const std::string & name, rclcpp::Node & node,
+    const std::string & name, tilde::TildeNode & node,
     std::shared_ptr<LaneChangeParameters> parameters);
 
   BehaviorModuleOutput run() override;
@@ -183,7 +188,7 @@ private:
   // debug
   mutable std::unordered_map<std::string, CollisionCheckDebug> object_debug_;
   mutable std::vector<LaneChangePath> debug_valid_path_;
-
+  
   void setObjectDebugVisualization() const;
 };
 }  // namespace behavior_path_planner

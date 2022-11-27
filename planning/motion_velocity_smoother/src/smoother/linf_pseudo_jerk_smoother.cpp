@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "motion_velocity_smoother/smoother/linf_pseudo_jerk_smoother.hpp"
 
 #include "eigen3/Eigen/Core"
@@ -24,7 +26,7 @@
 
 namespace motion_velocity_smoother
 {
-LinfPseudoJerkSmoother::LinfPseudoJerkSmoother(rclcpp::Node & node) : SmootherBase(node)
+LinfPseudoJerkSmoother::LinfPseudoJerkSmoother(tilde::TildeNode & node) : SmootherBase(node)
 {
   auto & p = smoother_param_;
   p.pseudo_jerk_weight = node.declare_parameter("pseudo_jerk_weight", 200.0);

@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// apply TILDE
+
 #ifndef OBSTACLE_STOP_PLANNER__DEBUG_MARKER_HPP_
 #define OBSTACLE_STOP_PLANNER__DEBUG_MARKER_HPP_
 
@@ -34,6 +37,10 @@
 #define EIGEN_MPL2_ONLY
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace motion_planning
 {
 
@@ -102,7 +109,7 @@ private:
 class ObstacleStopPlannerDebugNode
 {
 public:
-  explicit ObstacleStopPlannerDebugNode(rclcpp::Node * node, const double base_link2front);
+  explicit ObstacleStopPlannerDebugNode(tilde::TildeNode * node, const double base_link2front);
   ~ObstacleStopPlannerDebugNode() {}
   bool pushPolygon(
     const std::vector<cv::Point2d> & polygon, const double z, const PolygonType & type);
@@ -121,11 +128,11 @@ public:
   void publish();
 
 private:
-  rclcpp::Publisher<MarkerArray>::SharedPtr virtual_wall_pub_;
-  rclcpp::Publisher<MarkerArray>::SharedPtr debug_viz_pub_;
-  rclcpp::Publisher<StopReasonArray>::SharedPtr stop_reason_pub_;
-  rclcpp::Publisher<Float32MultiArrayStamped>::SharedPtr pub_debug_values_;
-  rclcpp::Node * node_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr virtual_wall_pub_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr debug_viz_pub_;
+  tilde::TildePublisher<StopReasonArray>::SharedPtr stop_reason_pub_;
+  tilde::TildePublisher<Float32MultiArrayStamped>::SharedPtr pub_debug_values_;
+  tilde::TildeNode * node_;
   double base_link2front_;
 
   std::shared_ptr<Pose> stop_pose_ptr_;

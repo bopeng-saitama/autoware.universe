@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/pull_over/geometric_pull_over.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -26,7 +28,7 @@
 namespace behavior_path_planner
 {
 GeometricPullOver::GeometricPullOver(
-  rclcpp::Node & node, const PullOverParameters & parameters,
+  tilde::TildeNode & node, const PullOverParameters & parameters,
   const ParallelParkingParameters & parallel_parking_parameters,
   const LaneDepartureChecker & lane_departure_checker,
   const std::shared_ptr<OccupancyGridBasedCollisionDetector> occupancy_grid_map,

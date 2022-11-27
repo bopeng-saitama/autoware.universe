@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "scene_module/run_out/debug.hpp"
 
 #include "scene_module/run_out/scene.hpp"
@@ -69,12 +71,12 @@ visualization_msgs::msg::MarkerArray createPolygonMarkerArray(
 
 }  // namespace
 
-RunOutDebug::RunOutDebug(rclcpp::Node & node) : node_(node)
+RunOutDebug::RunOutDebug(tilde::TildeNode & node) : node_(node)
 {
   pub_debug_values_ =
-    node.create_publisher<Float32MultiArrayStamped>("~/debug/run_out/debug_values", 1);
-  pub_accel_reason_ = node.create_publisher<Int32Stamped>("~/debug/run_out/accel_reason", 1);
-  pub_debug_trajectory_ = node.create_publisher<Trajectory>("~/debug/run_out/trajectory", 1);
+    node.create_tilde_publisher<Float32MultiArrayStamped>("~/debug/run_out/debug_values", 1);
+  pub_accel_reason_ = node.create_tilde_publisher<Int32Stamped>("~/debug/run_out/accel_reason", 1);
+  pub_debug_trajectory_ = node.create_tilde_publisher<Trajectory>("~/debug/run_out/trajectory", 1);
 }
 
 void RunOutDebug::pushCollisionPoints(const geometry_msgs::msg::Point & point)

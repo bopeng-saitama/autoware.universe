@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "scene_module/run_out/manager.hpp"
 
 namespace behavior_velocity_planner
@@ -20,7 +22,7 @@ namespace
 {
 }  // namespace
 
-RunOutModuleManager::RunOutModuleManager(rclcpp::Node & node)
+RunOutModuleManager::RunOutModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterface(node, getModuleName())
 {
   // Vehicle Parameters
@@ -137,7 +139,7 @@ RunOutModuleManager::getModuleExpiredFunction(
     };
 }
 
-void RunOutModuleManager::setDynamicObstacleCreator(rclcpp::Node & node)
+void RunOutModuleManager::setDynamicObstacleCreator(tilde::TildeNode & node)
 {
   using run_out_utils::DetectionMethod;
 

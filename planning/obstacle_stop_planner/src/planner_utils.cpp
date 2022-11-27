@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "obstacle_stop_planner/planner_utils.hpp"
 
 #include <motion_utils/trajectory/tmp_conversion.hpp>
@@ -414,7 +416,7 @@ TrajectoryPoint getBackwardPointFromBasePoint(
   return output;
 }
 
-rclcpp::SubscriptionOptions createSubscriptionOptions(rclcpp::Node * node_ptr)
+rclcpp::SubscriptionOptions createSubscriptionOptions(tilde::TildeNode * node_ptr)
 {
   rclcpp::CallbackGroup::SharedPtr callback_group =
     node_ptr->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);

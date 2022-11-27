@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "static_centerline_optimizer/static_centerline_optimizer_node.hpp"
 
 #include "lanelet2_extension/utility/message_conversion.hpp"
@@ -174,19 +176,19 @@ std::vector<unsigned int> check_lanelet_connection(
 
 StaticCenterlineOptimizerNode::StaticCenterlineOptimizerNode(
   const rclcpp::NodeOptions & node_options)
-: Node("static_centerline_optimizer", node_options)
+: TildeNode("static_centerline_optimizer", node_options)
 {
   // publishers
-  pub_map_bin_ = create_publisher<HADMapBin>("lanelet2_map_topic", create_transient_local_qos());
+  pub_map_bin_ = create_tilde_publisher<HADMapBin>("lanelet2_map_topic", create_transient_local_qos());
   pub_raw_path_with_lane_id_ =
-    create_publisher<PathWithLaneId>("input_centerline", create_transient_local_qos());
-  pub_raw_path_ = create_publisher<Path>("debug/raw_centerline", create_transient_local_qos());
+    create_tilde_publisher<PathWithLaneId>("input_centerline", create_transient_local_qos());
+  pub_raw_path_ = create_tilde_publisher<Path>("debug/raw_centerline", create_transient_local_qos());
   pub_optimized_centerline_ =
-    create_publisher<Trajectory>("output_centerline", create_transient_local_qos());
+    create_tilde_publisher<Trajectory>("output_centerline", create_transient_local_qos());
 
   // debug publishers
   pub_debug_unsafe_footprints_ =
-    create_publisher<MarkerArray>("debug/unsafe_footprints", create_transient_local_qos());
+    create_tilde_publisher<MarkerArray>("debug/unsafe_footprints", create_transient_local_qos());
 
   // services
   callback_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -310,7 +312,7 @@ std::vector<unsigned int> StaticCenterlineOptimizerNode::plan_route(
       plugin_loader.createSharedInstance("mission_planner::lanelet2::DefaultPlanner");
 
     // initialize mission_planner
-    auto node = rclcpp::Node("po");
+    auto node = tilde::TildeNode("po");
     mission_planner->initialize(&node, map_bin_ptr_);
 
     // plan route

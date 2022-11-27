@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef FREESPACE_PLANNING_ALGORITHMS__ASTAR_SEARCH_HPP_
 #define FREESPACE_PLANNING_ALGORITHMS__ASTAR_SEARCH_HPP_
 
@@ -30,6 +32,9 @@
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace freespace_planning_algorithms
 {
@@ -113,7 +118,7 @@ public:
 
   AstarSearch(
     const PlannerCommonParam & planner_common_param, const VehicleShape & collision_vehicle_shape,
-    rclcpp::Node & node)
+    tilde::TildeNode & node)
   : AstarSearch(
       planner_common_param, collision_vehicle_shape,
       AstarParam{

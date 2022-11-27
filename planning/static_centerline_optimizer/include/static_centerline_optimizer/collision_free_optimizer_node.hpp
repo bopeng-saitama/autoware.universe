@@ -15,6 +15,8 @@
 // NOTE: This file was copied from a part of implementation in
 // https://github.com/autowarefoundation/autoware.universe/blob/main/planning/obstacle_avoidance_planner/include/obstacle_avoidance_planner/node.hpp
 
+// apply TILDE
+
 #ifndef STATIC_CENTERLINE_OPTIMIZER__COLLISION_FREE_OPTIMIZER_NODE_HPP_
 #define STATIC_CENTERLINE_OPTIMIZER__COLLISION_FREE_OPTIMIZER_NODE_HPP_
 
@@ -35,9 +37,12 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace static_centerline_optimizer
 {
-class CollisionFreeOptimizerNode : public rclcpp::Node
+class CollisionFreeOptimizerNode : public tilde::TildeNode
 {
 private:
   rclcpp::Clock logger_ros_clock_;

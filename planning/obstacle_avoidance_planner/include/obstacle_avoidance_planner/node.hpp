@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// apply TILDE
+
 #ifndef OBSTACLE_AVOIDANCE_PLANNER__NODE_HPP_
 #define OBSTACLE_AVOIDANCE_PLANNER__NODE_HPP_
 
@@ -47,6 +50,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 using autoware_auto_perception_msgs::msg::PredictedObject;
 using autoware_auto_perception_msgs::msg::PredictedObjects;
@@ -150,7 +156,7 @@ double lerpPoseZ(
 }
 }  // namespace
 
-class ObstacleAvoidancePlanner : public rclcpp::Node
+class ObstacleAvoidancePlanner : public tilde::TildeNode
 {
 public:
   struct PlannerData
@@ -221,20 +227,20 @@ private:
   tier4_autoware_utils::SelfPoseListener self_pose_listener_{this};
 
   // ROS
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_extended_fixed_traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_extended_non_fixed_traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_eb_traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_mpt_fixed_traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_mpt_ref_traj_pub_;
-  rclcpp::Publisher<Trajectory>::SharedPtr debug_mpt_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_extended_fixed_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_extended_non_fixed_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_eb_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_mpt_fixed_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_mpt_ref_traj_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr debug_mpt_traj_pub_;
 
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_markers_pub_;
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_wall_markers_pub_;
-  rclcpp::Publisher<OccupancyGrid>::SharedPtr debug_clearance_map_pub_;
-  rclcpp::Publisher<OccupancyGrid>::SharedPtr debug_object_clearance_map_pub_;
-  rclcpp::Publisher<OccupancyGrid>::SharedPtr debug_area_with_objects_pub_;
-  rclcpp::Publisher<tier4_debug_msgs::msg::StringStamped>::SharedPtr debug_msg_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_markers_pub_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_wall_markers_pub_;
+  tilde::TildePublisher<OccupancyGrid>::SharedPtr debug_clearance_map_pub_;
+  tilde::TildePublisher<OccupancyGrid>::SharedPtr debug_object_clearance_map_pub_;
+  tilde::TildePublisher<OccupancyGrid>::SharedPtr debug_area_with_objects_pub_;
+  tilde::TildePublisher<tier4_debug_msgs::msg::StringStamped>::SharedPtr debug_msg_pub_;
 
   rclcpp::Subscription<Path>::SharedPtr path_sub_;
   rclcpp::Subscription<Odometry>::SharedPtr odom_sub_;

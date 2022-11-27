@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef RTC_AUTO_MODE_MANAGER__RTC_AUTO_MODE_MANAGER_INTERFACE_HPP_
 #define RTC_AUTO_MODE_MANAGER__RTC_AUTO_MODE_MANAGER_INTERFACE_HPP_
 
@@ -23,6 +25,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace rtc_auto_mode_manager
 {
 using tier4_rtc_msgs::srv::AutoMode;
@@ -31,7 +36,7 @@ class RTCAutoModeManagerInterface
 {
 public:
   RTCAutoModeManagerInterface(
-    rclcpp::Node * node, const std::string & module_name, const bool default_enable);
+    tilde::TildeNode * node, const std::string & module_name, const bool default_enable);
 
 private:
   void onEnableService(

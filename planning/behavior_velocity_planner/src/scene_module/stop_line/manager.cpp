@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <scene_module/stop_line/manager.hpp>
 
 #include <memory>
@@ -23,7 +25,7 @@ namespace behavior_velocity_planner
 {
 using lanelet::TrafficSign;
 
-StopLineModuleManager::StopLineModuleManager(rclcpp::Node & node)
+StopLineModuleManager::StopLineModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterface(node, getModuleName())
 {
   const std::string ns(getModuleName());

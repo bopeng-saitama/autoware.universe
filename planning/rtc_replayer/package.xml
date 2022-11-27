@@ -19,6 +19,10 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>tier4_rtc_msgs</depend>
+  
+  <depend>tilde_cmake</depend>
+  <depend>tilde</depend>
+  <depend>tilde_msg</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>autoware_lint_common</test_depend>

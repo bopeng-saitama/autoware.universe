@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef MOTION_VELOCITY_SMOOTHER__SMOOTHER__L2_PSEUDO_JERK_SMOOTHER_HPP_
 #define MOTION_VELOCITY_SMOOTHER__SMOOTHER__L2_PSEUDO_JERK_SMOOTHER_HPP_
 
@@ -26,6 +28,9 @@
 
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace motion_velocity_smoother
 {
 class L2PseudoJerkSmoother : public SmootherBase
@@ -38,7 +43,7 @@ public:
     double over_a_weight;
   };
 
-  explicit L2PseudoJerkSmoother(rclcpp::Node & node);
+  explicit L2PseudoJerkSmoother(tilde::TildeNode & node);
 
   bool apply(
     const double initial_vel, const double initial_acc, const TrajectoryPoints & input,

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/behavior_path_planner_node.hpp"
 
 #include "behavior_path_planner/debug_utilities.hpp"
@@ -48,7 +50,7 @@ using tier4_planning_msgs::msg::PathChangeModuleId;
 using vehicle_info_util::VehicleInfoUtil;
 
 BehaviorPathPlannerNode::BehaviorPathPlannerNode(const rclcpp::NodeOptions & node_options)
-: Node("behavior_path_planner", node_options)
+: TildeNode("behavior_path_planner", node_options)
 {
   using std::placeholders::_1;
   using std::chrono_literals::operator""ms;
@@ -60,37 +62,37 @@ BehaviorPathPlannerNode::BehaviorPathPlannerNode(const rclcpp::NodeOptions & nod
   }
 
   // publisher
-  path_publisher_ = create_publisher<PathWithLaneId>("~/output/path", 1);
-  path_candidate_publisher_ = create_publisher<Path>("~/output/path_candidate", 1);
+  path_publisher_ = create_tilde_publisher<PathWithLaneId>("~/output/path", 1);
+  path_candidate_publisher_ = create_tilde_publisher<Path>("~/output/path_candidate", 1);
   turn_signal_publisher_ =
-    create_publisher<TurnIndicatorsCommand>("~/output/turn_indicators_cmd", 1);
-  hazard_signal_publisher_ = create_publisher<HazardLightsCommand>("~/output/hazard_lights_cmd", 1);
+    create_tilde_publisher<TurnIndicatorsCommand>("~/output/turn_indicators_cmd", 1);
+  hazard_signal_publisher_ = create_tilde_publisher<HazardLightsCommand>("~/output/hazard_lights_cmd", 1);
   debug_avoidance_msg_array_publisher_ =
-    create_publisher<AvoidanceDebugMsgArray>("~/debug/avoidance_debug_message_array", 1);
+    create_tilde_publisher<AvoidanceDebugMsgArray>("~/debug/avoidance_debug_message_array", 1);
   debug_lane_change_msg_array_publisher_ =
-    create_publisher<LaneChangeDebugMsgArray>("~/debug/lane_change_debug_message_array", 1);
+    create_tilde_publisher<LaneChangeDebugMsgArray>("~/debug/lane_change_debug_message_array", 1);
 
   if (planner_data_->parameters.visualize_drivable_area_for_shared_linestrings_lanelet) {
     debug_drivable_area_lanelets_publisher_ =
-      create_publisher<MarkerArray>("~/drivable_area_boundary", 1);
+      create_tilde_publisher<MarkerArray>("~/drivable_area_boundary", 1);
   }
 
   // subscriber
-  velocity_subscriber_ = create_subscription<Odometry>(
+  velocity_subscriber_ = create_tilde_subscription<Odometry>(
     "~/input/odometry", 1, std::bind(&BehaviorPathPlannerNode::onVelocity, this, _1),
     createSubscriptionOptions(this));
-  acceleration_subscriber_ = create_subscription<AccelWithCovarianceStamped>(
+  acceleration_subscriber_ = create_tilde_subscription<AccelWithCovarianceStamped>(
     "~/input/accel", 1, std::bind(&BehaviorPathPlannerNode::onAcceleration, this, _1),
     createSubscriptionOptions(this));
-  perception_subscriber_ = create_subscription<PredictedObjects>(
+  perception_subscriber_ = create_tilde_subscription<PredictedObjects>(
     "~/input/perception", 1, std::bind(&BehaviorPathPlannerNode::onPerception, this, _1),
     createSubscriptionOptions(this));
   // todo: change to ~/input
-  occupancy_grid_subscriber_ = create_subscription<OccupancyGrid>(
+  occupancy_grid_subscriber_ = create_tilde_subscription<OccupancyGrid>(
     "/perception/occupancy_grid_map/map", 1,
     std::bind(&BehaviorPathPlannerNode::onOccupancyGrid, this, _1),
     createSubscriptionOptions(this));
-  scenario_subscriber_ = create_subscription<Scenario>(
+  scenario_subscriber_ = create_tilde_subscription<Scenario>(
     "~/input/scenario", 1,
     [this](const Scenario::ConstSharedPtr msg) {
       current_scenario_ = std::make_shared<Scenario>(*msg);
@@ -99,10 +101,10 @@ BehaviorPathPlannerNode::BehaviorPathPlannerNode(const rclcpp::NodeOptions & nod
 
   // route_handler
   auto qos_transient_local = rclcpp::QoS{1}.transient_local();
-  vector_map_subscriber_ = create_subscription<HADMapBin>(
+  vector_map_subscriber_ = create_tilde_subscription<HADMapBin>(
     "~/input/vector_map", qos_transient_local, std::bind(&BehaviorPathPlannerNode::onMap, this, _1),
     createSubscriptionOptions(this));
-  route_subscriber_ = create_subscription<HADMapRoute>(
+  route_subscriber_ = create_tilde_subscription<HADMapRoute>(
     "~/input/route", qos_transient_local, std::bind(&BehaviorPathPlannerNode::onRoute, this, _1),
     createSubscriptionOptions(this));
 
@@ -230,10 +232,10 @@ BehaviorPathPlannerParameters BehaviorPathPlannerNode::getCommonParam()
   p.lateral_distance_max_threshold = declare_parameter("lateral_distance_max_threshold", 2.0);
   p.longitudinal_distance_min_threshold =
     declare_parameter("longitudinal_distance_min_threshold", 3.0);
-
+  
   p.expected_front_deceleration = declare_parameter("expected_front_deceleration", -0.5);
   p.expected_rear_deceleration = declare_parameter("expected_rear_deceleration", -1.0);
-
+  
   p.expected_front_deceleration_for_abort =
     declare_parameter("expected_front_deceleration_for_abort", -2.0);
   p.expected_rear_deceleration_for_abort =

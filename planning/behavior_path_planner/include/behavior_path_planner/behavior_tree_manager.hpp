@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__BEHAVIOR_TREE_MANAGER_HPP_
 #define BEHAVIOR_PATH_PLANNER__BEHAVIOR_TREE_MANAGER_HPP_
 
@@ -30,6 +32,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace behavior_path_planner
 {
 struct BehaviorTreeManagerParam
@@ -42,7 +47,7 @@ struct BehaviorTreeManagerParam
 class BehaviorTreeManager
 {
 public:
-  BehaviorTreeManager(rclcpp::Node & node, const BehaviorTreeManagerParam & param);
+  BehaviorTreeManager(tilde::TildeNode & node, const BehaviorTreeManagerParam & param);
   void createBehaviorTree();
   void registerSceneModule(const std::shared_ptr<SceneModuleInterface> & p);
 

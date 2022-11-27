@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef MISSION_PLANNER__MISSION_PLANNER_PLUGIN_HPP_
 #define MISSION_PLANNER__MISSION_PLANNER_PLUGIN_HPP_
 
@@ -23,6 +25,9 @@
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace mission_planner
 {
@@ -36,8 +41,8 @@ public:
   using MarkerArray = visualization_msgs::msg::MarkerArray;
 
   virtual ~PlannerPlugin() = default;
-  virtual void initialize(rclcpp::Node * node) = 0;
-  virtual void initialize(rclcpp::Node * node, const HADMapBin::ConstSharedPtr msg) = 0;
+  virtual void initialize(tilde::TildeNode * node) = 0;
+  virtual void initialize(tilde::TildeNode * node, const HADMapBin::ConstSharedPtr msg) = 0;
   virtual bool ready() const = 0;
   virtual HADMapRoute plan(const RoutePoints & points) = 0;
   virtual MarkerArray visualize(const HADMapRoute & route) const = 0;

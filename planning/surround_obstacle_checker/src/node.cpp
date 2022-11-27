@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "surround_obstacle_checker/node.hpp"
 
 #include <autoware_auto_tf2/tf2_autoware_auto_msgs.hpp>
@@ -141,7 +143,7 @@ Polygon2d createSelfPolygon(const VehicleInfo & vehicle_info)
 }  // namespace
 
 SurroundObstacleCheckerNode::SurroundObstacleCheckerNode(const rclcpp::NodeOptions & node_options)
-: Node("surround_obstacle_checker_node", node_options)
+: TildeNode("surround_obstacle_checker_node", node_options)
 {
   // Parameters
   {
@@ -159,20 +161,20 @@ SurroundObstacleCheckerNode::SurroundObstacleCheckerNode(const rclcpp::NodeOptio
 
   // Publishers
   pub_stop_reason_ =
-    this->create_publisher<diagnostic_msgs::msg::DiagnosticStatus>("~/output/no_start_reason", 1);
-  pub_clear_velocity_limit_ = this->create_publisher<VelocityLimitClearCommand>(
+    this->create_tilde_publisher<diagnostic_msgs::msg::DiagnosticStatus>("~/output/no_start_reason", 1);
+  pub_clear_velocity_limit_ = this->create_tilde_publisher<VelocityLimitClearCommand>(
     "~/output/velocity_limit_clear_command", rclcpp::QoS{1}.transient_local());
-  pub_velocity_limit_ = this->create_publisher<VelocityLimit>(
+  pub_velocity_limit_ = this->create_tilde_publisher<VelocityLimit>(
     "~/output/max_velocity", rclcpp::QoS{1}.transient_local());
 
   // Subscribers
-  sub_pointcloud_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+  sub_pointcloud_ = this->create_tilde_subscription<sensor_msgs::msg::PointCloud2>(
     "~/input/pointcloud", rclcpp::SensorDataQoS(),
     std::bind(&SurroundObstacleCheckerNode::onPointCloud, this, std::placeholders::_1));
-  sub_dynamic_objects_ = this->create_subscription<PredictedObjects>(
+  sub_dynamic_objects_ = this->create_tilde_subscription<PredictedObjects>(
     "~/input/objects", 1,
     std::bind(&SurroundObstacleCheckerNode::onDynamicObjects, this, std::placeholders::_1));
-  sub_odometry_ = this->create_subscription<nav_msgs::msg::Odometry>(
+  sub_odometry_ = this->create_tilde_subscription<nav_msgs::msg::Odometry>(
     "~/input/odometry", 1,
     std::bind(&SurroundObstacleCheckerNode::onOdometry, this, std::placeholders::_1));
 

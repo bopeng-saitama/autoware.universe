@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__PULL_OVER__SHIFT_PULL_OVER_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__PULL_OVER__SHIFT_PULL_OVER_HPP_
 
@@ -25,6 +27,9 @@
 #include <memory>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_path_planner
 {
 using lane_departure_checker::LaneDepartureChecker;
@@ -33,7 +38,7 @@ class ShiftPullOver : public PullOverPlannerBase
 {
 public:
   ShiftPullOver(
-    rclcpp::Node & node, const PullOverParameters & parameters,
+    tilde::TildeNode & node, const PullOverParameters & parameters,
     const LaneDepartureChecker & lane_departure_checker,
     const std::shared_ptr<OccupancyGridBasedCollisionDetector> & occupancy_grid_map);
 

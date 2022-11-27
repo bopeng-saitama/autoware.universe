@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "obstacle_cruise_planner/pid_based_planner/pid_based_planner.hpp"
 
 #include "obstacle_cruise_planner/utils.hpp"
@@ -53,7 +55,7 @@ Float32MultiArrayStamped convertDebugValuesToMsg(
 }  // namespace
 
 PIDBasedPlanner::PIDBasedPlanner(
-  rclcpp::Node & node, const LongitudinalInfo & longitudinal_info,
+  tilde::TildeNode & node, const LongitudinalInfo & longitudinal_info,
   const vehicle_info_util::VehicleInfo & vehicle_info, const EgoNearestParam & ego_nearest_param)
 : PlannerInterface(node, longitudinal_info, vehicle_info, ego_nearest_param)
 {
@@ -83,7 +85,7 @@ PIDBasedPlanner::PIDBasedPlanner(
   lpf_cruise_ptr_ = std::make_shared<LowpassFilter1d>(lpf_cruise_gain);
 
   // publisher
-  debug_values_pub_ = node.create_publisher<Float32MultiArrayStamped>("~/debug/values", 1);
+  debug_values_pub_ = node.create_tilde_publisher<Float32MultiArrayStamped>("~/debug/values", 1);
 }
 
 Trajectory PIDBasedPlanner::generateCruiseTrajectory(

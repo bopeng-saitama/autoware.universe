@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "rtc_replayer/rtc_replayer_node.hpp"
 
 #include <algorithm>
@@ -88,9 +90,9 @@ std::string to_string(const unique_identifier_msgs::msg::UUID & uuid)
 }
 
 RTCReplayerNode::RTCReplayerNode(const rclcpp::NodeOptions & node_options)
-: Node("rtc_replayer_node", node_options)
+: TildeNode("rtc_replayer_node", node_options)
 {
-  sub_statuses_ = create_subscription<CooperateStatusArray>(
+  sub_statuses_ = create_tilde_subscription<CooperateStatusArray>(
     "/debug/rtc_status", 1, std::bind(&RTCReplayerNode::onCooperateStatus, this, _1));
   client_rtc_commands_ = create_client<CooperateCommands>(
     "/api/external/set/rtc_commands", rmw_qos_profile_services_default);

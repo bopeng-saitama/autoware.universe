@@ -50,6 +50,7 @@ ament_target_dependencies(behavior_velocity_planner
   Boost
   Eigen3
   PCL
+  tilde
 )
 
 target_link_libraries(behavior_velocity_planner ${PCL_LIBRARIES})

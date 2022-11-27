@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__SCENE_MODULE__PULL_OVER__PULL_OVER_PLANNER_BASE_HPP_
 #define BEHAVIOR_PATH_PLANNER__SCENE_MODULE__PULL_OVER__PULL_OVER_PLANNER_BASE_HPP_
 
@@ -27,6 +29,9 @@
 
 #include <memory>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 using autoware_auto_planning_msgs::msg::PathWithLaneId;
 using geometry_msgs::msg::Pose;
@@ -52,7 +57,7 @@ struct PullOverPath
 class PullOverPlannerBase
 {
 public:
-  PullOverPlannerBase(rclcpp::Node & node, const PullOverParameters & parameters)
+  PullOverPlannerBase(tilde::TildeNode & node, const PullOverParameters & parameters)
   {
     vehicle_info_ = vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo();
     vehicle_footprint_ = createVehicleFootprint(vehicle_info_);

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "rtc_auto_mode_manager/node.hpp"
 
 #include <algorithm>
@@ -20,7 +22,7 @@ namespace rtc_auto_mode_manager
 {
 
 RTCAutoModeManagerNode::RTCAutoModeManagerNode(const rclcpp::NodeOptions & node_options)
-: Node("rtc_auto_mode_manager_node", node_options)
+: TildeNode("rtc_auto_mode_manager_node", node_options)
 {
   const std::vector<std::string> module_list =
     declare_parameter("module_list", std::vector<std::string>());

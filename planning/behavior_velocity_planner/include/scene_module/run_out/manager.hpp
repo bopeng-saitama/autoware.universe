@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__RUN_OUT__MANAGER_HPP_
 #define SCENE_MODULE__RUN_OUT__MANAGER_HPP_
 
@@ -20,12 +22,15 @@
 
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class RunOutModuleManager : public SceneModuleManagerInterface
 {
 public:
-  explicit RunOutModuleManager(rclcpp::Node & node);
+  explicit RunOutModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "run_out"; }
 
@@ -39,7 +44,7 @@ private:
   std::function<bool(const std::shared_ptr<SceneModuleInterface> &)> getModuleExpiredFunction(
     const autoware_auto_planning_msgs::msg::PathWithLaneId & path) override;
 
-  void setDynamicObstacleCreator(rclcpp::Node & node);
+  void setDynamicObstacleCreator(tilde::TildeNode & node);
 };
 }  // namespace behavior_velocity_planner
 

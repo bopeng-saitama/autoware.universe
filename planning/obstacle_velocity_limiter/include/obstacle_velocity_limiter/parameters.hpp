@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_VELOCITY_LIMITER__PARAMETERS_HPP_
 #define OBSTACLE_VELOCITY_LIMITER__PARAMETERS_HPP_
 
@@ -22,6 +24,9 @@
 
 #include <string>
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace obstacle_velocity_limiter
 {
@@ -51,7 +56,7 @@ struct ObstacleParameters
   size_t rtree_min_segments{};
 
   ObstacleParameters() = default;
-  explicit ObstacleParameters(rclcpp::Node & node)
+  explicit ObstacleParameters(tilde::TildeNode & node)
   {
     updateType(node, node.declare_parameter<std::string>(DYN_SOURCE_PARAM));
     occupancy_grid_threshold =
@@ -67,7 +72,7 @@ struct ObstacleParameters
       node, static_cast<int>(node.declare_parameter<int>(RTREE_SEGMENTS_PARAM)));
   }
 
-  bool updateType(rclcpp::Node & node, const std::string & type)
+  bool updateType(tilde::TildeNode & node, const std::string & type)
   {
     if (type == "pointcloud") {
       dynamic_source = POINTCLOUD;
@@ -85,7 +90,7 @@ struct ObstacleParameters
     return true;
   }
 
-  bool updateRtreeMinPoints(rclcpp::Node & node, const int & size)
+  bool updateRtreeMinPoints(tilde::TildeNode & node, const int & size)
   {
     if (size < 0) {
       RCLCPP_WARN(
@@ -96,7 +101,7 @@ struct ObstacleParameters
     return true;
   }
 
-  bool updateRtreeMinSegments(rclcpp::Node & node, const int & size)
+  bool updateRtreeMinSegments(tilde::TildeNode & node, const int & size)
   {
     if (size < 0) {
       RCLCPP_WARN(
@@ -129,7 +134,7 @@ struct ProjectionParameters
   double steering_angle_offset{};
 
   ProjectionParameters() = default;
-  explicit ProjectionParameters(rclcpp::Node & node)
+  explicit ProjectionParameters(tilde::TildeNode & node)
   {
     updateModel(node, node.declare_parameter<std::string>(MODEL_PARAM));
     updateDistanceMethod(node, node.declare_parameter<std::string>(DISTANCE_METHOD_PARAM));
@@ -138,7 +143,7 @@ struct ProjectionParameters
     duration = node.declare_parameter<double>(DURATION_PARAM);
   }
 
-  bool updateModel(rclcpp::Node & node, const std::string & model_str)
+  bool updateModel(tilde::TildeNode & node, const std::string & model_str)
   {
     if (model_str == "particle") {
       model = PARTICLE;
@@ -153,7 +158,7 @@ struct ProjectionParameters
     return true;
   }
 
-  bool updateDistanceMethod(rclcpp::Node & node, const std::string & method_str)
+  bool updateDistanceMethod(tilde::TildeNode & node, const std::string & method_str)
   {
     if (method_str == "exact") {
       distance_method = EXACT;
@@ -168,7 +173,7 @@ struct ProjectionParameters
     return true;
   }
 
-  bool updateNbPoints(rclcpp::Node & node, const int nb_points)
+  bool updateNbPoints(tilde::TildeNode & node, const int nb_points)
   {
     if (nb_points < 2) {
       RCLCPP_WARN(
@@ -198,7 +203,7 @@ struct VelocityParameters
   Float current_ego_velocity{};
 
   VelocityParameters() = default;
-  explicit VelocityParameters(rclcpp::Node & node)
+  explicit VelocityParameters(tilde::TildeNode & node)
   {
     min_velocity = static_cast<Float>(node.declare_parameter<double>(MIN_VEL_PARAM));
     max_deceleration = static_cast<Float>(node.declare_parameter<double>(MAX_DECEL_PARAM));
@@ -220,7 +225,7 @@ struct PreprocessingParameters
   Float max_duration{};
 
   PreprocessingParameters() = default;
-  explicit PreprocessingParameters(rclcpp::Node & node)
+  explicit PreprocessingParameters(tilde::TildeNode & node)
   {
     downsample_factor = node.declare_parameter<int>(DOWNSAMPLING_PARAM);
     start_distance = static_cast<Float>(node.declare_parameter<double>(START_DIST_PARAM));

@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "rtc_auto_mode_manager/rtc_auto_mode_manager_interface.hpp"
 
 namespace rtc_auto_mode_manager
 {
 RTCAutoModeManagerInterface::RTCAutoModeManagerInterface(
-  rclcpp::Node * node, const std::string & module_name, const bool default_enable)
+  tilde::TildeNode * node, const std::string & module_name, const bool default_enable)
 {
   using std::chrono_literals::operator""s;
   using std::placeholders::_1;

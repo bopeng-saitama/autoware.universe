@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <scene_module/blind_spot/manager.hpp>
 #include <utilization/boost_geometry_helper.hpp>
 #include <utilization/util.hpp>
@@ -25,7 +27,7 @@
 
 namespace behavior_velocity_planner
 {
-BlindSpotModuleManager::BlindSpotModuleManager(rclcpp::Node & node)
+BlindSpotModuleManager::BlindSpotModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterfaceWithRTC(node, getModuleName())
 {
   const std::string ns(getModuleName());

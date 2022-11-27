@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__VIRTUAL_TRAFFIC_LIGHT__MANAGER_HPP_
 #define SCENE_MODULE__VIRTUAL_TRAFFIC_LIGHT__MANAGER_HPP_
 
@@ -24,12 +26,15 @@
 #include <functional>
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class VirtualTrafficLightModuleManager : public SceneModuleManagerInterface
 {
 public:
-  explicit VirtualTrafficLightModuleManager(rclcpp::Node & node);
+  explicit VirtualTrafficLightModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "virtual_traffic_light"; }
 

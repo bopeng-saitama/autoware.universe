@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/pull_over/pull_over_module.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -43,7 +45,7 @@ using tier4_autoware_utils::inverseTransformPose;
 namespace behavior_path_planner
 {
 PullOverModule::PullOverModule(
-  const std::string & name, rclcpp::Node & node, const PullOverParameters & parameters)
+  const std::string & name, tilde::TildeNode & node, const PullOverParameters & parameters)
 : SceneModuleInterface{name, node},
   parameters_{parameters},
   vehicle_info_{vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo()}
@@ -51,7 +53,7 @@ PullOverModule::PullOverModule(
   rtc_interface_ptr_ = std::make_shared<RTCInterface>(&node, "pull_over");
   steering_factor_interface_ptr_ = std::make_unique<SteeringFactorInterface>(&node, "pull_over");
   goal_pose_pub_ =
-    node.create_publisher<PoseStamped>("/planning/scenario_planning/modified_goal", 1);
+    node.create_tilde_publisher<PoseStamped>("/planning/scenario_planning/modified_goal", 1);
 
   LaneDepartureChecker lane_departure_checker{};
   lane_departure_checker.setVehicleInfo(vehicle_info_util::VehicleInfoUtil(node).getVehicleInfo());

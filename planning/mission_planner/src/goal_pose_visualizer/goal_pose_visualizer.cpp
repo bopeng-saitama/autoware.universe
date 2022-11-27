@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "goal_pose_visualizer.hpp"
 
 namespace mission_planner
 {
 GoalPoseVisualizer::GoalPoseVisualizer(const rclcpp::NodeOptions & node_options)
-: Node("goal_pose_visualizer", node_options)
+: TildeNode("goal_pose_visualizer", node_options)
 {
-  sub_route_ = create_subscription<autoware_auto_planning_msgs::msg::HADMapRoute>(
+  sub_route_ = create_tilde_subscription<autoware_auto_planning_msgs::msg::HADMapRoute>(
     "input/route", rclcpp::QoS{1}.transient_local(),
     std::bind(&GoalPoseVisualizer::echo_back_route_callback, this, std::placeholders::_1));
-  pub_goal_pose_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+  pub_goal_pose_ = create_tilde_publisher<geometry_msgs::msg::PoseStamped>(
     "output/goal_pose", rclcpp::QoS{1}.transient_local());
 }
 

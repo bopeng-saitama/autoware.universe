@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "obstacle_cruise_planner/node.hpp"
 
 #include "motion_utils/resample/resample.hpp"
@@ -193,7 +195,7 @@ Trajectory extendTrajectory(
 namespace motion_planning
 {
 ObstacleCruisePlannerNode::ObstacleCruisePlannerNode(const rclcpp::NodeOptions & node_options)
-: Node("obstacle_cruise_planner", node_options),
+: TildeNode("obstacle_cruise_planner", node_options),
   self_pose_listener_(this),
   in_objects_ptr_(nullptr),
   vehicle_info_(vehicle_info_util::VehicleInfoUtil(*this).getVehicleInfo())
@@ -201,33 +203,33 @@ ObstacleCruisePlannerNode::ObstacleCruisePlannerNode(const rclcpp::NodeOptions &
   using std::placeholders::_1;
 
   // subscriber
-  trajectory_sub_ = create_subscription<Trajectory>(
+  trajectory_sub_ = create_tilde_subscription<Trajectory>(
     "~/input/trajectory", rclcpp::QoS{1},
     std::bind(&ObstacleCruisePlannerNode::onTrajectory, this, _1));
-  smoothed_trajectory_sub_ = create_subscription<Trajectory>(
+  smoothed_trajectory_sub_ = create_tilde_subscription<Trajectory>(
     "/planning/scenario_planning/trajectory", rclcpp::QoS{1},
     std::bind(&ObstacleCruisePlannerNode::onSmoothedTrajectory, this, _1));
-  objects_sub_ = create_subscription<PredictedObjects>(
+  objects_sub_ = create_tilde_subscription<PredictedObjects>(
     "~/input/objects", rclcpp::QoS{1}, std::bind(&ObstacleCruisePlannerNode::onObjects, this, _1));
-  odom_sub_ = create_subscription<Odometry>(
+  odom_sub_ = create_tilde_subscription<Odometry>(
     "~/input/odometry", rclcpp::QoS{1},
     std::bind(&ObstacleCruisePlannerNode::onOdometry, this, std::placeholders::_1));
-  acc_sub_ = create_subscription<AccelWithCovarianceStamped>(
+  acc_sub_ = create_tilde_subscription<AccelWithCovarianceStamped>(
     "~/input/acceleration", rclcpp::QoS{1},
     std::bind(&ObstacleCruisePlannerNode::onAccel, this, std::placeholders::_1));
 
   // publisher
-  trajectory_pub_ = create_publisher<Trajectory>("~/output/trajectory", 1);
+  trajectory_pub_ = create_tilde_publisher<Trajectory>("~/output/trajectory", 1);
   vel_limit_pub_ =
-    create_publisher<VelocityLimit>("~/output/velocity_limit", rclcpp::QoS{1}.transient_local());
-  clear_vel_limit_pub_ = create_publisher<VelocityLimitClearCommand>(
+    create_tilde_publisher<VelocityLimit>("~/output/velocity_limit", rclcpp::QoS{1}.transient_local());
+  clear_vel_limit_pub_ = create_tilde_publisher<VelocityLimitClearCommand>(
     "~/output/clear_velocity_limit", rclcpp::QoS{1}.transient_local());
-  debug_calculation_time_pub_ = create_publisher<Float32Stamped>("~/debug/calculation_time", 1);
+  debug_calculation_time_pub_ = create_tilde_publisher<Float32Stamped>("~/debug/calculation_time", 1);
   debug_cruise_wall_marker_pub_ =
-    create_publisher<visualization_msgs::msg::MarkerArray>("~/debug/cruise/virtual_wall", 1);
+    create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/debug/cruise/virtual_wall", 1);
   debug_stop_wall_marker_pub_ =
-    create_publisher<visualization_msgs::msg::MarkerArray>("~/virtual_wall", 1);
-  debug_marker_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
+    create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/virtual_wall", 1);
+  debug_marker_pub_ = create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
 
   // longitudinal_info
   const auto longitudinal_info = [&]() {

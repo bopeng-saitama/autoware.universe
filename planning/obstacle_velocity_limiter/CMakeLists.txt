@@ -11,7 +11,7 @@ ament_auto_add_library(obstacle_velocity_limiter_node SHARED
   DIRECTORY src
 )
 
-ament_target_dependencies(obstacle_velocity_limiter_node PCL)
+ament_target_dependencies(obstacle_velocity_limiter_node PCL tilde)
 target_include_directories(obstacle_velocity_limiter_node
   SYSTEM PUBLIC
     "${PCL_INCLUDE_DIRS}"

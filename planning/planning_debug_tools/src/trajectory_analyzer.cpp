@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "planning_debug_tools/trajectory_analyzer.hpp"
 
 namespace planning_debug_tools
 {
 TrajectoryAnalyzerNode::TrajectoryAnalyzerNode(const rclcpp::NodeOptions & options)
-: Node("trajectory_analyzer", options)
+: TildeNode("trajectory_analyzer", options)
 {
   using TopicNames = std::vector<std::string>;
   const auto path_topics = declare_parameter<TopicNames>("path_topics", TopicNames{});
@@ -41,7 +43,7 @@ TrajectoryAnalyzerNode::TrajectoryAnalyzerNode(const rclcpp::NodeOptions & optio
   }
 
   using std::placeholders::_1;
-  sub_ego_kinematics_ = create_subscription<Odometry>(
+  sub_ego_kinematics_ = create_tilde_subscription<Odometry>(
     "ego_kinematics", 1, std::bind(&TrajectoryAnalyzerNode::onEgoKinematics, this, _1));
 }
 

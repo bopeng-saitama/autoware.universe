@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SURROUND_OBSTACLE_CHECKER__DEBUG_MARKER_HPP_
 #define SURROUND_OBSTACLE_CHECKER__DEBUG_MARKER_HPP_
 
@@ -27,6 +29,9 @@
 
 #include <memory>
 #include <string>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace surround_obstacle_checker
 {
@@ -52,7 +57,7 @@ public:
     const Polygon2d & ego_polygon, const double base_link2front,
     const double & surround_check_distance, const double & surround_check_recover_distance,
     const geometry_msgs::msg::Pose & self_pose, const rclcpp::Clock::SharedPtr clock,
-    rclcpp::Node & node);
+    tilde::TildeNode & node);
 
   bool pushPose(const geometry_msgs::msg::Pose & pose, const PoseType & type);
   bool pushObstaclePoint(const geometry_msgs::msg::Point & obstacle_point, const PointType & type);
@@ -60,12 +65,12 @@ public:
   void publishFootprints();
 
 private:
-  rclcpp::Publisher<MarkerArray>::SharedPtr debug_virtual_wall_pub_;
-  rclcpp::Publisher<MarkerArray>::SharedPtr debug_viz_pub_;
-  rclcpp::Publisher<StopReasonArray>::SharedPtr stop_reason_pub_;
-  rclcpp::Publisher<PolygonStamped>::SharedPtr vehicle_footprint_pub_;
-  rclcpp::Publisher<PolygonStamped>::SharedPtr vehicle_footprint_offset_pub_;
-  rclcpp::Publisher<PolygonStamped>::SharedPtr vehicle_footprint_recover_offset_pub_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr debug_virtual_wall_pub_;
+  tilde::TildePublisher<MarkerArray>::SharedPtr debug_viz_pub_;
+  tilde::TildePublisher<StopReasonArray>::SharedPtr stop_reason_pub_;
+  tilde::TildePublisher<PolygonStamped>::SharedPtr vehicle_footprint_pub_;
+  tilde::TildePublisher<PolygonStamped>::SharedPtr vehicle_footprint_offset_pub_;
+  tilde::TildePublisher<PolygonStamped>::SharedPtr vehicle_footprint_recover_offset_pub_;
 
   Polygon2d ego_polygon_;
   double base_link2front_;

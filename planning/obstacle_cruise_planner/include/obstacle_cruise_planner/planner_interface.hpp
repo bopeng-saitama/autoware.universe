@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_CRUISE_PLANNER__PLANNER_INTERFACE_HPP_
 #define OBSTACLE_CRUISE_PLANNER__PLANNER_INTERFACE_HPP_
 
@@ -32,6 +34,9 @@
 #include <memory>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 using autoware_auto_perception_msgs::msg::ObjectClassification;
 using autoware_auto_planning_msgs::msg::Trajectory;
 using autoware_auto_planning_msgs::msg::TrajectoryPoint;
@@ -42,16 +47,16 @@ class PlannerInterface
 {
 public:
   PlannerInterface(
-    rclcpp::Node & node, const LongitudinalInfo & longitudinal_info,
+    tilde::TildeNode & node, const LongitudinalInfo & longitudinal_info,
     const vehicle_info_util::VehicleInfo & vehicle_info, const EgoNearestParam & ego_nearest_param)
   : longitudinal_info_(longitudinal_info),
     vehicle_info_(vehicle_info),
     ego_nearest_param_(ego_nearest_param)
   {
     stop_reasons_pub_ =
-      node.create_publisher<tier4_planning_msgs::msg::StopReasonArray>("~/output/stop_reasons", 1);
+      node.create_tilde_publisher<tier4_planning_msgs::msg::StopReasonArray>("~/output/stop_reasons", 1);
     stop_speed_exceeded_pub_ =
-      node.create_publisher<StopSpeedExceeded>("~/output/stop_speed_exceeded", 1);
+      node.create_tilde_publisher<StopSpeedExceeded>("~/output/stop_speed_exceeded", 1);
   }
 
   PlannerInterface() = default;
@@ -109,8 +114,8 @@ protected:
   double nearest_yaw_deviation_threshold_;
 
   // Publishers
-  rclcpp::Publisher<tier4_planning_msgs::msg::StopReasonArray>::SharedPtr stop_reasons_pub_;
-  rclcpp::Publisher<StopSpeedExceeded>::SharedPtr stop_speed_exceeded_pub_;
+  tilde::TildePublisher<tier4_planning_msgs::msg::StopReasonArray>::SharedPtr stop_reasons_pub_;
+  tilde::TildePublisher<StopSpeedExceeded>::SharedPtr stop_speed_exceeded_pub_;
 
   // Vehicle Parameters
   vehicle_info_util::VehicleInfo vehicle_info_;

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef STATIC_CENTERLINE_OPTIMIZER__STATIC_CENTERLINE_OPTIMIZER_NODE_HPP_
 #define STATIC_CENTERLINE_OPTIMIZER__STATIC_CENTERLINE_OPTIMIZER_NODE_HPP_
 
@@ -26,13 +28,16 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace static_centerline_optimizer
 {
 using static_centerline_optimizer::srv::LoadMap;
 using static_centerline_optimizer::srv::PlanPath;
 using static_centerline_optimizer::srv::PlanRoute;
 
-class StaticCenterlineOptimizerNode : public rclcpp::Node
+class StaticCenterlineOptimizerNode : public tilde::TildeNode
 {
 public:
   explicit StaticCenterlineOptimizerNode(const rclcpp::NodeOptions & node_options);
@@ -65,11 +70,11 @@ private:
   std::shared_ptr<RouteHandler> route_handler_ptr_{nullptr};
 
   // publisher
-  rclcpp::Publisher<HADMapBin>::SharedPtr pub_map_bin_{nullptr};
-  rclcpp::Publisher<PathWithLaneId>::SharedPtr pub_raw_path_with_lane_id_{nullptr};
-  rclcpp::Publisher<Path>::SharedPtr pub_raw_path_{nullptr};
-  rclcpp::Publisher<MarkerArray>::SharedPtr pub_debug_unsafe_footprints_{nullptr};
-  rclcpp::Publisher<Trajectory>::SharedPtr pub_optimized_centerline_{nullptr};
+  tilde::TildePublisher<HADMapBin>::SharedPtr pub_map_bin_{nullptr};
+  tilde::TildePublisher<PathWithLaneId>::SharedPtr pub_raw_path_with_lane_id_{nullptr};
+  tilde::TildePublisher<Path>::SharedPtr pub_raw_path_{nullptr};
+  tilde::TildePublisher<MarkerArray>::SharedPtr pub_debug_unsafe_footprints_{nullptr};
+  tilde::TildePublisher<Trajectory>::SharedPtr pub_optimized_centerline_{nullptr};
 
   // service
   rclcpp::Service<LoadMap>::SharedPtr srv_load_map_;

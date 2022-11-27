@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef RTC_REPLAYER__RTC_REPLAYER_NODE_HPP_
 #define RTC_REPLAYER__RTC_REPLAYER_NODE_HPP_
 
@@ -30,6 +32,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace rtc_replayer
 {
 using std::placeholders::_1;
@@ -41,7 +46,7 @@ using tier4_rtc_msgs::msg::CooperateStatusArray;
 using tier4_rtc_msgs::msg::Module;
 using tier4_rtc_msgs::srv::CooperateCommands;
 using unique_identifier_msgs::msg::UUID;
-class RTCReplayerNode : public rclcpp::Node
+class RTCReplayerNode : public tilde::TildeNode
 {
 public:
   explicit RTCReplayerNode(const rclcpp::NodeOptions & node_options);

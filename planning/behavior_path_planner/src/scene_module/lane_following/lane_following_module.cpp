@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/lane_following/lane_following_module.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -25,7 +27,7 @@
 namespace behavior_path_planner
 {
 LaneFollowingModule::LaneFollowingModule(
-  const std::string & name, rclcpp::Node & node, const LaneFollowingParameters & parameters)
+  const std::string & name, tilde::TildeNode & node, const LaneFollowingParameters & parameters)
 : SceneModuleInterface{name, node}, parameters_{parameters}
 {
   initParam();

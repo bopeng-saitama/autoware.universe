@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef OBSTACLE_VELOCITY_LIMITER__OBSTACLE_VELOCITY_LIMITER_NODE_HPP_
 #define OBSTACLE_VELOCITY_LIMITER__OBSTACLE_VELOCITY_LIMITER_NODE_HPP_
 
@@ -41,10 +43,13 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace obstacle_velocity_limiter
 {
 
-class ObstacleVelocityLimiterNode : public rclcpp::Node
+class ObstacleVelocityLimiterNode : public tilde::TildeNode
 {
 public:
   explicit ObstacleVelocityLimiterNode(const rclcpp::NodeOptions & node_options);
@@ -52,11 +57,11 @@ public:
 private:
   tier4_autoware_utils::TransformListener transform_listener_{this};
   tier4_autoware_utils::SelfPoseListener self_pose_listener_{this};
-  rclcpp::Publisher<Trajectory>::SharedPtr
+  tilde::TildePublisher<Trajectory>::SharedPtr
     pub_trajectory_;  //!< @brief publisher for output trajectory
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr
     pub_debug_markers_;  //!< @brief publisher for debug markers
-  rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr
+  tilde::TildePublisher<std_msgs::msg::Int64>::SharedPtr
     pub_runtime_;  //!< @brief publisher for callback runtime
   rclcpp::Subscription<Trajectory>::SharedPtr
     sub_trajectory_;  //!< @brief subscriber for reference trajectory

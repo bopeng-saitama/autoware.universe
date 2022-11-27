@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef FREESPACE_PLANNING_ALGORITHMS__RRTSTAR_HPP_
 #define FREESPACE_PLANNING_ALGORITHMS__RRTSTAR_HPP_
 
@@ -21,6 +23,9 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <vector>
+
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
 
 namespace freespace_planning_algorithms
 {
@@ -43,7 +48,7 @@ public:
 
   RRTStar(
     const PlannerCommonParam & planner_common_param, const VehicleShape & original_vehicle_shape,
-    rclcpp::Node & node)
+    tilde::TildeNode & node)
   : RRTStar(
       planner_common_param, original_vehicle_shape,
       RRTStarParam{

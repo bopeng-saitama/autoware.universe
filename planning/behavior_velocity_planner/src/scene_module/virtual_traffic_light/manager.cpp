@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include <scene_module/virtual_traffic_light/manager.hpp>
 #include <tier4_autoware_utils/math/unit_conversion.hpp>
 
@@ -25,7 +27,7 @@ namespace behavior_velocity_planner
 {
 using lanelet::autoware::VirtualTrafficLight;
 
-VirtualTrafficLightModuleManager::VirtualTrafficLightModuleManager(rclcpp::Node & node)
+VirtualTrafficLightModuleManager::VirtualTrafficLightModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterface(node, getModuleName())
 {
   const std::string ns(getModuleName());

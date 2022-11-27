@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/steering_factor_interface.hpp"
 
 namespace steering_factor_interface
 {
-SteeringFactorInterface::SteeringFactorInterface(rclcpp::Node * node, const std::string & name)
+SteeringFactorInterface::SteeringFactorInterface(tilde::TildeNode * node, const std::string & name)
 : logger_{node->get_logger().get_child("PlanningAPI[" + name + "]")}
 {
   // Publisher
   pub_steering_factors_ =
-    node->create_publisher<SteeringFactorArray>("/planning/steering_factor/" + name, 1);
+    node->create_tilde_publisher<SteeringFactorArray>("/planning/steering_factor/" + name, 1);
 }
 
 void SteeringFactorInterface::publishSteeringFactor(const rclcpp::Time & stamp)

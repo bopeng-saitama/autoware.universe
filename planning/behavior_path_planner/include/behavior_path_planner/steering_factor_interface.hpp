@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef BEHAVIOR_PATH_PLANNER__STEERING_FACTOR_INTERFACE_HPP_
 #define BEHAVIOR_PATH_PLANNER__STEERING_FACTOR_INTERFACE_HPP_
 
@@ -25,6 +27,9 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_node.hpp"
+#include "tilde/tilde_publisher.hpp"
+
 namespace steering_factor_interface
 {
 using autoware_adapi_v1_msgs::msg::SteeringFactor;
@@ -34,7 +39,7 @@ using geometry_msgs::msg::Pose;
 class SteeringFactorInterface
 {
 public:
-  SteeringFactorInterface(rclcpp::Node * node, const std::string & name);
+  SteeringFactorInterface(tilde::TildeNode * node, const std::string & name);
   void publishSteeringFactor(const rclcpp::Time & stamp);
   void updateSteeringFactor(
     const std::array<Pose, 2> & pose, const std::array<double, 2> distance, const uint16_t type,
@@ -44,7 +49,7 @@ public:
 private:
   rclcpp::Logger getLogger() const;
 
-  rclcpp::Publisher<SteeringFactorArray>::SharedPtr pub_steering_factors_;
+  tilde::TildePublisher<SteeringFactorArray>::SharedPtr pub_steering_factors_;
 
   std::mutex mutex_;
   rclcpp::Logger logger_;

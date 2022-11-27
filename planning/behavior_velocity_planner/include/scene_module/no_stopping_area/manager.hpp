@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #ifndef SCENE_MODULE__NO_STOPPING_AREA__MANAGER_HPP_
 #define SCENE_MODULE__NO_STOPPING_AREA__MANAGER_HPP_
 
@@ -24,12 +26,15 @@
 #include <functional>
 #include <memory>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace behavior_velocity_planner
 {
 class NoStoppingAreaModuleManager : public SceneModuleManagerInterfaceWithRTC
 {
 public:
-  explicit NoStoppingAreaModuleManager(rclcpp::Node & node);
+  explicit NoStoppingAreaModuleManager(tilde::TildeNode & node);
 
   const char * getModuleName() override { return "no_stopping_area"; }
 

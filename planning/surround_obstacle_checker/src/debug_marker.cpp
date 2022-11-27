@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "surround_obstacle_checker/debug_marker.hpp"
 
 #include <motion_utils/motion_utils.hpp>
@@ -39,7 +41,7 @@ SurroundObstacleCheckerDebugNode::SurroundObstacleCheckerDebugNode(
   const Polygon2d & ego_polygon, const double base_link2front,
   const double & surround_check_distance, const double & surround_check_recover_distance,
   const geometry_msgs::msg::Pose & self_pose, const rclcpp::Clock::SharedPtr clock,
-  rclcpp::Node & node)
+  tilde::TildeNode & node)
 : ego_polygon_(ego_polygon),
   base_link2front_(base_link2front),
   surround_check_distance_(surround_check_distance),
@@ -48,14 +50,14 @@ SurroundObstacleCheckerDebugNode::SurroundObstacleCheckerDebugNode(
   clock_(clock)
 {
   debug_virtual_wall_pub_ =
-    node.create_publisher<visualization_msgs::msg::MarkerArray>("~/virtual_wall", 1);
-  debug_viz_pub_ = node.create_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
-  stop_reason_pub_ = node.create_publisher<StopReasonArray>("~/output/stop_reasons", 1);
-  vehicle_footprint_pub_ = node.create_publisher<PolygonStamped>("~/debug/footprint", 1);
+    node.create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/virtual_wall", 1);
+  debug_viz_pub_ = node.create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/debug/marker", 1);
+  stop_reason_pub_ = node.create_tilde_publisher<StopReasonArray>("~/output/stop_reasons", 1);
+  vehicle_footprint_pub_ = node.create_tilde_publisher<PolygonStamped>("~/debug/footprint", 1);
   vehicle_footprint_offset_pub_ =
-    node.create_publisher<PolygonStamped>("~/debug/footprint_offset", 1);
+    node.create_tilde_publisher<PolygonStamped>("~/debug/footprint_offset", 1);
   vehicle_footprint_recover_offset_pub_ =
-    node.create_publisher<PolygonStamped>("~/debug/footprint_recover_offset", 1);
+    node.create_tilde_publisher<PolygonStamped>("~/debug/footprint_recover_offset", 1);
 }
 
 bool SurroundObstacleCheckerDebugNode::pushPose(

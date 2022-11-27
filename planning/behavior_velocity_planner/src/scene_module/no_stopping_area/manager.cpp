@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "scene_module/no_stopping_area/manager.hpp"
 
 #include <lanelet2_extension/utility/query.hpp>
@@ -29,7 +31,7 @@ namespace behavior_velocity_planner
 {
 using lanelet::autoware::NoStoppingArea;
 
-NoStoppingAreaModuleManager::NoStoppingAreaModuleManager(rclcpp::Node & node)
+NoStoppingAreaModuleManager::NoStoppingAreaModuleManager(tilde::TildeNode & node)
 : SceneModuleManagerInterfaceWithRTC(node, getModuleName())
 {
   const std::string ns(getModuleName());

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "arrival_checker.hpp"
 
 #include <tier4_autoware_utils/tier4_autoware_utils.hpp>
@@ -24,14 +26,14 @@
 namespace mission_planner
 {
 
-ArrivalChecker::ArrivalChecker(rclcpp::Node * node) : vehicle_stop_checker_(node)
+ArrivalChecker::ArrivalChecker(tilde::TildeNode * node) : vehicle_stop_checker_(node)
 {
   const double angle_deg = node->declare_parameter<double>("arrival_check_angle_deg");
   angle_ = tier4_autoware_utils::deg2rad(angle_deg);
   distance_ = node->declare_parameter<double>("arrival_check_distance");
   duration_ = node->declare_parameter<double>("arrival_check_duration");
 
-  sub_goal_ = node->create_subscription<geometry_msgs::msg::PoseStamped>(
+  sub_goal_ = node->create_tilde_subscription<geometry_msgs::msg::PoseStamped>(
     "input/modified_goal", 1,
     [this](const geometry_msgs::msg::PoseStamped::ConstSharedPtr msg) { goal_pose_ = msg; });
 }

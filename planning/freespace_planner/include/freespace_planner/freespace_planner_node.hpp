@@ -28,6 +28,8 @@
  * limitations under the License.
  */
 
+ // apply TILDE
+
 #ifndef FREESPACE_PLANNER__FREESPACE_PLANNER_NODE_HPP_
 #define FREESPACE_PLANNER__FREESPACE_PLANNER_NODE_HPP_
 
@@ -60,6 +62,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
 
 namespace freespace_planner
 {
@@ -94,17 +99,17 @@ struct NodeParam
   bool replan_when_course_out;
 };
 
-class FreespacePlannerNode : public rclcpp::Node
+class FreespacePlannerNode : public tilde::TildeNode
 {
 public:
   explicit FreespacePlannerNode(const rclcpp::NodeOptions & node_options);
 
 private:
   // ros
-  rclcpp::Publisher<Trajectory>::SharedPtr trajectory_pub_;
-  rclcpp::Publisher<PoseArray>::SharedPtr debug_pose_array_pub_;
-  rclcpp::Publisher<PoseArray>::SharedPtr debug_partial_pose_array_pub_;
-  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr parking_state_pub_;
+  tilde::TildePublisher<Trajectory>::SharedPtr trajectory_pub_;
+  tilde::TildePublisher<PoseArray>::SharedPtr debug_pose_array_pub_;
+  tilde::TildePublisher<PoseArray>::SharedPtr debug_partial_pose_array_pub_;
+  tilde::TildePublisher<std_msgs::msg::Bool>::SharedPtr parking_state_pub_;
 
   rclcpp::Subscription<HADMapRoute>::SharedPtr route_sub_;
   rclcpp::Subscription<OccupancyGrid>::SharedPtr occupancy_grid_sub_;

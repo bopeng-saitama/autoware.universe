@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// apply TILDE
+
 #include "behavior_path_planner/scene_module/pull_out/shift_pull_out.hpp"
 
 #include "behavior_path_planner/path_utilities.hpp"
@@ -30,7 +32,7 @@ using pull_out_utils::combineReferencePath;
 using pull_out_utils::getPullOutLanes;
 
 ShiftPullOut::ShiftPullOut(
-  rclcpp::Node & node, const PullOutParameters & parameters,
+  tilde::TildeNode & node, const PullOutParameters & parameters,
   std::shared_ptr<LaneDepartureChecker> & lane_departure_checker)
 : PullOutPlannerBase{node, parameters}, lane_departure_checker_{lane_departure_checker}
 {
