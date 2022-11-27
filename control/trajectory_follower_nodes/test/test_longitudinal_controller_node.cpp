@@ -72,12 +72,12 @@ TEST_F(FakeNodeFixture, longitudinal_keep_velocity)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;
@@ -144,12 +144,12 @@ TEST_F(FakeNodeFixture, longitudinal_slow_down)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;
@@ -216,12 +216,12 @@ TEST_F(FakeNodeFixture, longitudinal_accelerate)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;
@@ -288,12 +288,12 @@ TEST_F(FakeNodeFixture, longitudinal_stopped)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;
@@ -352,12 +352,12 @@ TEST_F(FakeNodeFixture, longitudinal_reverse)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;
@@ -416,12 +416,12 @@ TEST_F(FakeNodeFixture, longitudinal_emergency)
   std::shared_ptr<LongitudinalController> node = makeLongitudinalNode();
 
   // Publisher/Subscribers
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
-    this->create_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
-    this->create_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
+    this->create_tilde_publisher<VehicleOdometry>("longitudinal_controller/input/current_odometry");
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
+    this->create_tilde_publisher<Trajectory>("longitudinal_controller/input/current_trajectory");
   rclcpp::Subscription<LongitudinalCommand>::SharedPtr cmd_sub =
-    this->create_subscription<LongitudinalCommand>(
+    this->create_tilde_subscription<LongitudinalCommand>(
       "longitudinal_controller/output/control_cmd", *this->get_fake_node(),
       [&cmd_msg, &received_longitudinal_command](const LongitudinalCommand::SharedPtr msg) {
         cmd_msg = msg;

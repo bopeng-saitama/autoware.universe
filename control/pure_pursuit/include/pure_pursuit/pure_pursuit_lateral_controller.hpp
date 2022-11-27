@@ -54,6 +54,9 @@
 #include <memory>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 using autoware::motion::control::trajectory_follower::InputData;
 using autoware::motion::control::trajectory_follower::LateralControllerBase;
 using autoware::motion::control::trajectory_follower::LateralOutput;
@@ -101,10 +104,10 @@ struct DebugData
 class PurePursuitLateralController : public LateralControllerBase
 {
 public:
-  explicit PurePursuitLateralController(rclcpp::Node & node);
+  explicit PurePursuitLateralController(tilde::TildeNode & node);
 
 private:
-  rclcpp::Node::SharedPtr node_;
+  tilde::TildeNode::SharedPtr node_;
   tier4_autoware_utils::SelfPoseListener self_pose_listener_;
   boost::optional<std::vector<TrajectoryPoint>> output_tp_array_;
   autoware_auto_planning_msgs::msg::Trajectory::SharedPtr trajectory_resampled_;
@@ -114,10 +117,10 @@ private:
   boost::optional<AckermannLateralCommand> prev_cmd_;
 
   // Debug Publisher
-  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_marker_;
-  rclcpp::Publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr pub_debug_values_;
+  tilde::TildePublisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_debug_marker_;
+  tilde::TildePublisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr pub_debug_values_;
   // Predicted Trajectory publish
-  rclcpp::Publisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr
+  tilde::TildePublisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr
     pub_predicted_trajectory_;
 
   bool isDataReady();

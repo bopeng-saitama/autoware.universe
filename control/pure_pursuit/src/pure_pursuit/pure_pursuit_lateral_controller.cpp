@@ -56,7 +56,7 @@ enum TYPE {
 
 namespace pure_pursuit
 {
-PurePursuitLateralController::PurePursuitLateralController(rclcpp::Node & node)
+PurePursuitLateralController::PurePursuitLateralController(tilde::TildeNode & node)
 : node_{&node}, self_pose_listener_(&node), tf_buffer_(node_->get_clock()), tf_listener_(tf_buffer_)
 {
   pure_pursuit_ = std::make_unique<PurePursuit>();
@@ -89,12 +89,12 @@ PurePursuitLateralController::PurePursuitLateralController(rclcpp::Node & node)
 
   // Debug Publishers
   pub_debug_marker_ =
-    node_->create_publisher<visualization_msgs::msg::MarkerArray>("~/debug/markers", 0);
-  pub_debug_values_ = node_->create_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
+    node_->create_tilde_publisher<visualization_msgs::msg::MarkerArray>("~/debug/markers", 0);
+  pub_debug_values_ = node_->create_tilde_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
     "~/debug/ld_outputs", rclcpp::QoS{1});
 
   // Publish predicted trajectory
-  pub_predicted_trajectory_ = node_->create_publisher<autoware_auto_planning_msgs::msg::Trajectory>(
+  pub_predicted_trajectory_ = node_->create_tilde_publisher<autoware_auto_planning_msgs::msg::Trajectory>(
     "~/output/predicted_trajectory", 1);
 
   //  Wait for first current pose

@@ -19,20 +19,20 @@
 namespace operation_mode_transition_manager
 {
 
-Compatibility::Compatibility(rclcpp::Node * node) : node_(node)
+Compatibility::Compatibility(tilde::TildeNode * node) : node_(node)
 {
-  sub_autoware_engage_ = node->create_subscription<AutowareEngage>(
+  sub_autoware_engage_ = node->create_tilde_subscription<AutowareEngage>(
     "/api/autoware/get/engage", 1,
     std::bind(&Compatibility::on_autoware_engage, this, std::placeholders::_1));
-  sub_gate_mode_ = node->create_subscription<GateMode>(
+  sub_gate_mode_ = node->create_tilde_subscription<GateMode>(
     "/control/current_gate_mode", 1,
     std::bind(&Compatibility::on_gate_mode, this, std::placeholders::_1));
-  sub_selector_mode_ = node->create_subscription<SelectorModeMsg>(
+  sub_selector_mode_ = node->create_tilde_subscription<SelectorModeMsg>(
     "/control/external_cmd_selector/current_selector_mode", 1,
     std::bind(&Compatibility::on_selector_mode, this, std::placeholders::_1));
 
-  pub_autoware_engage_ = node->create_publisher<AutowareEngage>("/autoware/engage", 1);
-  pub_gate_mode_ = node->create_publisher<GateMode>("/control/gate_mode_cmd", 1);
+  pub_autoware_engage_ = node->create_tilde_publisher<AutowareEngage>("/autoware/engage", 1);
+  pub_gate_mode_ = node->create_tilde_publisher<GateMode>("/control/gate_mode_cmd", 1);
   cli_selector_mode_ =
     node->create_client<SelectorModeSrv>("/control/external_cmd_selector/select_external_command");
 }

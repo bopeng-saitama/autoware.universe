@@ -49,6 +49,10 @@
 #include <string>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
+
 namespace autoware
 {
 namespace motion
@@ -66,7 +70,7 @@ public:
   /**
    * @brief constructor
    */
-  explicit MpcLateralController(rclcpp::Node & node);
+  explicit MpcLateralController(tilde::TildeNode & node);
 
   /**
    * @brief destructor
@@ -74,12 +78,12 @@ public:
   virtual ~MpcLateralController();
 
 private:
-  rclcpp::Node * node_;
+  tilde::TildeNode * node_;
 
   //!< @brief topic publisher for predicted trajectory
-  rclcpp::Publisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr m_pub_predicted_traj;
+  tilde::TildePublisher<autoware_auto_planning_msgs::msg::Trajectory>::SharedPtr m_pub_predicted_traj;
   //!< @brief topic publisher for control debug values
-  rclcpp::Publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_debug_values;
+  tilde::TildePublisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_debug_values;
   //!< @brief subscription for transform messages
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr m_tf_sub;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr m_tf_static_sub;

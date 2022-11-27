@@ -32,7 +32,7 @@ namespace control
 {
 namespace trajectory_follower
 {
-PidLongitudinalController::PidLongitudinalController(rclcpp::Node & node)
+PidLongitudinalController::PidLongitudinalController(tilde::TildeNode & node)
 : node_{&node}, diagnostic_updater_(&node)
 {
   using std::placeholders::_1;
@@ -186,9 +186,9 @@ PidLongitudinalController::PidLongitudinalController(rclcpp::Node & node)
       : node_->declare_parameter<double>("ego_nearest_yaw_threshold");  // [rad]
 
   // subscriber, publisher
-  m_pub_slope = node_->create_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
+  m_pub_slope = node_->create_tilde_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
     "~/output/slope_angle", rclcpp::QoS{1});
-  m_pub_debug = node_->create_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
+  m_pub_debug = node_->create_tilde_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
     "~/output/longitudinal_diagnostic", rclcpp::QoS{1});
 
   // set parameter callback

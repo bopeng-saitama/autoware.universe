@@ -22,13 +22,16 @@
 #include <tier4_control_msgs/msg/gate_mode.hpp>
 #include <tier4_control_msgs/srv/external_command_select.hpp>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace operation_mode_transition_manager
 {
 
 class Compatibility
 {
 public:
-  explicit Compatibility(rclcpp::Node * node);
+  explicit Compatibility(tilde::TildeNode * node);
   void set_mode(const OperationMode mode);
   std::optional<OperationMode> get_mode() const;
 
@@ -40,15 +43,15 @@ private:
   rclcpp::Subscription<AutowareEngage>::SharedPtr sub_autoware_engage_;
   rclcpp::Subscription<GateMode>::SharedPtr sub_gate_mode_;
   rclcpp::Subscription<SelectorModeMsg>::SharedPtr sub_selector_mode_;
-  rclcpp::Publisher<AutowareEngage>::SharedPtr pub_autoware_engage_;
-  rclcpp::Publisher<GateMode>::SharedPtr pub_gate_mode_;
+  tilde::TildePublisher<AutowareEngage>::SharedPtr pub_autoware_engage_;
+  tilde::TildePublisher<GateMode>::SharedPtr pub_gate_mode_;
   rclcpp::Client<SelectorModeSrv>::SharedPtr cli_selector_mode_;
   void on_autoware_engage(const AutowareEngage::ConstSharedPtr msg);
   void on_gate_mode(const GateMode::ConstSharedPtr msg);
   void on_selector_mode(const SelectorModeMsg::ConstSharedPtr msg);
 
   bool is_calling_service_ = false;
-  rclcpp::Node * node_;
+  tilde::TildeNode * node_;
   AutowareEngage::ConstSharedPtr autoware_engage_;
   GateMode::ConstSharedPtr gate_mode_;
   SelectorModeMsg::ConstSharedPtr selector_mode_;

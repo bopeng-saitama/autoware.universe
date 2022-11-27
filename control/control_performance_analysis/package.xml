@@ -26,6 +26,9 @@
   <depend>motion_utils</depend>
   <depend>nav_msgs</depend>
   <depend>rclcpp</depend>
+  <depend>tilde_cmake</depend>
+  <depend>tilde</depend>
+  <depend>tilde_msg</depend>
   <depend>rclcpp_components</depend>
   <depend>sensor_msgs</depend>
   <depend>signal_processing</depend>

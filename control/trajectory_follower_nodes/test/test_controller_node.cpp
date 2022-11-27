@@ -137,16 +137,16 @@ public:
     test_utils::spinWhile(node);
   };
 
-  rclcpp::Publisher<Trajectory>::SharedPtr traj_pub =
+  tilde::TildePublisher<Trajectory>::SharedPtr traj_pub =
     fnf->create_publisher<Trajectory>("controller/input/reference_trajectory");
 
-  rclcpp::Publisher<VehicleOdometry>::SharedPtr odom_pub =
+  tilde::TildePublisher<VehicleOdometry>::SharedPtr odom_pub =
     fnf->create_publisher<VehicleOdometry>("controller/input/current_odometry");
 
-  rclcpp::Publisher<SteeringReport>::SharedPtr steer_pub =
+  tilde::TildePublisher<SteeringReport>::SharedPtr steer_pub =
     fnf->create_publisher<SteeringReport>("controller/input/current_steering");
 
-  rclcpp::Publisher<AccelWithCovarianceStamped>::SharedPtr accel_pub =
+  tilde::TildePublisher<AccelWithCovarianceStamped>::SharedPtr accel_pub =
     fnf->create_publisher<AccelWithCovarianceStamped>("controller/input/current_accel");
 
   rclcpp::Subscription<AckermannControlCommand>::SharedPtr cmd_sub =

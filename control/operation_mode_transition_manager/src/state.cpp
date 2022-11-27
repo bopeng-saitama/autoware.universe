@@ -27,19 +27,19 @@ using motion_utils::findNearestIndex;
 using tier4_autoware_utils::calcDistance2d;
 using tier4_autoware_utils::calcYawDeviation;
 
-AutonomousMode::AutonomousMode(rclcpp::Node * node)
+AutonomousMode::AutonomousMode(tilde::TildeNode * node)
 : logger_(node->get_logger()), clock_(node->get_clock())
 {
   vehicle_info_ = vehicle_info_util::VehicleInfoUtil(*node).getVehicleInfo();
 
-  sub_control_cmd_ = node->create_subscription<AckermannControlCommand>(
+  sub_control_cmd_ = node->create_tilde_subscription<AckermannControlCommand>(
     "control_cmd", 1,
     [this](const AckermannControlCommand::SharedPtr msg) { control_cmd_ = *msg; });
 
-  sub_kinematics_ = node->create_subscription<Odometry>(
+  sub_kinematics_ = node->create_tilde_subscription<Odometry>(
     "kinematics", 1, [this](const Odometry::SharedPtr msg) { kinematics_ = *msg; });
 
-  sub_trajectory_ = node->create_subscription<Trajectory>(
+  sub_trajectory_ = node->create_tilde_subscription<Trajectory>(
     "trajectory", 1, [this](const Trajectory::SharedPtr msg) { trajectory_ = *msg; });
 
   // params for mode change available

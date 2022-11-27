@@ -26,10 +26,13 @@
 #include <unordered_map>
 #include <utility>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace operation_mode_transition_manager
 {
 
-class OperationModeTransitionManager : public rclcpp::Node
+class OperationModeTransitionManager : public tilde::TildeNode
 {
 public:
   explicit OperationModeTransitionManager(const rclcpp::NodeOptions & options);
@@ -52,7 +55,7 @@ private:
   rclcpp::Subscription<ControlModeReport>::SharedPtr sub_control_mode_report_;
   rclcpp::Subscription<OperationModeState>::SharedPtr sub_gate_operation_mode_;
   rclcpp::Client<ControlModeCommand>::SharedPtr cli_control_mode_;
-  rclcpp::Publisher<ModeChangeBase::DebugInfo>::SharedPtr pub_debug_info_;
+  tilde::TildePublisher<ModeChangeBase::DebugInfo>::SharedPtr pub_debug_info_;
   rclcpp::TimerBase::SharedPtr timer_;
   void onTimer();
   void publishData();

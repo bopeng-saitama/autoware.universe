@@ -44,6 +44,10 @@
 #include <utility>
 #include <vector>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
+
 namespace autoware
 {
 namespace motion
@@ -60,7 +64,7 @@ namespace trajectory_follower = ::autoware::motion::control::trajectory_follower
 class TRAJECTORY_FOLLOWER_PUBLIC PidLongitudinalController : public LongitudinalControllerBase
 {
 public:
-  explicit PidLongitudinalController(rclcpp::Node & node);
+  explicit PidLongitudinalController(tilde::TildeNode & node);
 
 private:
   struct Motion
@@ -81,10 +85,10 @@ private:
     double slope_angle{0.0};
     double dt{0.0};
   };
-  rclcpp::Node * node_;
+  tilde::TildeNode * node_;
   // ros variables
-  rclcpp::Publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_slope;
-  rclcpp::Publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_debug;
+  tilde::TildePublisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_slope;
+  tilde::TildePublisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>::SharedPtr m_pub_debug;
 
   rclcpp::Node::OnSetParametersCallbackHandle::SharedPtr m_set_param_res;
   rcl_interfaces::msg::SetParametersResult paramCallback(

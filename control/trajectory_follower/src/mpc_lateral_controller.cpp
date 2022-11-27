@@ -50,7 +50,7 @@ void update_param(
 }
 }  // namespace
 
-MpcLateralController::MpcLateralController(rclcpp::Node & node) : node_{&node}
+MpcLateralController::MpcLateralController(tilde::TildeNode & node) : node_{&node}
 {
   using std::placeholders::_1;
 
@@ -150,9 +150,9 @@ MpcLateralController::MpcLateralController(rclcpp::Node & node) : node_{&node}
   m_mpc.ego_nearest_dist_threshold = m_ego_nearest_dist_threshold;
   m_mpc.ego_nearest_yaw_threshold = m_ego_nearest_yaw_threshold;
 
-  m_pub_predicted_traj = node_->create_publisher<autoware_auto_planning_msgs::msg::Trajectory>(
+  m_pub_predicted_traj = node_->create_tilde_publisher<autoware_auto_planning_msgs::msg::Trajectory>(
     "~/output/predicted_trajectory", 1);
-  m_pub_debug_values = node_->create_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
+  m_pub_debug_values = node_->create_tilde_publisher<tier4_debug_msgs::msg::Float32MultiArrayStamped>(
     "~/output/lateral_diagnostic", 1);
 
   // TODO(Frederik.Beaujean) ctor is too long, should factor out parameter declarations

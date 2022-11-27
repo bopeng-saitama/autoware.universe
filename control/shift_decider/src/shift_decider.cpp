@@ -22,7 +22,7 @@
 #include <utility>
 
 ShiftDecider::ShiftDecider(const rclcpp::NodeOptions & node_options)
-: Node("shift_decider", node_options)
+: TildeNode("shift_decider", node_options)
 {
   using std::placeholders::_1;
 
@@ -33,10 +33,10 @@ ShiftDecider::ShiftDecider(const rclcpp::NodeOptions & node_options)
   park_on_goal_ = declare_parameter("park_on_goal", true);
 
   pub_shift_cmd_ =
-    create_publisher<autoware_auto_vehicle_msgs::msg::GearCommand>("output/gear_cmd", durable_qos);
-  sub_control_cmd_ = create_subscription<autoware_auto_control_msgs::msg::AckermannControlCommand>(
+    create_tilde_publisher<autoware_auto_vehicle_msgs::msg::GearCommand>("output/gear_cmd", durable_qos);
+  sub_control_cmd_ = create_tilde_subscription<autoware_auto_control_msgs::msg::AckermannControlCommand>(
     "input/control_cmd", queue_size, std::bind(&ShiftDecider::onControlCmd, this, _1));
-  sub_autoware_state_ = create_subscription<autoware_auto_system_msgs::msg::AutowareState>(
+  sub_autoware_state_ = create_tilde_subscription<autoware_auto_system_msgs::msg::AutowareState>(
     "input/state", queue_size, std::bind(&ShiftDecider::onAutowareState, this, _1));
 
   initTimer(0.1);

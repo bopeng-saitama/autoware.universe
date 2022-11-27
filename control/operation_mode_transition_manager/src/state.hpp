@@ -28,6 +28,9 @@
 #include <memory>
 #include <utility>
 
+#include "tilde/tilde_publisher.hpp"
+#include "tilde/tilde_node.hpp"
+
 namespace operation_mode_transition_manager
 {
 
@@ -53,7 +56,7 @@ public:
 class AutonomousMode : public ModeChangeBase
 {
 public:
-  explicit AutonomousMode(rclcpp::Node * node);
+  explicit AutonomousMode(tilde::TildeNode * node);
   void update(bool transition) override;
   bool isModeChangeCompleted() override;
   bool isModeChangeAvailable() override;
